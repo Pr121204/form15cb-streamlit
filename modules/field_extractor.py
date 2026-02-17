@@ -21,6 +21,7 @@ import json
 import logging
 import os
 import re
+from pathlib import Path
 from typing import Dict, Optional, List
 
 from dotenv import load_dotenv
@@ -44,7 +45,7 @@ except Exception:
 
 # You can tune these if needed
 GEMINI_TEMPERATURE: float = float(os.getenv("GEMINI_TEMPERATURE", "0"))
-GEMINI_MAX_OUTPUT_TOKENS: int = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "1600"))
+GEMINI_MAX_OUTPUT_TOKENS: int = int(os.getenv("GEMINI_MAX_OUTPUT_TOKENS", "8192"))
 
 # If your OCR text is huge, keep a cap to control token cost
 MAX_INPUT_CHARS: int = int(os.getenv("GEMINI_MAX_INPUT_CHARS", "60000"))
@@ -111,6 +112,28 @@ XML_FIELD_KEYS: List[str] = [
     "RemitterPAN",
     "NameRemitter",
 ]
+
+RESPONSE_SCHEMA = {
+    "type": "object",
+    "properties": {k: {"type": "string"} for k in XML_FIELD_KEYS},
+    "required": XML_FIELD_KEYS,
+    "additionalProperties": False,
+}
+
+
+def _load_lookup(file_name: str) -> Dict[str, str]:
+    try:
+        path = Path(__file__).resolve().parent.parent / "lookups" / file_name
+        with open(path, "r", encoding="utf8") as f:
+            data: Dict[str, str] = json.load(f)
+        return {k.lower(): str(v) for k, v in data.items()}
+    except Exception:
+        return {}
+
+
+COUNTRY_LOOKUP = _load_lookup("country_codes.json")
+CURRENCY_LOOKUP = _load_lookup("currency_codes.json")
+BANK_LOOKUP = _load_lookup("bank_codes.json")
 
 
 def _ensure_all_keys(data: Dict[str, object]) -> Dict[str, str]:
@@ -207,24 +230,27 @@ def extract_fields(text: str) -> Dict[str, str]:
     keys_list = ", ".join(XML_FIELD_KEYS)
 
     prompt = (
-        "You are extracting fields from an Indian Form 15CB (Accountant Certificate) document.\n"
-        "Return ONLY a single JSON object.\n"
+        "You are extracting fields from OCR/text for Indian Form 15CB.\n"
+        "Return ONLY a single JSON object that strictly follows the provided schema.\n"
         "Rules:\n"
         f"- Keys MUST be exactly these (no extra keys): {keys_list}\n"
+        "- Return ALL keys; no omissions.\n"
         "- For missing values, use empty string \"\".\n"
         "- Do NOT add explanations.\n"
         "- Keep numeric fields as digits only (remove commas, currency symbols, ₹ signs).\n"
         "- Convert dates to YYYY-MM-DD format.\n"
         "- For Y/N fields: output Y or N.\n"
         "\n"
-        "IMPORTANT FIELD DEFINITIONS (read carefully):\n"
-        "- NameRemitter = the company/person MAKING the payment (appears with phrase 'with PAN' in the doc). This is the INDIAN entity.\n"
-        "- RemitterPAN = the PAN number of the REMITTER (the Indian company making the payment, format: 5 letters + 4 digits + 1 letter, e.g. AAACR7108R)\n"
-        "- NameRemittee = the company/person RECEIVING the payment (the foreign beneficiary).\n"
-        "- AmtPayIndRem = amount payable in Indian Rupees (INR), digits only, no symbols.\n"
-        "- AmtPayForgnRem = amount payable in foreign currency, digits only.\n"
-        "- PropDateRem = proposed date of remittance in YYYY-MM-DD format.\n"
-        "- DednDateTds = date of deduction of tax at source in YYYY-MM-DD format.\n"
+        "Section-aware extraction rules:\n"
+        "- Remitter = the party marked '(Remitters)' in opening paragraphs; PAN near this party is RemitterPAN.\n"
+        "- Remittee/Beneficiary = the foreign party marked '(Beneficiary)' and Section A beneficiary details.\n"
+        "- Use Section A for remittee address fields and remittee country.\n"
+        "- Use Section B for country/currency/bank/branch/BSR/remittance amounts/proposed date/nature/purpose fields.\n"
+        "- Use Section 10 for ItActDetails fields.\n"
+        "- Use Section 11 for DTAADetails fields.\n"
+        "- Use Sections 12-15 for TDSDetails fields.\n"
+        "- RemitterPAN format hint: 5 letters + 4 digits + 1 letter (example: AAACR7108R).\n"
+        "- PropDateRem and DednDateTds must be YYYY-MM-DD if present.\n"
         "\n"
         "Document text:\n"
         f"{doc}"
@@ -237,9 +263,10 @@ def extract_fields(text: str) -> Dict[str, str]:
             model=GEMINI_MODEL_NAME,
             contents=prompt,
             config={
-                "temperature": GEMINI_TEMPERATURE,
-                "max_output_tokens": 4000,
+                "temperature": 0,
+                "max_output_tokens": GEMINI_MAX_OUTPUT_TOKENS,
                 "response_mime_type": "application/json",
+                "response_schema": RESPONSE_SCHEMA,
             },
         )
 
@@ -287,8 +314,9 @@ def extract_fields(text: str) -> Dict[str, str]:
                         contents=retry_prompt,
                         config={
                             "temperature": 0,
-                            "max_output_tokens": 4000,
+                            "max_output_tokens": GEMINI_MAX_OUTPUT_TOKENS,
                             "response_mime_type": "application/json",
+                            "response_schema": RESPONSE_SCHEMA,
                         },
                     )
                     raw2 = (resp2.text or "").strip()
@@ -317,6 +345,36 @@ def extract_fields(text: str) -> Dict[str, str]:
             return {k: "" for k in XML_FIELD_KEYS}
 
         cleaned = _ensure_all_keys(data)
+
+        # Normalize descriptor fields to expected lookup codes with fallback sources.
+        def _lkp(table: Dict[str, str], raw: str) -> str:
+            if not raw:
+                return ""
+            key = raw.strip().lower()
+            return table.get(key, raw.strip())
+
+        country_raw = (
+            cleaned.get("CountryRemMadeSecb")
+            or cleaned.get("RemitteeCountryCode")
+            or cleaned.get("RemitteeTownCityDistrict")
+            or ""
+        )
+        mapped_country = _lkp(COUNTRY_LOOKUP, country_raw)
+        if mapped_country:
+            cleaned["CountryRemMadeSecb"] = mapped_country
+            cleaned["RemitteeCountryCode"] = mapped_country
+
+        currency_raw = cleaned.get("CurrencySecbCode", "")
+        if currency_raw:
+            cleaned["CurrencySecbCode"] = _lkp(CURRENCY_LOOKUP, currency_raw)
+
+        bank_raw = cleaned.get("NameBankCode", "")
+        if bank_raw:
+            cleaned["NameBankCode"] = _lkp(BANK_LOOKUP, bank_raw)
+
+        if not cleaned.get("RemitteeZipCode"):
+            cleaned["RemitteeZipCode"] = "999999"
+
         populated = sum(1 for v in cleaned.values() if v)
         logger.info(f"Gemini extraction populated {populated}/{len(XML_FIELD_KEYS)} fields")
         return cleaned
