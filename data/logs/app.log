@@ -1,0 +1,213 @@
+2026-02-17 12:47:57,913 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\7057441295.pdf
+2026-02-17 12:48:02,194 INFO OCR extraction completed
+2026-02-17 12:48:02,200 INFO ================================================================================
+2026-02-17 12:48:02,201 INFO FORM 15CB FIELD EXTRACTION (REGEX + AI Fallback)
+2026-02-17 12:48:02,201 INFO ================================================================================
+2026-02-17 12:48:02,206 INFO Regex extraction found 1 fields
+2026-02-17 12:48:02,206 INFO 7 critical fields missing and only 1 regex fields found; invoking Gemini AI...
+2026-02-17 12:48:02,866 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 12:48:09,000 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 12:48:09,004 ERROR Gemini output did not contain a JSON object
+2026-02-17 12:48:09,008 WARNING AI extraction failed or returned no data
+2026-02-17 12:48:09,008 INFO Extraction complete: 1 fields populated
+2026-02-17 12:48:09,009 INFO Extracted 57 fields
+2026-02-17 12:58:48,116 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\7057441295.pdf
+2026-02-17 12:58:53,000 INFO OCR extraction completed
+2026-02-17 12:58:53,008 INFO ================================================================================
+2026-02-17 12:58:53,008 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 12:58:53,009 INFO ================================================================================
+2026-02-17 12:58:53,849 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 12:59:01,180 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 12:59:01,184 ERROR Gemini output was not valid JSON. Returning blanks.
+2026-02-17 12:59:01,186 INFO Extracted 57 fields
+2026-02-17 13:04:32,541 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\7057441295.pdf
+2026-02-17 13:04:36,309 INFO OCR extraction completed
+2026-02-17 13:04:36,317 INFO ================================================================================
+2026-02-17 13:04:36,317 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 13:04:36,317 INFO ================================================================================
+2026-02-17 13:04:37,131 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 13:04:44,335 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 13:04:44,344 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "Bosch Global Software Technologies Private Limited",
+  "RemitteeFlatDoorBuilding": "No. 76, 77",
+  "RemitteeAreaLocality": "Cyber park",
+2026-02-17 13:04:44,344 ERROR Gemini output was not valid JSON object. Returning blanks.
+2026-02-17 13:04:44,346 INFO Extracted 57 fields
+2026-02-17 13:09:53,106 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\25-26 RE1659-7057441295.pdf
+2026-02-17 13:09:53,826 INFO PDF text extracted successfully
+2026-02-17 13:09:53,831 INFO ================================================================================
+2026-02-17 13:09:53,831 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 13:09:53,832 INFO ================================================================================
+2026-02-17 13:09:54,643 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 13:10:07,820 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 13:10:07,825 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "",
+  "RemitteeTownCityDistrict": "berlin",
+  "RemitteeZipCode": "12109",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "No",
+  "RemittanceCharIndia": "Yes",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Yes",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa": 
+2026-02-17 13:10:07,826 INFO Gemini extraction populated 52/57 fields
+2026-02-17 13:10:07,828 INFO Extracted 57 fields
+2026-02-17 13:10:17,549 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\25-26 RE1659-7057441295.pdf
+2026-02-17 13:10:18,291 INFO PDF text extracted successfully
+2026-02-17 13:10:18,297 INFO ================================================================================
+2026-02-17 13:10:18,298 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 13:10:18,298 INFO ================================================================================
+2026-02-17 13:10:19,077 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 13:10:31,357 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 13:10:31,359 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "",
+  "RemitteeTownCityDistrict": "berlin",
+  "RemitteeZipCode": "12109",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "No",
+  "RemittanceCharIndia": "Yes",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Yes",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa": 
+2026-02-17 13:10:31,360 INFO Gemini extraction populated 52/57 fields
+2026-02-17 13:10:31,361 INFO Extracted 57 fields
+2026-02-17 13:10:31,405 INFO XML generated: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\output\generated_3cd55e47882d.xml
+2026-02-17 13:11:05,484 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\25-26 RE1659-7057441295.pdf
+2026-02-17 13:11:06,170 INFO PDF text extracted successfully
+2026-02-17 13:11:06,180 INFO ================================================================================
+2026-02-17 13:11:06,181 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 13:11:06,181 INFO ================================================================================
+2026-02-17 13:11:07,107 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 13:11:17,821 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 13:11:17,824 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "",
+  "RemitteeTownCityDistrict": "berlin",
+  "RemitteeZipCode": "12109",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa": "ARTI
+2026-02-17 13:11:17,825 INFO Gemini extraction populated 52/57 fields
+2026-02-17 13:11:17,829 INFO Extracted 57 fields
+2026-02-17 13:11:20,753 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\7057441295.pdf
+2026-02-17 13:11:24,816 INFO OCR extraction completed
+2026-02-17 13:11:24,825 INFO ================================================================================
+2026-02-17 13:11:24,825 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-17 13:11:24,827 INFO ================================================================================
+2026-02-17 13:11:25,468 INFO AFC is enabled with max remote calls: 10.
+2026-02-17 13:11:37,459 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-17 13:11:37,461 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "Bosch Global Software Technologies Private Limited",
+  "RemitteeFlatDoorBuilding": "No. 76, 77",
+  "RemitteeAreaLocality": "Cyber park",
+  "RemitteeTownCityDistrict": "Bangalore",
+  "RemitteeZipCode": "560100",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "IN",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300.00",
+  "AmtPayIndRem": "",
+  "NameBankCode": "Deutsene Bank Stuttgart",
+  "BranchName": "Stuttgart",
+  "BsrCode": "",
+  "PropDateRem": "2023-05-15",
+  "NatureRemCategory": "Services",
+  "RevPurCategory": "Services",
+  "RevPurCode": "",
+  "TaxPayGrossSecb": "",
+  "RemittanceCharIndia": "",
+  "SecRemCovered": "",
+  "AmtIncChrgIt": "",
+  "TaxLiablIt": "",
+  "BasisDeterTax": "",
+  "TaxResidCert": "",
+  "RelevantDtaa": "",
+  "RelevantArtDtaa": "",
+  "TaxIncDtaa": "",
+  "TaxLiablDtaa": "",
+  "RemForRoyFlg": "N",
+  "ArtDtaa": "",
+  "RateTdsADtaa": "",
+  "RemAcctBusIncFlg": "Y",
+  "IncLiabIndiaFlg": "Y",
+  "RemOnCapGainFlg": "N",
+  "OtherRemDtaa": "",
+  "TaxIndDtaaFlg": "",
+  "RelArtDetlDDtaa": "",
+  "AmtPayForgnTds": "",
+  "AmtPayIndianTds": "",
+  "RateTdsSecbFlg": "",
+  "RateTdsSecB": "",
+  "ActlAmtTdsForgn": "",
+  "D
+2026-02-17 13:11:37,462 INFO Gemini extraction populated 19/57 fields
+2026-02-17 13:11:37,465 INFO Extracted 57 fields
