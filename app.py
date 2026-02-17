@@ -6,7 +6,7 @@ Last Updated: February 2026
 
 This application automates Form 15CB data entry by:
 1. Extracting text from PDFs or images using OCR
-2. Auto-extracting key fields using pattern matching
+2. Auto-extracting key fields using Gemini (AI)
 3. Allowing manual review and correction
 4. Generating schema-compliant XML for IT Department's Java utility
 """
@@ -18,6 +18,7 @@ from modules.ocr_engine import extract_text_from_image_file
 from modules.field_extractor import extract_fields
 from modules.xml_generator import generate_xml
 from modules.logger import get_logger
+import hashlib
 import os
 import time
 import re
@@ -87,6 +88,7 @@ if uploaded:
     # Display file info
     file_size_kb = uploaded.size / 1024
     st.success(f"✅ File uploaded: **{uploaded.name}** ({file_size_kb:.1f} KB)")
+    file_hash = hashlib.md5(uploaded.getvalue()).hexdigest()
     
     # Save uploaded file
     try:
@@ -185,16 +187,37 @@ if uploaded:
     
     # Field Extraction Section
     st.subheader('✏️ Step 3: Review & Edit Extracted Fields')
-    st.caption('Fields are auto-extracted using pattern matching. Please review and correct any errors.')
+    st.caption('Fields are auto-extracted using Gemini (AI). Please review and correct any errors.')
     
     # Extract fields
     with st.spinner('Analyzing document and extracting fields...'):
         fields = extract_fields(text)
         logger.info(f"Extracted {len(fields)} fields")
     
-    # Initialize session state
-    if 'extracted_fields' not in st.session_state:
-        st.session_state['extracted_fields'] = fields
+    # Update extracted fields only when uploaded file changes
+    if st.session_state.get("last_file_hash") != file_hash:
+        st.session_state["extracted_fields"] = fields
+        st.session_state["last_file_hash"] = file_hash
+        st.session_state["amt_inr"] = fields.get("AmtPayIndRem", "")
+        st.session_state["amt_foreign"] = fields.get("AmtPayForgnRem", "")
+        st.session_state["prop_date"] = fields.get("PropDateRem", "")
+        st.session_state["remitter_pan"] = fields.get("RemitterPAN", "")
+        st.session_state["remitter_name"] = fields.get("NameRemitter", "")
+        st.session_state["remittee_name"] = fields.get("NameRemittee", "")
+        st.session_state["accountant_name"] = fields.get("NameAcctnt", "")
+
+    if st.button("Re-extract fields"):
+        with st.spinner("Re-running Gemini extraction..."):
+            refreshed_fields = extract_fields(text)
+        st.session_state["extracted_fields"] = refreshed_fields
+        st.session_state["amt_inr"] = refreshed_fields.get("AmtPayIndRem", "")
+        st.session_state["amt_foreign"] = refreshed_fields.get("AmtPayForgnRem", "")
+        st.session_state["prop_date"] = refreshed_fields.get("PropDateRem", "")
+        st.session_state["remitter_pan"] = refreshed_fields.get("RemitterPAN", "")
+        st.session_state["remitter_name"] = refreshed_fields.get("NameRemitter", "")
+        st.session_state["remittee_name"] = refreshed_fields.get("NameRemittee", "")
+        st.session_state["accountant_name"] = refreshed_fields.get("NameAcctnt", "")
+        logger.info("Fields re-extracted via manual action")
     
     # Validation helpers
     def validate_pan(pan):
