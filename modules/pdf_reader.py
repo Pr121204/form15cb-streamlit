@@ -1,13 +1,15 @@
 import pdfplumber
 import io
 
-def extract_text_from_pdf(path):
-    """Extract text from a PDF file at 'path'. Returns empty string if no embedded text."""
+def extract_text_from_pdf(source):
+    """Extract text from a PDF. source can be a file path (str) or BytesIO."""
     text = ""
     try:
-        with pdfplumber.open(path) as pdf:
+        with pdfplumber.open(source) as pdf:
             for p in pdf.pages:
-                text += p.extract_text() or "\n"
+                page_text = p.extract_text()
+                if page_text:
+                    text += page_text + "\n"
     except Exception:
         return ""
     return text

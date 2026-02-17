@@ -19,6 +19,7 @@ from modules.field_extractor import extract_fields
 from modules.xml_generator import generate_xml
 from modules.logger import get_logger
 import hashlib
+import io
 import os
 import time
 import re
@@ -116,7 +117,9 @@ if uploaded:
         
         # Try PDF extraction first
         try:
-            text = extract_text_from_pdf(saved_path)
+            uploaded.seek(0)
+            pdf_bytes = io.BytesIO(uploaded.read())
+            text = extract_text_from_pdf(pdf_bytes)
             if text and len(text.strip()) >= 20:
                 extraction_method = "PDF text extraction"
                 logger.info("PDF text extracted successfully")

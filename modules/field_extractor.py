@@ -113,14 +113,6 @@ XML_FIELD_KEYS: List[str] = [
     "NameRemitter",
 ]
 
-RESPONSE_SCHEMA = {
-    "type": "object",
-    "properties": {k: {"type": "string"} for k in XML_FIELD_KEYS},
-    "required": XML_FIELD_KEYS,
-    "additionalProperties": False,
-}
-
-
 def _load_lookup(file_name: str) -> Dict[str, str]:
     try:
         path = Path(__file__).resolve().parent.parent / "lookups" / file_name
@@ -266,7 +258,6 @@ def extract_fields(text: str) -> Dict[str, str]:
                 "temperature": 0,
                 "max_output_tokens": GEMINI_MAX_OUTPUT_TOKENS,
                 "response_mime_type": "application/json",
-                "response_schema": RESPONSE_SCHEMA,
             },
         )
 
@@ -316,7 +307,6 @@ def extract_fields(text: str) -> Dict[str, str]:
                             "temperature": 0,
                             "max_output_tokens": GEMINI_MAX_OUTPUT_TOKENS,
                             "response_mime_type": "application/json",
-                            "response_schema": RESPONSE_SCHEMA,
                         },
                     )
                     raw2 = (resp2.text or "").strip()
