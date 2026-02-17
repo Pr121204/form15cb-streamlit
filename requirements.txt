@@ -3,8 +3,7 @@ pytesseract
 pdf2image
 Pillow
 pdfplumber
-opencv-python
-
+opencv-python-headless
 google-genai
 python-dotenv
 python-dateutil

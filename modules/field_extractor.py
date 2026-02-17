@@ -34,8 +34,13 @@ logger = logging.getLogger(__name__)
 
 # Load env
 load_dotenv()
-GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL_NAME: str = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+try:
+    import streamlit as st
+    GEMINI_API_KEY: Optional[str] = st.secrets.get("GEMINI_API_KEY", os.getenv("GEMINI_API_KEY"))
+    GEMINI_MODEL_NAME: str = st.secrets.get("GEMINI_MODEL_NAME", os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash"))
+except Exception:
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    GEMINI_MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
 
 # You can tune these if needed
 GEMINI_TEMPERATURE: float = float(os.getenv("GEMINI_TEMPERATURE", "0"))
