@@ -15,7 +15,7 @@ import streamlit as st
 from modules.file_manager import save_uploaded_file, ensure_folders
 from modules.pdf_reader import extract_text_from_pdf
 from modules.ocr_engine import extract_text_from_image_file
-from modules.field_extractor import extract_fields
+from modules.field_extractor import extract_fields, XML_FIELD_KEYS
 from modules.xml_generator import generate_xml
 from modules.logger import get_logger
 import hashlib
@@ -191,176 +191,128 @@ if uploaded:
     # Field Extraction Section
     st.subheader('✏️ Step 3: Review & Edit Extracted Fields')
     st.caption('Fields are auto-extracted using Gemini (AI). Please review and correct any errors.')
-    
-    # Extract fields
+
     with st.spinner('Analyzing document and extracting fields...'):
         fields = extract_fields(text)
         logger.info(f"Extracted {len(fields)} fields")
-    
-    # Update extracted fields only when uploaded file changes
-    if st.session_state.get("last_file_hash") != file_hash:
-        st.session_state["extracted_fields"] = fields
-        st.session_state["last_file_hash"] = file_hash
-        st.session_state["amt_inr"] = fields.get("AmtPayIndRem", "")
-        st.session_state["amt_foreign"] = fields.get("AmtPayForgnRem", "")
-        st.session_state["prop_date"] = fields.get("PropDateRem", "")
-        st.session_state["remitter_pan"] = fields.get("RemitterPAN", "")
-        st.session_state["remitter_name"] = fields.get("NameRemitter", "")
-        st.session_state["remittee_name"] = fields.get("NameRemittee", "")
-        st.session_state["accountant_name"] = fields.get("NameAcctnt", "")
 
-    if st.button("Re-extract fields"):
-        with st.spinner("Re-running Gemini extraction..."):
-            refreshed_fields = extract_fields(text)
-        st.session_state["extracted_fields"] = refreshed_fields
-        st.session_state["amt_inr"] = refreshed_fields.get("AmtPayIndRem", "")
-        st.session_state["amt_foreign"] = refreshed_fields.get("AmtPayForgnRem", "")
-        st.session_state["prop_date"] = refreshed_fields.get("PropDateRem", "")
-        st.session_state["remitter_pan"] = refreshed_fields.get("RemitterPAN", "")
-        st.session_state["remitter_name"] = refreshed_fields.get("NameRemitter", "")
-        st.session_state["remittee_name"] = refreshed_fields.get("NameRemittee", "")
-        st.session_state["accountant_name"] = refreshed_fields.get("NameAcctnt", "")
-        logger.info("Fields re-extracted via manual action")
-    
-    # Validation helpers
-    def validate_pan(pan):
-        """Validate PAN format: AAAAA9999A"""
-        return bool(re.match(r'^[A-Z]{5}[0-9]{4}[A-Z]$', pan))
-    
-    def validate_amount(amount):
-        """Validate amount is numeric"""
-        if not amount:
-            return None
-        clean = amount.replace(',', '').replace('.', '')
-        return clean.isdigit()
-    
-    def validate_date(date):
-        """Validate date format"""
-        if not date:
-            return None
-        try:
-            datetime.fromisoformat(date)
-            return True
-        except:
-            return False
-    
-    # Display editable fields with validation
+    if 'extracted_fields' not in st.session_state:
+        st.session_state['extracted_fields'] = fields
+
     edited = {}
-    
-    # Key financial fields first
-    st.markdown("#### 💰 Financial Information")
-    col1, col2, col3 = st.columns([4, 1, 1])
-    
+
+    st.markdown("#### 👤 Remitter & Beneficiary")
+    col1, col2 = st.columns(2)
     with col1:
-        edited['AmtPayIndRem'] = st.text_input(
-            'Amount Payable (Indian Rupees)',
-            value=st.session_state['extracted_fields'].get('AmtPayIndRem', ''),
-            help='Amount in INR',
-            key='amt_inr'
-        )
+        edited['NameRemitter'] = st.text_input('Remitter Name', value=st.session_state['extracted_fields'].get('NameRemitter', ''))
+        edited['RemitterPAN'] = st.text_input('Remitter PAN', value=st.session_state['extracted_fields'].get('RemitterPAN', ''))
     with col2:
-        is_valid = validate_amount(edited['AmtPayIndRem'])
-        if is_valid:
-            st.markdown("✅ Valid")
-        elif is_valid is None:
-            st.markdown("⚠️ Empty")
-        else:
-            st.markdown("❌ Invalid")
-    with col3:
-        if edited['AmtPayIndRem']:
-            try:
-                amt_display = f"₹{float(edited['AmtPayIndRem'].replace(',', '')):,.2f}"
-                st.caption(amt_display)
-            except:
-                st.caption("")
-    
-    col1, col2, col3 = st.columns([4, 1, 1])
+        edited['NameRemittee'] = st.text_input('Remittee Name', value=st.session_state['extracted_fields'].get('NameRemittee', ''))
+
+    st.markdown("#### 🏠 Remittee Address")
+    col1, col2, col3 = st.columns(3)
     with col1:
-        edited['AmtPayForgnRem'] = st.text_input(
-            'Amount Payable (Foreign Currency)',
-            value=st.session_state['extracted_fields'].get('AmtPayForgnRem', ''),
-            help='Amount in foreign currency',
-            key='amt_foreign'
-        )
+        edited['RemitteeFlatDoorBuilding'] = st.text_input('Flat/Door/Building', value=st.session_state['extracted_fields'].get('RemitteeFlatDoorBuilding', ''))
+        edited['RemitteeAreaLocality'] = st.text_input('Area/Locality', value=st.session_state['extracted_fields'].get('RemitteeAreaLocality', ''))
     with col2:
-        is_valid = validate_amount(edited['AmtPayForgnRem'])
-        if is_valid:
-            st.markdown("✅ Valid")
-        elif is_valid is None:
-            st.markdown("⚠️ Empty")
-        else:
-            st.markdown("❌ Invalid")
+        edited['RemitteeTownCityDistrict'] = st.text_input('Town/City', value=st.session_state['extracted_fields'].get('RemitteeTownCityDistrict', ''))
+        edited['RemitteeZipCode'] = st.text_input('Zip Code', value=st.session_state['extracted_fields'].get('RemitteeZipCode', ''))
     with col3:
-        st.caption("")
-    
-    col1, col2, col3 = st.columns([4, 1, 1])
+        edited['RemitteeState'] = st.text_input('State', value=st.session_state['extracted_fields'].get('RemitteeState', ''))
+        edited['RemitteeCountryCode'] = st.text_input('Country Code', value=st.session_state['extracted_fields'].get('RemitteeCountryCode', ''))
+
+    st.markdown("#### 💰 Remittance Details")
+    col1, col2, col3 = st.columns(3)
     with col1:
-        edited['PropDateRem'] = st.text_input(
-            'Proposed Date of Remittance',
-            value=st.session_state['extracted_fields'].get('PropDateRem', ''),
-            help='Format: YYYY-MM-DD',
-            key='prop_date'
-        )
+        edited['CountryRemMadeSecb'] = st.text_input('Country Code (Remittance)', value=st.session_state['extracted_fields'].get('CountryRemMadeSecb', ''))
+        edited['CurrencySecbCode'] = st.text_input('Currency Code', value=st.session_state['extracted_fields'].get('CurrencySecbCode', ''))
+        edited['AmtPayForgnRem'] = st.text_input('Amount (Foreign Currency)', value=st.session_state['extracted_fields'].get('AmtPayForgnRem', ''))
+        edited['AmtPayIndRem'] = st.text_input('Amount (Indian ₹)', value=st.session_state['extracted_fields'].get('AmtPayIndRem', ''))
     with col2:
-        is_valid = validate_date(edited['PropDateRem'])
-        if is_valid:
-            st.markdown("✅ Valid")
-        elif is_valid is None:
-            st.markdown("⚠️ Empty")
-        else:
-            st.markdown("❌ Invalid")
+        edited['NameBankCode'] = st.text_input('Bank Code', value=st.session_state['extracted_fields'].get('NameBankCode', ''))
+        edited['BranchName'] = st.text_input('Branch Name', value=st.session_state['extracted_fields'].get('BranchName', ''))
+        edited['BsrCode'] = st.text_input('BSR Code', value=st.session_state['extracted_fields'].get('BsrCode', ''))
+        edited['PropDateRem'] = st.text_input('Proposed Date of Remittance (YYYY-MM-DD)', value=st.session_state['extracted_fields'].get('PropDateRem', ''))
     with col3:
-        if validate_date(edited['PropDateRem']):
-            try:
-                dt = datetime.fromisoformat(edited['PropDateRem'])
-                st.caption(dt.strftime("%d %b %Y"))
-            except:
-                st.caption("")
-    
-    st.markdown("#### 👤 Party Information")
-    
-    # Remitter details
-    col1, col2, col3 = st.columns([4, 1, 1])
+        edited['NatureRemCategory'] = st.text_input('Nature of Remittance Category', value=st.session_state['extracted_fields'].get('NatureRemCategory', ''))
+        edited['RevPurCategory'] = st.text_input('RBI Purpose Category', value=st.session_state['extracted_fields'].get('RevPurCategory', ''))
+        edited['RevPurCode'] = st.text_input('RBI Purpose Code', value=st.session_state['extracted_fields'].get('RevPurCode', ''))
+        edited['TaxPayGrossSecb'] = st.text_input('Tax Grossed Up? (Y/N)', value=st.session_state['extracted_fields'].get('TaxPayGrossSecb', ''))
+
+    st.markdown("#### 🏛️ IT Act Details")
+    col1, col2 = st.columns(2)
     with col1:
-        edited['RemitterPAN'] = st.text_input(
-            'Remitter PAN',
-            value=st.session_state['extracted_fields'].get('RemitterPAN', ''),
-            help='Format: AAAAA9999A (5 letters, 4 digits, 1 letter)',
-            key='remitter_pan'
-        )
+        edited['RemittanceCharIndia'] = st.text_input('Remittance Chargeable in India? (Y/N)', value=st.session_state['extracted_fields'].get('RemittanceCharIndia', ''))
+        edited['SecRemCovered'] = st.text_input('Section Covered', value=st.session_state['extracted_fields'].get('SecRemCovered', ''))
+        edited['AmtIncChrgIt'] = st.text_input('Amount of Income Chargeable (₹)', value=st.session_state['extracted_fields'].get('AmtIncChrgIt', ''))
     with col2:
-        is_valid = validate_pan(edited['RemitterPAN'])
-        if is_valid:
-            st.markdown("✅ Valid")
-        elif not edited['RemitterPAN']:
-            st.markdown("⚠️ Empty")
-        else:
-            st.markdown("❌ Invalid")
+        edited['TaxLiablIt'] = st.text_input('Tax Liability under IT Act (₹)', value=st.session_state['extracted_fields'].get('TaxLiablIt', ''))
+        edited['BasisDeterTax'] = st.text_area('Basis of Determining Tax', value=st.session_state['extracted_fields'].get('BasisDeterTax', ''), height=100)
+
+    st.markdown("#### 📜 DTAA Details")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        edited['TaxResidCert'] = st.text_input('Tax Residency Certificate? (Y/N)', value=st.session_state['extracted_fields'].get('TaxResidCert', ''))
+        edited['RelevantDtaa'] = st.text_input('Relevant DTAA', value=st.session_state['extracted_fields'].get('RelevantDtaa', ''))
+        edited['RelevantArtDtaa'] = st.text_input('Relevant Article of DTAA', value=st.session_state['extracted_fields'].get('RelevantArtDtaa', ''))
+        edited['TaxIncDtaa'] = st.text_input('Taxable Income as per DTAA (₹)', value=st.session_state['extracted_fields'].get('TaxIncDtaa', ''))
+        edited['TaxLiablDtaa'] = st.text_input('Tax Liability as per DTAA (₹)', value=st.session_state['extracted_fields'].get('TaxLiablDtaa', ''))
+    with col2:
+        edited['RemForRoyFlg'] = st.text_input('Remittance for Royalty/FTS? (Y/N)', value=st.session_state['extracted_fields'].get('RemForRoyFlg', ''))
+        edited['ArtDtaa'] = st.text_input('Article of DTAA (Royalty)', value=st.session_state['extracted_fields'].get('ArtDtaa', ''))
+        edited['RateTdsADtaa'] = st.text_input('TDS Rate as per DTAA (%)', value=st.session_state['extracted_fields'].get('RateTdsADtaa', ''))
+        edited['RemAcctBusIncFlg'] = st.text_input('Business Income? (Y/N)', value=st.session_state['extracted_fields'].get('RemAcctBusIncFlg', ''))
+        edited['IncLiabIndiaFlg'] = st.text_input('Income Liable in India? (Y/N)', value=st.session_state['extracted_fields'].get('IncLiabIndiaFlg', ''))
     with col3:
-        st.caption("PAN format")
-    
-    edited['NameRemitter'] = st.text_input(
-        'Remitter Name',
-        value=st.session_state['extracted_fields'].get('NameRemitter', ''),
-        help='Name of the person/company making the payment',
-        key='remitter_name'
-    )
-    
-    edited['NameRemittee'] = st.text_input(
-        'Remittee/Beneficiary Name',
-        value=st.session_state['extracted_fields'].get('NameRemittee', ''),
-        help='Name of the person/company receiving the payment',
-        key='remittee_name'
-    )
-    
-    st.markdown("#### 📋 Other Details")
-    edited['NameAcctnt'] = st.text_input(
-        'Accountant Name',
-        value=st.session_state['extracted_fields'].get('NameAcctnt', ''),
-        help='Name of the Chartered Accountant',
-        key='accountant_name'
-    )
-    
+        edited['RemOnCapGainFlg'] = st.text_input('Capital Gains? (Y/N)', value=st.session_state['extracted_fields'].get('RemOnCapGainFlg', ''))
+        edited['OtherRemDtaa'] = st.text_input('Other Remittance? (Y/N)', value=st.session_state['extracted_fields'].get('OtherRemDtaa', ''))
+        edited['TaxIndDtaaFlg'] = st.text_input('Taxable in India per DTAA? (Y/N)', value=st.session_state['extracted_fields'].get('TaxIndDtaaFlg', ''))
+        edited['RelArtDetlDDtaa'] = st.text_input('Relevant Article Detail (Other)', value=st.session_state['extracted_fields'].get('RelArtDetlDDtaa', ''))
+
+    st.markdown("#### 🧾 TDS Details")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        edited['AmtPayForgnTds'] = st.text_input('TDS Amount (Foreign Currency)', value=st.session_state['extracted_fields'].get('AmtPayForgnTds', ''))
+        edited['AmtPayIndianTds'] = st.text_input('TDS Amount (₹)', value=st.session_state['extracted_fields'].get('AmtPayIndianTds', ''))
+    with col2:
+        edited['RateTdsSecbFlg'] = st.text_input('TDS Rate Flag', value=st.session_state['extracted_fields'].get('RateTdsSecbFlg', ''))
+        edited['RateTdsSecB'] = st.text_input('TDS Rate (%)', value=st.session_state['extracted_fields'].get('RateTdsSecB', ''))
+    with col3:
+        edited['ActlAmtTdsForgn'] = st.text_input('Actual Remittance after TDS (Foreign)', value=st.session_state['extracted_fields'].get('ActlAmtTdsForgn', ''))
+        edited['DednDateTds'] = st.text_input('Date of TDS Deduction (YYYY-MM-DD)', value=st.session_state['extracted_fields'].get('DednDateTds', ''))
+
+    st.markdown("#### 🧑‍💼 Accountant Details")
+    col1, col2 = st.columns(2)
+    with col1:
+        edited['NameAcctnt'] = st.text_input('Accountant Name', value=st.session_state['extracted_fields'].get('NameAcctnt', ''))
+        edited['NameFirmAcctnt'] = st.text_input('Firm Name', value=st.session_state['extracted_fields'].get('NameFirmAcctnt', ''))
+        edited['MembershipNumber'] = st.text_input('Membership Number', value=st.session_state['extracted_fields'].get('MembershipNumber', ''))
+    with col2:
+        edited['AcctntFlatDoorBuilding'] = st.text_input('Flat/Door/Building (CA)', value=st.session_state['extracted_fields'].get('AcctntFlatDoorBuilding', ''))
+        edited['PremisesBuildingVillage'] = st.text_input('Premises/Village (CA)', value=st.session_state['extracted_fields'].get('PremisesBuildingVillage', ''))
+        edited['AcctntAreaLocality'] = st.text_input('Area/Locality (CA)', value=st.session_state['extracted_fields'].get('AcctntAreaLocality', ''))
+        edited['AcctntRoadStreet'] = st.text_input('Road/Street (CA)', value=st.session_state['extracted_fields'].get('AcctntRoadStreet', ''))
+        edited['AcctntTownCityDistrict'] = st.text_input('Town/City (CA)', value=st.session_state['extracted_fields'].get('AcctntTownCityDistrict', ''))
+        edited['AcctntPincode'] = st.text_input('Pincode (CA)', value=st.session_state['extracted_fields'].get('AcctntPincode', ''))
+        edited['AcctntState'] = st.text_input('State (CA)', value=st.session_state['extracted_fields'].get('AcctntState', ''))
+        edited['AcctntCountryCode'] = st.text_input('Country Code (CA)', value=st.session_state['extracted_fields'].get('AcctntCountryCode', ''))
+
+    shown_keys = set(edited.keys())
+    remaining_keys = [field_key for field_key in XML_FIELD_KEYS if field_key not in shown_keys]
+
+    st.markdown("#### 🧩 All Extracted Fields (Advanced)")
+    with st.expander("Click to view/edit all fields", expanded=False):
+        if not remaining_keys:
+            st.caption("All extracted fields are already shown above.")
+        else:
+            st.caption("Review or edit every extracted field. Leave blank to keep the extracted value.")
+            for field_key in remaining_keys:
+                edited[field_key] = st.text_input(
+                    field_key,
+                    value=st.session_state['extracted_fields'].get(field_key, ''),
+                    key=f"all_{field_key}"
+                )
+
     st.divider()
     
     # Fixed/Template Fields
