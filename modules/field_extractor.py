@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Dict, Optional, List
 
 from dotenv import load_dotenv
+from modules.master_data import suggest_from_master
 
 try:
     from google import genai  # google-genai SDK
@@ -126,6 +127,9 @@ def _load_lookup(file_name: str) -> Dict[str, str]:
 COUNTRY_LOOKUP = _load_lookup("country_codes.json")
 CURRENCY_LOOKUP = _load_lookup("currency_codes.json")
 BANK_LOOKUP = _load_lookup("bank_codes.json")
+STATE_LOOKUP = _load_lookup("state_codes.json")
+NATURE_LOOKUP = _load_lookup("nature_codes.json")
+PURPOSE_LOOKUP = _load_lookup("purpose_codes.json")
 
 
 def _ensure_all_keys(data: Dict[str, object]) -> Dict[str, str]:
@@ -243,6 +247,11 @@ def extract_fields(text: str) -> Dict[str, str]:
         "- Use Sections 12-15 for TDSDetails fields.\n"
         "- RemitterPAN format hint: 5 letters + 4 digits + 1 letter (example: AAACR7108R).\n"
         "- PropDateRem and DednDateTds must be YYYY-MM-DD if present.\n"
+        "- ActlAmtTdsForgn = actual remittance amount AFTER TDS deduction (field 14), not the TDS amount.\n"
+        "- RemitteeZipCode for foreign addresses should be 999999.\n"
+        "- RemitteeTownCityDistrict should capture country name (example: Germany) and RemitteeAreaLocality can hold city+zip.\n"
+        "- IncLiabIndiaFlg: if business income is N and field is not applicable, use -1.\n"
+        "- RateTdsSecbFlg must be numeric code: 1=IT Act rate, 2=DTAA rate, 3=Lower deduction certificate.\n"
         "\n"
         "Document text:\n"
         f"{doc}"
@@ -362,8 +371,89 @@ def extract_fields(text: str) -> Dict[str, str]:
         if bank_raw:
             cleaned["NameBankCode"] = _lkp(BANK_LOOKUP, bank_raw)
 
-        if not cleaned.get("RemitteeZipCode"):
+        state_raw = cleaned.get("AcctntState", "")
+        if state_raw:
+            cleaned["AcctntState"] = _lkp(STATE_LOOKUP, state_raw)
+
+        acctnt_country_raw = cleaned.get("AcctntCountryCode", "")
+        if acctnt_country_raw:
+            cleaned["AcctntCountryCode"] = _lkp(COUNTRY_LOOKUP, acctnt_country_raw)
+
+        nature_raw = cleaned.get("NatureRemCategory", "")
+        if nature_raw:
+            cleaned["NatureRemCategory"] = _lkp(NATURE_LOOKUP, nature_raw)
+
+        purpose_category_raw = cleaned.get("RevPurCategory", "")
+        if purpose_category_raw:
+            cleaned["RevPurCategory"] = _lkp(PURPOSE_LOOKUP, purpose_category_raw)
+
+        purpose_code_raw = cleaned.get("RevPurCode", "")
+        if purpose_code_raw:
+            mapped_purpose_code = _lkp(PURPOSE_LOOKUP, purpose_code_raw)
+            if mapped_purpose_code.startswith("RB-"):
+                cleaned["RevPurCode"] = mapped_purpose_code
+            elif mapped_purpose_code.upper().startswith("S") and cleaned.get("RevPurCategory", "").startswith("RB-"):
+                cleaned["RevPurCode"] = f"{cleaned['RevPurCategory']}-{mapped_purpose_code.upper()}"
+            else:
+                cleaned["RevPurCode"] = mapped_purpose_code
+
+        orig_r_zip = cleaned.get("RemitteeZipCode", "").strip()
+        orig_r_town = cleaned.get("RemitteeTownCityDistrict", "").strip()
+        remittee_country_code = cleaned.get("RemitteeCountryCode", "")
+        is_foreign_remittee = bool(remittee_country_code and remittee_country_code != "91")
+
+        # If area/locality is blank but original zip+city exists, preserve both in locality.
+        if not cleaned.get("RemitteeAreaLocality") and orig_r_zip and orig_r_town and orig_r_zip != "999999":
+            cleaned["RemitteeAreaLocality"] = f"{orig_r_zip}, {orig_r_town.lower()}"
+
+        if is_foreign_remittee:
+            # For foreign remittee, zipcode should be placeholder and town/city should carry country.
             cleaned["RemitteeZipCode"] = "999999"
+            country_name = next(
+                (name for name, code in COUNTRY_LOOKUP.items() if code == remittee_country_code and " " in name),
+                next((name for name, code in COUNTRY_LOOKUP.items() if code == remittee_country_code), ""),
+            )
+            if country_name:
+                cleaned["RemitteeTownCityDistrict"] = country_name.title()
+
+        # Mark not-applicable explicitly for business-income dependent field.
+        if cleaned.get("RemAcctBusIncFlg", "").upper() == "N" and cleaned.get("IncLiabIndiaFlg", "").upper() in {"", "N"}:
+            cleaned["IncLiabIndiaFlg"] = "-1"
+
+        # Normalize RateTdsSecbFlg to numeric code when model returns Y/N style output.
+        rate_flag = cleaned.get("RateTdsSecbFlg", "").strip().upper()
+        if rate_flag in {"Y", "N"}:
+            if cleaned.get("RateTdsADtaa", "").strip():
+                cleaned["RateTdsSecbFlg"] = "2"
+            elif cleaned.get("RateTdsSecB", "").strip():
+                cleaned["RateTdsSecbFlg"] = "1"
+
+        # Ensure ActlAmtTdsForgn is net of TDS when base and TDS amounts are available.
+        def _to_number(raw: str) -> Optional[float]:
+            if not raw:
+                return None
+            digits = re.sub(r"[^0-9.]", "", raw)
+            if not digits:
+                return None
+            try:
+                return float(digits)
+            except ValueError:
+                return None
+
+        gross_forgn = _to_number(cleaned.get("AmtPayForgnRem", ""))
+        tds_forgn = _to_number(cleaned.get("AmtPayForgnTds", ""))
+        if gross_forgn is not None and tds_forgn is not None and gross_forgn >= tds_forgn:
+            net_forgn = gross_forgn - tds_forgn
+            cleaned["ActlAmtTdsForgn"] = str(int(net_forgn)) if net_forgn.is_integer() else str(net_forgn)
+
+        # Optional non-destructive enrichment from master data: fill only missing keys.
+        try:
+            master_suggestions, _ = suggest_from_master(cleaned, BANK_LOOKUP)
+            for key, value in master_suggestions.items():
+                if key in cleaned and (not cleaned[key]) and isinstance(value, str) and value.strip():
+                    cleaned[key] = value.strip()
+        except Exception as enrich_err:
+            logger.warning("Master-data enrichment skipped: %s", enrich_err)
 
         populated = sum(1 for v in cleaned.values() if v)
         logger.info(f"Gemini extraction populated {populated}/{len(XML_FIELD_KEYS)} fields")

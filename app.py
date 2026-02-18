@@ -16,10 +16,27 @@ from modules.file_manager import save_uploaded_file, ensure_folders
 from modules.pdf_reader import extract_text_from_pdf
 from modules.ocr_engine import extract_text_from_image_file
 from modules.field_extractor import extract_fields, XML_FIELD_KEYS
+from modules.master_data import (
+    find_dtaa,
+    find_foreign_company,
+    find_indian_company,
+    find_nature_row,
+    find_party_banks,
+    load_aliases,
+    load_master,
+    mask_pan_for_log,
+    safe_master_view,
+    suggest_from_master,
+    validate_bsr_code,
+    validate_dtaa_rate,
+    validate_pan,
+    validate_purpose_code,
+)
 from modules.xml_generator import generate_xml
 from modules.logger import get_logger
 import hashlib
 import io
+import json
 import os
 import time
 import re
@@ -28,6 +45,24 @@ from datetime import datetime
 # Initialize
 logger = get_logger()
 ensure_folders()
+MASTER = safe_master_view(load_master())
+ALIASES = load_aliases()
+logger.info(
+    "Master data loaded: indian=%d foreign=%d banks=%d nature=%d dtaa=%d alias_groups=%d",
+    len(MASTER.get("indian_companies", [])),
+    len(MASTER.get("foreign_companies", [])),
+    len(MASTER.get("banks_by_party", {})),
+    len(MASTER.get("nature_map", [])),
+    len(MASTER.get("dtaa_rates", [])),
+    len(ALIASES),
+)
+
+try:
+    with open(os.path.join("lookups", "bank_codes.json"), "r", encoding="utf8") as _f:
+        _raw_bank_map = json.load(_f)
+    BANK_CODE_MAP = {re.sub(r"\s+", " ", str(k).strip().lower()): str(v) for k, v in _raw_bank_map.items()}
+except Exception:
+    BANK_CODE_MAP = {}
 
 # Constants
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
@@ -200,6 +235,107 @@ if uploaded:
         st.session_state['extracted_fields'] = fields
 
     edited = {}
+
+    st.markdown("#### 🧭 Master Data Assist")
+    remitter_options = [""] + [str(c.get("name") or "").strip() for c in MASTER.get("indian_companies", []) if str(c.get("name") or "").strip()]
+    beneficiary_options = [""] + [str(c.get("name") or "").strip() for c in MASTER.get("foreign_companies", []) if str(c.get("name") or "").strip()]
+    nature_options = [""] + sorted(
+        {
+            str(n.get("agreement_nature") or "").strip()
+            for n in MASTER.get("nature_map", [])
+            if str(n.get("agreement_nature") or "").strip()
+        }
+    )
+
+    extracted_fields = dict(st.session_state.get("extracted_fields", {}))
+    remitter_guess = extracted_fields.get("NameRemitter", "")
+    beneficiary_guess = extracted_fields.get("NameRemittee", "")
+    nature_guess = extracted_fields.get("NatureRemCategory", "")
+
+    col_assist_1, col_assist_2, col_assist_3 = st.columns(3)
+    with col_assist_1:
+        remitter_idx = remitter_options.index(remitter_guess) if remitter_guess in remitter_options else 0
+        selected_remitter = st.selectbox("Master Remitter", remitter_options, index=remitter_idx, key="master_remitter")
+    with col_assist_2:
+        beneficiary_idx = beneficiary_options.index(beneficiary_guess) if beneficiary_guess in beneficiary_options else 0
+        selected_beneficiary = st.selectbox("Master Beneficiary", beneficiary_options, index=beneficiary_idx, key="master_beneficiary")
+    with col_assist_3:
+        nature_idx = nature_options.index(nature_guess) if nature_guess in nature_options else 0
+        selected_nature = st.selectbox("Master Nature", nature_options, index=nature_idx, key="master_nature")
+
+    party_for_bank = selected_remitter or remitter_guess
+    bank_rows = find_party_banks(party_for_bank) if party_for_bank else []
+    bank_labels = [""]
+    for row in bank_rows:
+        bank_labels.append(
+            f"{str(row.get('bank_name') or '').strip()} | {str(row.get('branch') or '').strip()} | {str(row.get('bsr_code') or '').strip()}"
+        )
+    selected_bank_label = st.selectbox("Master Bank/Branch/BSR", bank_labels, index=0, key="master_bank")
+
+    apply_assist = st.button("Apply Master Data Suggestions", key="apply_master_data")
+    if apply_assist:
+        seed = dict(st.session_state.get("extracted_fields", {}))
+        if selected_remitter:
+            seed["NameRemitter"] = selected_remitter
+        if selected_beneficiary:
+            seed["NameRemittee"] = selected_beneficiary
+        if selected_nature:
+            seed["NatureRemCategory"] = selected_nature
+
+        suggestions, events = suggest_from_master(seed, BANK_CODE_MAP)
+
+        if selected_bank_label and selected_bank_label != "" and " | " in selected_bank_label:
+            bank_name, branch, bsr = [v.strip() for v in selected_bank_label.split(" | ", 2)]
+            mapped_bank = BANK_CODE_MAP.get(re.sub(r"\s+", " ", bank_name.lower()), bank_name)
+            suggestions["NameBankCode"] = mapped_bank
+            suggestions["BranchName"] = branch
+            suggestions["BsrCode"] = re.sub(r"\D", "", bsr)
+
+        if selected_beneficiary:
+            beneficiary_rec = find_foreign_company(selected_beneficiary)
+            if beneficiary_rec:
+                suggestions["NameRemittee"] = str(beneficiary_rec.get("name") or "").strip() or selected_beneficiary
+            country_seed = (
+                seed.get("CountryRemMadeSecb")
+                or seed.get("RemitteeTownCityDistrict")
+                or suggestions.get("RelevantDtaa")
+                or ""
+            )
+            dtaa = find_dtaa(country_seed)
+            if dtaa:
+                suggestions["RelevantDtaa"] = str(dtaa.get("country") or "")
+                suggestions["RelevantArtDtaa"] = str(dtaa.get("article") or "")
+                if dtaa.get("rate") is not None:
+                    try:
+                        suggestions["RateTdsADtaa"] = str(round(float(dtaa["rate"]) * 100, 2)).rstrip("0").rstrip(".")
+                    except Exception:
+                        pass
+
+        st.session_state["extracted_fields"].update({k: v for k, v in suggestions.items() if isinstance(v, str) and v.strip()})
+        st.session_state["master_suggestions"] = suggestions
+        st.session_state["master_events"] = events
+        logger.info("master_data_apply suggestions=%d events=%d", len(suggestions), len(events))
+        for event in events:
+            logger.info(
+                "lookup_domain=%s input=%s resolved=%s match_type=%s source=%s",
+                event.get("lookup_domain", ""),
+                event.get("input", ""),
+                event.get("resolved", ""),
+                event.get("match_type", ""),
+                event.get("source", ""),
+            )
+        if "RemitterPAN" in suggestions:
+            logger.info("suggested_remitter_pan=%s", mask_pan_for_log(suggestions.get("RemitterPAN", "")))
+        st.success(f"Applied {len(suggestions)} master-data suggestions.")
+
+    if st.session_state.get("master_events"):
+        with st.expander("Master Match Status", expanded=False):
+            for event in st.session_state["master_events"]:
+                domain = event.get("lookup_domain", "")
+                match_type = event.get("match_type", "")
+                source = event.get("source", "")
+                resolved = event.get("resolved", "")
+                st.caption(f"`{domain}` -> `{match_type}` | `{resolved}` | source: `{source}`")
 
     st.markdown("#### 👤 Remitter & Beneficiary")
     col1, col2 = st.columns(2)
@@ -388,10 +524,30 @@ if uploaded:
         # Validate mandatory fields
         mandatory_fields = ['RemitterPAN', 'NameRemitter', 'AmtPayIndRem']
         missing_fields = [f for f in mandatory_fields if not final_fields.get(f, '').strip()]
-        
+        validation_errors = []
+
+        remitter_pan = final_fields.get("RemitterPAN", "").strip()
+        if remitter_pan and not validate_pan(remitter_pan):
+            validation_errors.append("RemitterPAN format is invalid (expected AAAAA9999A).")
+
+        bsr_code = final_fields.get("BsrCode", "").strip()
+        if bsr_code and not validate_bsr_code(bsr_code):
+            validation_errors.append("BsrCode must be exactly 7 digits.")
+
+        rev_pur_code = final_fields.get("RevPurCode", "").strip()
+        if rev_pur_code and not validate_purpose_code(rev_pur_code):
+            validation_errors.append("RevPurCode format is invalid (expected RB-xx.x or RB-xx.x-Snnnn).")
+
+        dtaa_rate = final_fields.get("RateTdsADtaa", "").strip()
+        if dtaa_rate and not validate_dtaa_rate(dtaa_rate):
+            validation_errors.append("RateTdsADtaa must be a valid numeric percentage between 0 and 100.")
+
         if missing_fields:
             st.error(f"❌ **Missing mandatory fields:** {', '.join(missing_fields)}")
             st.warning("Please fill in all required fields before generating XML.")
+        elif validation_errors:
+            for error_msg in validation_errors:
+                st.error(f"❌ {error_msg}")
         else:
             # Generate XML
             try:
