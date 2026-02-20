@@ -132,6 +132,27 @@ NATURE_LOOKUP = _load_lookup("nature_codes.json")
 PURPOSE_LOOKUP = _load_lookup("purpose_codes.json")
 
 
+def load_purpose_code_list() -> Dict[str, List[Dict[str, str]]]:
+    path = Path(__file__).resolve().parent.parent / "lookups" / "purpose_code_list.json"
+    try:
+        with open(path, "r", encoding="utf8") as f:
+            data = json.load(f)
+    except Exception:
+        return {}
+
+    grouped: Dict[str, List[Dict[str, str]]] = {}
+    for entry in data.get("purpose_codes", []):
+        if not isinstance(entry, dict):
+            continue
+        group = str(entry.get("group_name") or "").strip()
+        code = str(entry.get("purpose_code") or "").strip().upper()
+        description = str(entry.get("description") or "").strip()
+        if not group or not code:
+            continue
+        grouped.setdefault(group, []).append({"code": code, "description": description})
+    return grouped
+
+
 def _ensure_all_keys(data: Dict[str, object]) -> Dict[str, str]:
     """Return a dict with exactly XML_FIELD_KEYS, missing -> ''."""
     out: Dict[str, str] = {}

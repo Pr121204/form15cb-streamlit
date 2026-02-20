@@ -140,6 +140,27 @@ def find_party_banks(party_name: str) -> List[Dict[str, Any]]:
     return [r for r in rows if isinstance(r, dict)]
 
 
+def find_bank_by_name(bank_name: str, party_name: str = "") -> Optional[Dict[str, Any]]:
+    bank_key = normalize(bank_name)
+    if not bank_key:
+        return None
+
+    rows: List[Dict[str, Any]] = []
+    if party_name:
+        rows = find_party_banks(party_name)
+    if not rows:
+        master = load_master()
+        for _, group_rows in (master.get("banks_by_party", {}) or {}).items():
+            if isinstance(group_rows, list):
+                rows.extend([r for r in group_rows if isinstance(r, dict)])
+
+    for row in rows:
+        name = normalize(str(row.get("bank_name") or ""))
+        if name and (name == bank_key or bank_key in name or name in bank_key):
+            return row
+    return None
+
+
 def find_nature_row(nature_text: str) -> Optional[Dict[str, Any]]:
     key = resolve_name(nature_text, "nature")
     return _cached_indexes()["nature"].get(key)

@@ -9,5 +9,7 @@ ROOT = os.getcwd()
 INPUT_FOLDER = os.path.join(ROOT, "data", "input")
 OUTPUT_FOLDER = os.path.join(ROOT, "data", "output")
 LOG_FOLDER = os.path.join(ROOT, "data", "logs")
+PROPOSED_DATE_OFFSET = 15
+PARITY_UI_ENABLED = os.getenv("PARITY_UI_ENABLED", "1").strip().lower() not in {"0", "false", "no", "off"}
 
 # ensure folders exist can be called from file_manager.ensure_folders

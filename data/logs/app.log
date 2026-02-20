@@ -211,3 +211,360 @@
   "D
 2026-02-17 13:11:37,462 INFO Gemini extraction populated 19/57 fields
 2026-02-17 13:11:37,465 INFO Extracted 57 fields
+2026-02-18 15:26:13,439 INFO Master data loaded: indian=36 foreign=136 banks=24 nature=183 dtaa=35 alias_groups=5
+2026-02-18 15:26:38,168 INFO Master data loaded: indian=36 foreign=136 banks=24 nature=183 dtaa=35 alias_groups=5
+2026-02-18 15:26:38,185 INFO File saved: C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\25-26 RE1659-7057441295.pdf
+2026-02-18 15:26:39,880 INFO PDF text extracted successfully
+2026-02-18 15:26:39,892 INFO ================================================================================
+2026-02-18 15:26:39,892 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-18 15:26:39,893 INFO ================================================================================
+2026-02-18 15:26:41,639 INFO AFC is enabled with max remote calls: 10.
+2026-02-18 15:26:59,369 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-18 15:26:59,375 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa"
+2026-02-18 15:26:59,386 INFO Gemini extraction populated 54/57 fields
+2026-02-18 15:26:59,389 INFO Extracted 57 fields
+2026-02-18 19:25:48,626 INFO ================================================================================
+2026-02-18 19:25:48,636 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-18 19:25:48,636 INFO ================================================================================
+2026-02-18 19:25:50,593 INFO AFC is enabled with max remote calls: 10.
+2026-02-18 19:26:10,291 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-18 19:26:10,307 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "12109, berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023 - Other Technical Services including scientific/ space services.",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": 
+2026-02-18 19:26:10,363 INFO Gemini extraction populated 56/57 fields
+2026-02-18 19:26:10,369 INFO invoice_extraction populated=56
+2026-02-18 19:26:24,129 INFO ================================================================================
+2026-02-18 19:26:24,129 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-18 19:26:24,129 INFO ================================================================================
+2026-02-18 19:26:25,586 INFO AFC is enabled with max remote calls: 10.
+2026-02-18 19:26:26,154 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-02-18 19:26:26,157 ERROR Gemini extraction failed: ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 33.284670407s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '33s'}]}}
+2026-02-18 19:26:26,159 INFO invoice_extraction populated=0
+2026-02-18 19:27:55,017 INFO ================================================================================
+2026-02-18 19:27:55,019 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-18 19:27:55,019 INFO ================================================================================
+2026-02-18 19:27:56,626 INFO AFC is enabled with max remote calls: 10.
+2026-02-18 19:27:57,228 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 429 Too Many Requests"
+2026-02-18 19:27:57,232 ERROR Gemini extraction failed: ClientError: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-2.5-flash\nPlease retry in 2.103859992s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerDayPerProjectPerModel-FreeTier', 'quotaDimensions': {'location': 'global', 'model': 'gemini-2.5-flash'}, 'quotaValue': '20'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '2s'}]}}
+2026-02-18 19:27:57,235 INFO invoice_extraction populated=0
+2026-02-19 15:00:09,446 INFO ================================================================================
+2026-02-19 15:00:09,449 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:00:09,449 INFO ================================================================================
+2026-02-19 15:00:11,259 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:00:28,273 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:00:28,297 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa"
+2026-02-19 15:00:28,369 INFO Gemini extraction populated 54/57 fields
+2026-02-19 15:00:28,375 INFO invoice_extraction populated=54
+2026-02-19 15:01:03,722 INFO ================================================================================
+2026-02-19 15:01:03,723 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:01:03,724 INFO ================================================================================
+2026-02-19 15:01:05,260 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:01:22,195 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:01:22,198 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "12109, berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023 - Other Technical Services including scientific/ space services.",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": 
+2026-02-19 15:01:22,200 INFO Gemini extraction populated 56/57 fields
+2026-02-19 15:01:22,203 INFO invoice_extraction populated=56
+2026-02-19 15:06:58,715 INFO ================================================================================
+2026-02-19 15:06:58,716 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:06:58,716 INFO ================================================================================
+2026-02-19 15:07:00,449 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:07:19,184 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:07:19,190 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "12109, berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023 - Other Technical Services including scientific/ space services.",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": 
+2026-02-19 15:07:19,211 INFO Gemini extraction populated 56/57 fields
+2026-02-19 15:07:19,223 INFO invoice_extraction populated=56
+2026-02-19 15:23:55,904 INFO ================================================================================
+2026-02-19 15:23:55,906 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:23:55,907 INFO ================================================================================
+2026-02-19 15:23:57,562 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:24:15,933 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:24:15,939 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa"
+2026-02-19 15:24:15,958 INFO Gemini extraction populated 54/57 fields
+2026-02-19 15:24:15,963 INFO invoice_extraction populated=54
+2026-02-19 15:25:56,926 INFO ================================================================================
+2026-02-19 15:25:56,926 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:25:56,927 INFO ================================================================================
+2026-02-19 15:25:58,386 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:26:15,864 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:26:15,869 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa"
+2026-02-19 15:26:15,875 INFO Gemini extraction populated 54/57 fields
+2026-02-19 15:26:15,883 INFO invoice_extraction populated=54
+2026-02-19 15:30:16,434 INFO ================================================================================
+2026-02-19 15:30:16,435 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:30:16,436 INFO ================================================================================
+2026-02-19 15:30:18,164 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:30:37,601 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:30:37,611 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH.",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "12109, berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023 - Other Technical Services including scientific/ space services.",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": 
+2026-02-19 15:30:37,633 INFO Gemini extraction populated 56/57 fields
+2026-02-19 15:30:37,642 INFO invoice_extraction populated=56
+2026-02-19 15:37:50,307 INFO ================================================================================
+2026-02-19 15:37:50,309 INFO FORM 15CB FIELD EXTRACTION (GEMINI ONLY)
+2026-02-19 15:37:50,310 INFO ================================================================================
+2026-02-19 15:37:52,087 INFO AFC is enabled with max remote calls: 10.
+2026-02-19 15:38:10,307 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-19 15:38:10,319 INFO Gemini raw output (first 1200 chars): {
+  "NameRemittee": "BOSCH IO GMBH",
+  "RemitteeFlatDoorBuilding": "Ullsteinstrabe 128",
+  "RemitteeAreaLocality": "berlin",
+  "RemitteeTownCityDistrict": "Germany",
+  "RemitteeZipCode": "999999",
+  "RemitteeState": "",
+  "RemitteeCountryCode": "GERMANY",
+  "CountryRemMadeSecb": "Germany",
+  "CurrencySecbCode": "EUR",
+  "AmtPayForgnRem": "49300",
+  "AmtPayIndRem": "5407720",
+  "NameBankCode": "Deutsche Bank",
+  "BranchName": "M G ROAD, BANGALORE",
+  "BsrCode": "6550003",
+  "PropDateRem": "2026-03-11",
+  "NatureRemCategory": "Fees For Technical Services/ Fees For Included Services",
+  "RevPurCategory": "Other Business Services",
+  "RevPurCode": "S1023",
+  "TaxPayGrossSecb": "N",
+  "RemittanceCharIndia": "Y",
+  "SecRemCovered": "SEC. 195 READ WITH SEC. 115A",
+  "AmtIncChrgIt": "5407720",
+  "TaxLiablIt": "1181046",
+  "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.",
+  "TaxResidCert": "Y",
+  "RelevantDtaa": "DTAA BETWEEN INDIA AND GERMANY",
+  "RelevantArtDtaa": "ARTICLE 12 OF DTAA BETWEEN INDIA AND GERMANY",
+  "TaxIncDtaa": "5407720",
+  "TaxLiablDtaa": "540772",
+  "RemForRoyFlg": "Y",
+  "ArtDtaa"
+2026-02-19 15:38:10,322 INFO Gemini extraction populated 54/57 fields
+2026-02-19 15:38:10,330 INFO invoice_extraction populated=54
