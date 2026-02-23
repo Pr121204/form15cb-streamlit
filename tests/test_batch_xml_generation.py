@@ -110,6 +110,13 @@ class TestBatchXmlGeneration(unittest.TestCase):
         ns = {"f": "http://incometaxindiaefiling.gov.in/FORM15CAB"}
         self.assertIsNotNone(root.find(".//f:TDSDetails/f:RateTdsSecbFlg", ns))
 
+    def test_preserves_leading_zero_codes_and_escapes_firm_name(self):
+        xml = generate_xml_content(self._base(), mode=MODE_TDS)
+        self.assertIn("<FORM15CB:IorWe>02</FORM15CB:IorWe>", xml)
+        self.assertIn("<FORM15CB:RemitterHonorific>03</FORM15CB:RemitterHonorific>", xml)
+        self.assertIn("<FORM15CB:BeneficiaryHonorific>03</FORM15CB:BeneficiaryHonorific>", xml)
+        self.assertIn("<FORM15CB:NameFirmAcctnt>ANAND S &amp; ASSOCIATES</FORM15CB:NameFirmAcctnt>", xml)
+
     def test_tds_blocks_when_mandatory_tax_fields_missing(self):
         data = self._base()
         data["TaxLiablIt"] = ""

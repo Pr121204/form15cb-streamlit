@@ -26,6 +26,9 @@ def normalize_numeric_value(value: str) -> str:
     """Convert numeric strings like '5355.0' or '535.50' to '5355' or '535.5'"""
     if not value or not isinstance(value, str):
         return value
+    # Preserve code-like numeric strings that intentionally carry leading zeros (e.g., "02", "03").
+    if re.fullmatch(r"0\d+", value):
+        return value
     try:
         # Try to parse as float
         num = float(value)
