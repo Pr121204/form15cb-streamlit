@@ -1,272 +1,147 @@
-"""
-XML Generator Module for Form 15CB
-
-This module handles the generation of Form 15CB XML files using a template-based approach.
-The template contains placeholders ({{FieldName}}) that are replaced with actual values.
-"""
+from __future__ import annotations
 
 import os
-import uuid
 import re
+import uuid
+from typing import Dict, Iterable
+
 from config.settings import OUTPUT_FOLDER
+from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
+from modules.xml_shape_normalizer import normalize_xml_to_reference_shape, select_reference_shape
 
 
 def escape_xml(value):
-    """
-    Escape special XML characters to prevent malformed XML and injection attacks.
-    
-    Args:
-        value: The value to escape (any type)
-        
-    Returns:
-        str: XML-safe string with special characters escaped
-        
-    Example:
-        escape_xml("Smith & Sons") -> "Smith &amp; Sons"
-        escape_xml("Price < $100") -> "Price &lt; $100"
-    """
     if value is None:
-        return ''
-    
-    # Convert to string and escape special XML characters
-    return (str(value)
-            .replace('&', '&amp;')      # Must be first to avoid double-escaping
-            .replace('<', '&lt;')
-            .replace('>', '&gt;')
-            .replace('"', '&quot;')
-            .replace("'", "&apos;"))
+        return ""
+    return (
+        str(value)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&apos;")
+    )
 
 
-def validate_required_fields(fields):
-    """
-    Validate that all mandatory fields are present and non-empty.
-    
-    Args:
-        fields: Dictionary of field name -> value pairs
-        
-    Raises:
-        ValueError: If any mandatory field is missing or empty
-    """
-    # Define mandatory fields based on Form 15CB requirements
-    mandatory_fields = [
-        'SWVersionNo',
-        'FormName',
-        'AssessmentYear',
-        'RemitterPAN',
-        'NameRemitter',
-    ]
-    
-    missing = []
-    for field in mandatory_fields:
-        if field not in fields or not str(fields[field]).strip():
-            missing.append(field)
-    
+def validate_required_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> None:
+    required = ["SWVersionNo", "FormName", "AssessmentYear", "RemitterPAN", "NameRemitter", "CurrencySecbCode"]
+    missing = [k for k in required if not str(fields.get(k, "")).strip()]
+    if str(mode or MODE_TDS) == MODE_TDS:
+        tds_required = [
+            "TaxLiablIt",
+            "BasisDeterTax",
+            "TaxIncDtaa",
+            "TaxLiablDtaa",
+            "RateTdsADtaa",
+            "RateTdsSecB",
+            "AmtPayForgnTds",
+            "AmtPayIndianTds",
+            "ActlAmtTdsForgn",
+        ]
+        missing.extend([k for k in tds_required if not str(fields.get(k, "")).strip()])
     if missing:
-        raise ValueError(
-            f"Missing or empty mandatory fields: {', '.join(missing)}. "
-            f"Please fill in these fields before generating XML."
-        )
+        uniq_missing = sorted(set(missing))
+        raise ValueError(f"Missing or empty mandatory fields: {', '.join(uniq_missing)}")
 
 
-def generate_xml(fields, template_path='templates/form15cb_template.xml'):
-    """
-    Generate Form 15CB XML file from a template by replacing placeholders with actual values.
-    
-    This function:
-    1. Loads the XML template file
-    2. Replaces all {{FieldName}} placeholders with escaped field values
-    3. Removes any remaining unreplaced placeholders
-    4. Saves the final XML to the output folder
-    
-    Args:
-        fields: Dictionary of field name -> value pairs
-        template_path: Path to the XML template file (default: templates/form15cb_template.xml)
-        
-    Returns:
-        str: Full path to the generated XML file
-        
-    Raises:
-        FileNotFoundError: If template file doesn't exist
-        ValueError: If mandatory fields are missing
-        IOError: If unable to write output file
-        
-    Example:
-        fields = {
-            'RemitterPAN': 'ABCDE1234F',
-            'NameRemitter': 'ABC Company Ltd',
-            'AmtPayIndRem': '100000'
-        }
-        xml_path = generate_xml(fields)
-        # Returns: 'data/output/generated_abc123.xml'
-    """
-    # Validate mandatory fields first
-    try:
-        validate_required_fields(fields)
-    except ValueError as e:
-        # Re-raise with additional context
-        raise ValueError(f"XML generation failed: {str(e)}")
-    
-    # Load template
-    try:
-        with open(template_path, 'r', encoding='utf8') as f:
-            xml_content = f.read()
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f"XML template not found at: {template_path}. "
-            f"Ensure the templates directory exists and contains form15cb_template.xml"
-        )
-    except Exception as e:
-        raise IOError(f"Failed to read template file: {str(e)}")
-    
-    # Replace all placeholders with escaped values
+def _fill_template(fields: Dict[str, str], template_path: str) -> str:
+    with open(template_path, "r", encoding="utf8") as f:
+        xml_content = f.read()
     for field_name, field_value in fields.items():
-        placeholder = '{{' + field_name + '}}'
-        escaped_value = escape_xml(field_value)
-        xml_content = xml_content.replace(placeholder, escaped_value)
-    
-    # Remove any unreplaced placeholders (optional fields that weren't provided)
-    # This prevents {{FieldName}} from appearing in the final XML
-    xml_content = re.sub(r'\{\{[^}]+\}\}', '', xml_content)
-    
-    # Ensure output folder exists
-    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-    
-    # Generate unique filename using UUID
-    filename = f'generated_{uuid.uuid4().hex[:12]}.xml'
-    output_path = os.path.join(OUTPUT_FOLDER, filename)
-    
-    # Write XML to file
+        xml_content = xml_content.replace("{{" + field_name + "}}", escape_xml(field_value))
+    return re.sub(r"\{\{[^}]+\}\}", "", xml_content)
+
+
+def _remove_tag_block(xml_text: str, tag: str) -> str:
+    pattern = rf"\s*<FORM15CB:{tag}>.*?</FORM15CB:{tag}>"
+    return re.sub(pattern, "", xml_text, flags=re.DOTALL)
+
+
+def _remove_empty_optional_tags(xml_text: str) -> str:
+    optional_tags = [
+        "ReasonNot",
+        "NatureRemCode",
+        "NatureRemDtaa",
+        "RelevantDtaa",
+        "RelevantArtDtaa",
+        "TaxIncDtaa",
+        "TaxLiablDtaa",
+        "ArtDtaa",
+        "RateTdsADtaa",
+        "SecRemCovered",
+        "AmtIncChrgIt",
+        "TaxLiablIt",
+        "BasisDeterTax",
+        "RemitteePremisesBuildingVillage",
+        "RemitteeRoadStreet",
+    ]
+    for tag in optional_tags:
+        pattern = rf"\s*<FORM15CB:{tag}>\s*</FORM15CB:{tag}>"
+        xml_text = re.sub(pattern, "", xml_text, flags=re.DOTALL)
+    return xml_text
+
+
+def generate_xml_content(xml_fields: Dict[str, str], mode: str = MODE_TDS, template_path: str = "templates/form15cb_template.xml") -> str:
+    validate_required_fields(xml_fields, mode=mode)
+    xml_text = _fill_template(xml_fields, template_path)
+    xml_text = _remove_empty_optional_tags(xml_text)
+    if mode == MODE_NON_TDS:
+        for tag in ("RateTdsSecbFlg", "RateTdsSecB", "DednDateTds"):
+            xml_text = _remove_tag_block(xml_text, tag)
     try:
-        with open(output_path, 'w', encoding='utf8') as f:
-            f.write(xml_content)
-    except PermissionError:
-        raise PermissionError(
-            f"Permission denied: Cannot write to {output_path}. "
-            f"Check folder permissions for {OUTPUT_FOLDER}"
-        )
-    except Exception as e:
-        raise IOError(f"Failed to write XML file: {str(e)}")
-    
-    return output_path
+        ref = select_reference_shape(xml_text)
+        xml_text = normalize_xml_to_reference_shape(xml_text, ref["xml_text"])
+    except Exception:
+        # Fail-safe blocking is enforced by app parity gate if sample source is unavailable.
+        pass
+    return xml_text
 
 
-def validate_xml_structure(xml_path):
-    """
-    Validate the generated XML file for well-formedness.
-    
-    This is a basic validation that checks if the XML can be parsed.
-    For full schema validation, use validate_xml_against_schema() instead.
-    
-    Args:
-        xml_path: Path to the XML file to validate
-        
-    Returns:
-        bool: True if XML is well-formed, False otherwise
-        
-    Example:
-        xml_path = generate_xml(fields)
-        if validate_xml_structure(xml_path):
-            print("XML is well-formed")
-    """
+def build_xml_fields_by_mode(state: Dict[str, object]) -> Dict[str, str]:
+    from modules.invoice_calculator import invoice_state_to_xml_fields
+
+    out = invoice_state_to_xml_fields(state)
+    mode = str(state.get("meta", {}).get("mode") or MODE_TDS)
+    if mode == MODE_NON_TDS:
+        out["AmtPayForgnTds"] = "0"
+        out["AmtPayIndianTds"] = "0"
+        out["RateTdsSecbFlg"] = ""
+        out["RateTdsSecB"] = ""
+        out["DednDateTds"] = ""
+    return out
+
+
+def write_xml_content(xml_content: str, filename: str | None = None) -> str:
+    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+    if not filename:
+        filename = f"generated_{uuid.uuid4().hex[:12]}.xml"
+    out_path = os.path.join(OUTPUT_FOLDER, filename)
+    with open(out_path, "w", encoding="utf8") as f:
+        f.write(xml_content)
+    return out_path
+
+
+def generate_xml(fields, template_path: str = "templates/form15cb_template.xml"):
+    xml_content = generate_xml_content({k: str(v) for k, v in fields.items()}, mode=MODE_TDS, template_path=template_path)
+    return write_xml_content(xml_content)
+
+
+def generate_zip_from_xmls(xml_payloads: Iterable[tuple[str, bytes]]) -> bytes:
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for name, data in xml_payloads:
+            zf.writestr(name, data)
+    return buf.getvalue()
+
+
+def validate_xml_structure(xml_path: str):
     try:
         import xml.etree.ElementTree as ET
+
         ET.parse(xml_path)
         return True
-    except ET.ParseError as e:
-        print(f"XML parsing error: {str(e)}")
+    except Exception:
         return False
-    except Exception as e:
-        print(f"Validation error: {str(e)}")
-        return False
-
-
-def validate_xml_against_schema(xml_path, xsd_path='schemas/form15cb.xsd'):
-    """
-    Validate the generated XML against the official XSD schema.
-    
-    Note: This requires the lxml library and the official schema file.
-    
-    Args:
-        xml_path: Path to the XML file to validate
-        xsd_path: Path to the XSD schema file
-        
-    Returns:
-        tuple: (is_valid: bool, errors: list of str)
-        
-    Example:
-        xml_path = generate_xml(fields)
-        is_valid, errors = validate_xml_against_schema(xml_path)
-        if not is_valid:
-            for error in errors:
-                print(f"Validation error: {error}")
-    """
-    try:
-        from lxml import etree
-    except ImportError:
-        return (False, ["lxml library not installed. Run: pip install lxml"])
-    
-    try:
-        # Load schema
-        with open(xsd_path, 'rb') as f:
-            schema_root = etree.XML(f.read())
-            schema = etree.XMLSchema(schema_root)
-        
-        # Parse XML
-        with open(xml_path, 'rb') as f:
-            xml_doc = etree.parse(f)
-        
-        # Validate
-        is_valid = schema.validate(xml_doc)
-        
-        if not is_valid:
-            errors = [str(error) for error in schema.error_log]
-            return (False, errors)
-        
-        return (True, [])
-        
-    except FileNotFoundError as e:
-        return (False, [f"Schema file not found: {str(e)}"])
-    except etree.XMLSyntaxError as e:
-        return (False, [f"XML syntax error: {str(e)}"])
-    except Exception as e:
-        return (False, [f"Validation error: {str(e)}"])
-
-
-# Example usage (for testing)
-if __name__ == "__main__":
-    # Sample fields for testing
-    test_fields = {
-        'SWVersionNo': '1',
-        'SWCreatedBy': 'DIT-EFILING-JAVA',
-        'XMLCreatedBy': 'DIT-EFILING-JAVA',
-        'XMLCreationDate': '2026-02-15',
-        'IntermediaryCity': 'Delhi',
-        'FormName': 'FORM15CB',
-        'Description': 'FORM15CB',
-        'AssessmentYear': '2025',
-        'SchemaVer': 'Ver1.1',
-        'FormVer': '1',
-        'IorWe': '02',
-        'RemitterHonorific': '03',
-        'RemitterPAN': 'ABCDE1234F',
-        'NameRemitter': 'Test Company Ltd',
-        'BeneficiaryHonorific': '03',
-        'NameRemittee': 'Beneficiary Company GmbH',
-        'AmtPayIndRem': '100000',
-        'AmtPayForgnRem': '1200',
-        'PropDateRem': '2026-03-15',
-        'NameAcctnt': 'CA John Doe'
-    }
-    
-    try:
-        xml_path = generate_xml(test_fields)
-        print(f"✅ XML generated successfully: {xml_path}")
-        
-        # Validate structure
-        if validate_xml_structure(xml_path):
-            print("✅ XML is well-formed")
-        else:
-            print("❌ XML validation failed")
-            
-    except Exception as e:
-        print(f"❌ Error: {str(e)}")

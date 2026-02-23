@@ -8,6 +8,11 @@ from typing import Dict, List, Optional, Tuple
 import streamlit as st
 
 from config.settings import PROPOSED_DATE_OFFSET
+from modules.currency_mapping import (
+    load_currency_exact_index,
+    preselect_currency_code,
+    validate_short_code_targets,
+)
 from modules.master_data import (
     find_bank_by_name,
     find_dtaa,
@@ -65,7 +70,8 @@ def _yn_to_yes_no(v: str) -> str:
 def _get_lookup_options() -> Dict[str, object]:
     country_map = _load_json(LOOKUP_DIR / "country_codes.json", {})
     bank_map = _load_json(LOOKUP_DIR / "bank_codes.json", {})
-    currency_map = _load_json(LOOKUP_DIR / "currency_codes.json", {})
+    currency_map = load_currency_exact_index()
+    currency_short_resolved, currency_short_missing = validate_short_code_targets(currency_map)
     state_map = _load_json(LOOKUP_DIR / "state_codes.json", {})
     purpose_map = _load_json(LOOKUP_DIR / "purpose_codes.json", {})
     # Source of truth for RBI purpose dropdowns must be master Purpose_code_List.json.
@@ -91,6 +97,8 @@ def _get_lookup_options() -> Dict[str, object]:
         "country_map": country_map,
         "bank_map": bank_map,
         "currency_map": currency_map,
+        "currency_short_resolved": currency_short_resolved,
+        "currency_short_missing": currency_short_missing,
         "state_map": state_map,
         "purpose_map": {str(k).lower(): str(v) for k, v in purpose_map.items()},
         "purpose_grouped": grouped,
@@ -208,6 +216,13 @@ def render_form() -> Dict[str, str]:
     master = load_master()
     lookups = _get_lookup_options()
     nature_groups = _nature_to_groups(master)
+    if lookups.get("currency_short_missing"):
+        missing = lookups["currency_short_missing"]
+        details = ", ".join(f"{k}->{v}" for k, v in sorted(missing.items()))
+        st.error(
+            "Currency short-code mapping configuration is incomplete in data/master/currency_codes.json: "
+            f"{details}. Affected invoices require manual currency selection."
+        )
 
     st.subheader("Step 3: Review in Structured Form")
 
@@ -417,6 +432,20 @@ def render_form() -> Dict[str, str]:
         st.caption(f"Display format: {_format_dd_mmm_yyyy(prop_date)}")
 
         currency_map = lookups["currency_map"]
+        selected_code, requires_manual = preselect_currency_code(
+            fields.get("CurrencySecbCode", ""),
+            fields.get("_currency_short_code", ""),
+            currency_map,
+        )
+        if selected_code:
+            fields["CurrencySecbCode"] = selected_code
+        fields["_currency_requires_manual_selection"] = "1" if requires_manual else ""
+        if requires_manual:
+            st.warning(
+                f"Could not auto-map short code '{fields.get('_currency_short_code', '')}' to a valid currency name. "
+                "Select currency manually."
+            )
+
         currency_items = sorted([(k.upper(), v) for k, v in currency_map.items()], key=lambda x: x[0])
         currency_labels = [f"{label} ({code})" for label, code in currency_items]
         curr_idx = 0
@@ -427,6 +456,8 @@ def render_form() -> Dict[str, str]:
         curr_sel = st.selectbox("Currency", currency_labels or [""], index=curr_idx if currency_labels else 0)
         if curr_sel:
             fields["CurrencySecbCode"] = curr_sel.split("(")[-1].replace(")", "").strip()
+            if fields["CurrencySecbCode"] and fields["CurrencySecbCode"] != "-1":
+                fields["_currency_requires_manual_selection"] = ""
         fields["AmtPayForgnRem"] = st.text_input("Amount (foreign)", value=fields.get("AmtPayForgnRem", ""))
         fields["AmtPayIndRem"] = st.text_input("Amount (INR)", value=fields.get("AmtPayIndRem", ""))
         fields["CountryRemMadeSecb"] = fields.get("RemitteeCountryCode", fields.get("CountryRemMadeSecb", ""))

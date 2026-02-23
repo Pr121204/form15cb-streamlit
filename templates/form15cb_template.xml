@@ -24,9 +24,11 @@
     <FORM15CB:RemitteeDetls>
         <FORM15CB:NameRemittee>{{NameRemittee}}</FORM15CB:NameRemittee>
         <FORM15CB:RemitteeAddrs>
+            <FORM15CB:PremisesBuildingVillage>{{RemitteePremisesBuildingVillage}}</FORM15CB:PremisesBuildingVillage>
             <FORM15CB:TownCityDistrict>{{RemitteeTownCityDistrict}}</FORM15CB:TownCityDistrict>
             <FORM15CB:FlatDoorBuilding>{{RemitteeFlatDoorBuilding}}</FORM15CB:FlatDoorBuilding>
             <FORM15CB:AreaLocality>{{RemitteeAreaLocality}}</FORM15CB:AreaLocality>
+            <FORM15CB:RoadStreet>{{RemitteeRoadStreet}}</FORM15CB:RoadStreet>
             <FORM15CB:ZipCode>{{RemitteeZipCode}}</FORM15CB:ZipCode>
             <Form:State>{{RemitteeState}}</Form:State>
             <FORM15CB:Country>{{RemitteeCountryCode}}</FORM15CB:Country>
@@ -42,12 +44,14 @@
         <FORM15CB:BsrCode>{{BsrCode}}</FORM15CB:BsrCode>
         <FORM15CB:PropDateRem>{{PropDateRem}}</FORM15CB:PropDateRem>
         <FORM15CB:NatureRemCategory>{{NatureRemCategory}}</FORM15CB:NatureRemCategory>
+        <FORM15CB:NatureRemCode>{{NatureRemCode}}</FORM15CB:NatureRemCode>
         <FORM15CB:RevPurCategory>{{RevPurCategory}}</FORM15CB:RevPurCategory>
         <FORM15CB:RevPurCode>{{RevPurCode}}</FORM15CB:RevPurCode>
         <FORM15CB:TaxPayGrossSecb>{{TaxPayGrossSecb}}</FORM15CB:TaxPayGrossSecb>
     </FORM15CB:RemittanceDetails>
     <FORM15CB:ItActDetails>
         <FORM15CB:RemittanceCharIndia>{{RemittanceCharIndia}}</FORM15CB:RemittanceCharIndia>
+        <FORM15CB:ReasonNot>{{ReasonNot}}</FORM15CB:ReasonNot>
         <FORM15CB:SecRemCovered>{{SecRemCovered}}</FORM15CB:SecRemCovered>
         <FORM15CB:AmtIncChrgIt>{{AmtIncChrgIt}}</FORM15CB:AmtIncChrgIt>
         <FORM15CB:TaxLiablIt>{{TaxLiablIt}}</FORM15CB:TaxLiablIt>
@@ -66,6 +70,7 @@
         <FORM15CB:IncLiabIndiaFlg>{{IncLiabIndiaFlg}}</FORM15CB:IncLiabIndiaFlg>
         <FORM15CB:RemOnCapGainFlg>{{RemOnCapGainFlg}}</FORM15CB:RemOnCapGainFlg>
         <FORM15CB:OtherRemDtaa>{{OtherRemDtaa}}</FORM15CB:OtherRemDtaa>
+        <FORM15CB:NatureRemDtaa>{{NatureRemDtaa}}</FORM15CB:NatureRemDtaa>
         <FORM15CB:TaxIndDtaaFlg>{{TaxIndDtaaFlg}}</FORM15CB:TaxIndDtaaFlg>
         <FORM15CB:RelArtDetlDDtaa>{{RelArtDetlDDtaa}}</FORM15CB:RelArtDetlDDtaa>
     </FORM15CB:DTAADetails>

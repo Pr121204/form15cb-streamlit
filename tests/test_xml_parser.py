@@ -36,6 +36,14 @@ class TestXmlParser(unittest.TestCase):
             "BsrCode": "1234567",
             "RateTdsSecbFlg": "1",
             "RateTdsSecB": "10",
+            "TaxLiablIt": "21840",
+            "BasisDeterTax": "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME.",
+            "TaxIncDtaa": "100000",
+            "TaxLiablDtaa": "10000",
+            "RateTdsADtaa": "10",
+            "AmtPayForgnTds": "120",
+            "AmtPayIndianTds": "10000",
+            "ActlAmtTdsForgn": "1080",
         }
         xml_path = generate_xml(fields)
         try:

@@ -1,0 +1,77 @@
+from __future__ import annotations
+
+from typing import Dict
+
+
+SW_VERSION_NO = "1"
+SW_CREATED_BY = "DIT-EFILING-JAVA"
+XML_CREATED_BY = "DIT-EFILING-JAVA"
+INTERMEDIARY_CITY = "Delhi"
+FORM_NAME = "FORM15CB"
+FORM_DESCRIPTION = "FORM15CB"
+ASSESSMENT_YEAR = "2017"
+SCHEMA_VER = "Ver1.1"
+FORM_VER = "1"
+
+IOR_WE_CODE = "02"
+HONORIFIC_M_S = "03"
+
+REMITTEE_ZIP_CODE = "999999"
+REMITTEE_STATE = "OUTSIDE INDIA"
+NAME_REMITTEE_DATE_FORMAT = "%d.%m.%Y"
+PROPOSED_DATE_OFFSET_DAYS = 15
+
+SEC_REM_COVERED_DEFAULT = "SEC. 195 READ WITH SEC. 115A"
+
+TAX_RESID_CERT_Y = "Y"
+INC_LIAB_INDIA_ALWAYS = "-1"
+TAX_IND_DTAA_ALWAYS = "N"
+RATE_TDS_SECB_FLG_TDS = "2"
+
+IT_RATE_LOW = 21.84
+IT_RATE_HIGH = 21.216
+
+BASIS_LOW = (
+    "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY "
+    "IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE."
+)
+BASIS_HIGH = (
+    "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY "
+    "IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE."
+)
+
+CA_DEFAULTS: Dict[str, str] = {
+    "NameAcctnt": "SONDUR ANAND",
+    "NameFirmAcctnt": "ANAND S & ASSOCIATES",
+    "AcctntFlatDoorBuilding": "NO. 55, SECOND FLOOR",
+    "PremisesBuildingVillage": "S.V. COMPLEX",
+    "AcctntRoadStreet": "K.R. ROAD",
+    "AcctntAreaLocality": "BASAVANAGUDI",
+    "AcctntTownCityDistrict": "BENGALURU",
+    "AcctntPincode": "560004",
+    "MembershipNumber": "216066",
+    "AcctntState": "15",
+    "AcctntCountryCode": "91",
+}
+
+CA_FIRM_OPTIONS = ["ANAND S & ASSOCIATES", "S ANANTHA AND CO."]
+
+SHORT_CURRENCY_OPTIONS = [
+    "EUR",
+    "USD",
+    "GBP",
+    "JPY",
+    "AUD",
+    "SGD",
+    "CHF",
+    "CAD",
+    "CNY",
+    "SEK",
+    "NOK",
+    "DKK",
+    "NZD",
+    "Other",
+]
+
+MODE_TDS = "TDS"
+MODE_NON_TDS = "NON_TDS"
