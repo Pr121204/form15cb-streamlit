@@ -42,7 +42,7 @@ class TestInvoiceCalculator(unittest.TestCase):
             "extracted": {
                 "remitter_name": "A",
                 "remitter_address": "B",
-                "beneficiary_name": "C",
+                "beneficiary_name": "bosch io gmbh",
                 "invoice_number": "1",
                 "invoice_date_iso": "2023-05-15",
             },
@@ -52,6 +52,7 @@ class TestInvoiceCalculator(unittest.TestCase):
         }
         xmlf = invoice_state_to_xml_fields(state)
         self.assertEqual(xmlf["RemitteeZipCode"], REMITTEE_ZIP_CODE)
+        self.assertTrue(xmlf["NameRemittee"].startswith("BOSCH IO GMBH"))
         self.assertIn("INVOICE NO. 1", xmlf["NameRemittee"])
         self.assertIn("DT 15.05.2023", xmlf["NameRemittee"])
 

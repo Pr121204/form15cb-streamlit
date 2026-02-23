@@ -71,7 +71,7 @@ def _fmt_num(n: Optional[float]) -> str:
 
 
 def _build_name_remittee(beneficiary: str, invoice_no: str, dotted_date: str) -> str:
-    b = str(beneficiary or "").strip()
+    b = str(beneficiary or "").strip().upper()
     inv = str(invoice_no or "").strip()
     d = str(dotted_date or "").strip()
     if b and inv and d:

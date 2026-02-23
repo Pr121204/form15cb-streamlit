@@ -1268,3 +1268,7 @@
 2026-02-23 18:29:36,332 INFO xml_fields_built invoice_id=inv_0_567208 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '116953'}
 2026-02-23 18:29:36,333 INFO xml_validation_ok mode=TDS key_fields={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
 2026-02-23 18:29:36,336 INFO xml_generate_ok invoice_id=inv_0_567208 bytes=5513
+2026-02-23 18:50:29,407 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-02-23 18:50:29,408 INFO recompute_non_tds_done invoice_id=
+2026-02-23 18:50:29,409 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-02-23 18:50:29,409 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1747', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
