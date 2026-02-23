@@ -71,8 +71,8 @@ def _remove_empty_optional_tags(xml_text: str) -> str:
         "AmtIncChrgIt",
         "TaxLiablIt",
         "BasisDeterTax",
-        "RemitteePremisesBuildingVillage",
-        "RemitteeRoadStreet",
+        "PremisesBuildingVillage",  # In RemitteeAddrs: actual tag name (not RemitteePremisesBuildingVillage)
+        "RoadStreet",  # In RemitteeAddrs: actual tag name (not RemitteeRoadStreet)
     ]
     for tag in optional_tags:
         pattern = rf"\s*<FORM15CB:{tag}>\s*</FORM15CB:{tag}>"
