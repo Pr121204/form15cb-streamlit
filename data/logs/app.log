@@ -1079,3 +1079,66 @@
 2026-02-23 18:07:36,114 INFO xml_fields_built invoice_id=inv_0_204051 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '116953'}
 2026-02-23 18:07:36,115 INFO xml_validation_ok mode=TDS key_fields={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
 2026-02-23 18:07:36,119 INFO xml_generate_ok invoice_id=inv_0_204051 bytes=5516
+2026-02-23 18:14:50,319 INFO upload_received file_count=1 files=['19003645.pdf']
+2026-02-23 18:14:53,623 INFO upload_received file_count=1 files=['19003645.pdf']
+2026-02-23 18:14:55,546 INFO upload_received file_count=1 files=['19003645.pdf']
+2026-02-23 18:14:55,553 INFO process_clicked file_count=1
+2026-02-23 18:14:55,554 INFO invoice_process_start file=19003645.pdf cfg={'currency_short': 'EUR', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '19003645.pdf'}
+2026-02-23 18:14:55,561 INFO extract_start file=19003645.pdf saved_path=C:\Users\HP\Downloads\15CB_final\15CB_extracted\data\input\19003645.pdf
+2026-02-23 18:14:55,767 INFO extract_pdf_done file=19003645.pdf text_len=3068
+2026-02-23 18:14:55,768 INFO extract_complete file=19003645.pdf final_text_len=3068
+2026-02-23 18:14:55,768 INFO gemini_extract_start text_len=3068 model=gemini-2.5-flash
+2026-02-23 18:14:56,498 INFO AFC is enabled with max remote calls: 10.
+2026-02-23 18:15:05,462 INFO HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+2026-02-23 18:15:05,469 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_name']
+2026-02-23 18:15:05,480 INFO nature_of_remittance_fallback keyword=FEES FOR TECHNICAL SERVICES matched=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES
+2026-02-23 18:15:05,482 INFO purpose_code_fallback keyword=S1023 matched=S1023 group=
+2026-02-23 18:15:05,485 WARNING match_remitter_none input=Robert Bosch GmbH
+2026-02-23 18:15:05,485 INFO match_remitter_exact input=Bosch Ltd. matched=BOSCH LIMITED
+2026-02-23 18:15:05,489 INFO gemini_extract_done summary={'remitter_name': 'Bosch Ltd.', 'beneficiary_name': 'Robert Bosch GmbH', 'invoice_number': '19003645', 'amount': '5355.00', 'currency_short': 'EUR', 'beneficiary_country_text': 'Germany', 'nature_of_remittance': 'FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES', 'purpose_group': 'Other Business Services', 'purpose_code': 'S1023'}
+2026-02-23 18:15:05,491 INFO invoice_extracted file=19003645.pdf fields={'remitter_name': 'Bosch Ltd.', 'beneficiary_name': 'Robert Bosch GmbH', 'invoice_number': '19003645', 'amount': '5355.00', 'currency_short': 'EUR', 'invoice_date_iso': '2025-12-31'}
+2026-02-23 18:15:05,492 INFO state_build_start invoice_id=inv_0_705491 file=19003645.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Ltd.', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '5355.00', 'invoice_date_iso': '2025-12-31'}
+2026-02-23 18:15:05,496 INFO state_country_inference invoice_id=inv_0_705491 beneficiary=Robert Bosch GmbH inferred_country_code=49
+2026-02-23 18:15:05,497 INFO state_nature_set invoice_id=inv_0_705491 label=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES code=16.21
+2026-02-23 18:15:05,504 INFO state_purpose_set invoice_id=inv_0_705491 group=Other Business Services code=S1023 gr_no=10
+2026-02-23 18:15:05,510 INFO match_remitter_exact input=Bosch Ltd. matched=BOSCH LIMITED
+2026-02-23 18:15:05,521 INFO state_remitter_match invoice_id=inv_0_705491 remitter_name=Bosch Ltd. pan=AAACM9840P bank=CITI Bank
+2026-02-23 18:15:05,525 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:05,527 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:05,531 INFO state_build_done invoice_id=inv_0_705491 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '116953', 'AmtPayForgnTds': '535.5'}
+2026-02-23 18:15:05,535 INFO invoice_state_built invoice_id=inv_0_705491 file=19003645.pdf form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
+2026-02-23 18:15:05,537 INFO invoice_processed file=19003645.pdf elapsed=9.98s
+2026-02-23 18:15:05,540 INFO process_complete invoice_count=1 ids=['inv_0_705491']
+2026-02-23 18:15:05,547 INFO review_start invoice_id=inv_0_705491 file=19003645.pdf
+2026-02-23 18:15:05,556 INFO match_remitter_exact input=Bosch Ltd. matched=BOSCH LIMITED
+2026-02-23 18:15:05,558 INFO ui_remitter_match invoice_id=inv_0_705491 remitter_name=Bosch Ltd. pan=AAACM9840P bank=CITI Bank
+2026-02-23 18:15:05,580 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:05,581 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:05,581 INFO ui_country_selected invoice_id=inv_0_705491 country_code=49 dtaa_article=ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-02-23 18:15:05,595 INFO ui_rate_entered invoice_id=inv_0_705491 rate=10
+2026-02-23 18:15:05,596 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:05,597 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:05,598 INFO ui_recompute_done invoice_id=inv_0_705491 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '116953', 'AmtPayForgnTds': '535.5'}
+2026-02-23 18:15:05,614 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:05,615 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:05,615 INFO review_recomputed invoice_id=inv_0_705491 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '116953', 'AmtPayForgnTds': '535.5'}
+2026-02-23 18:15:05,617 INFO xml_fields_built invoice_id=inv_0_705491 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '116953'}
+2026-02-23 18:15:05,617 INFO xml_validation_ok mode=TDS key_fields={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
+2026-02-23 18:15:05,625 INFO xml_generate_ok invoice_id=inv_0_705491 bytes=5516
+2026-02-23 18:15:16,793 INFO upload_received file_count=1 files=['19003645.pdf']
+2026-02-23 18:15:16,797 INFO review_start invoice_id=inv_0_705491 file=19003645.pdf
+2026-02-23 18:15:16,800 INFO match_remitter_exact input=Bosch Ltd. matched=BOSCH LIMITED
+2026-02-23 18:15:16,802 INFO ui_remitter_match invoice_id=inv_0_705491 remitter_name=Bosch Ltd. pan=AAACM9840P bank=CITI Bank
+2026-02-23 18:15:16,824 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:16,824 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:16,825 INFO ui_country_selected invoice_id=inv_0_705491 country_code=49 dtaa_article=ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-02-23 18:15:16,839 INFO ui_rate_entered invoice_id=inv_0_705491 rate=10
+2026-02-23 18:15:16,843 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:16,844 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:16,844 INFO ui_recompute_done invoice_id=inv_0_705491 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '116953', 'AmtPayForgnTds': '535.5'}
+2026-02-23 18:15:16,850 INFO recompute_start invoice_id=inv_0_705491 mode=TDS fcy=5355 inr=535500 exchange_rate=100 dtaa_rate=10
+2026-02-23 18:15:16,851 INFO recompute_tds_done invoice_id=inv_0_705491 values={'TaxLiablIt': '116953', 'TaxIncDtaa': '535500', 'TaxLiablDtaa': '53550', 'AmtPayForgnTds': '535.5', 'AmtPayIndianTds': '53550', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4819.5'}
+2026-02-23 18:15:16,851 INFO review_recomputed invoice_id=inv_0_705491 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '116953', 'AmtPayForgnTds': '535.5'}
+2026-02-23 18:15:16,852 INFO xml_fields_built invoice_id=inv_0_705491 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '116953'}
+2026-02-23 18:15:16,854 INFO xml_validation_ok mode=TDS key_fields={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
+2026-02-23 18:15:16,858 INFO xml_generate_ok invoice_id=inv_0_705491 bytes=5516

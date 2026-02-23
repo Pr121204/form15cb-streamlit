@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FORM15CB:FORM15CB xmlns:Form="http://incometaxindiaefiling.gov.in/common" xmlns:FORM15CB="http://incometaxindiaefiling.gov.in/FORM15CAB">
+    <Form:CreationInfo>
+        <Form:SWVersionNo>1</Form:SWVersionNo>
+        <Form:SWCreatedBy>DIT-EFILING-JAVA</Form:SWCreatedBy>
+        <Form:XMLCreatedBy>DIT-EFILING-JAVA</Form:XMLCreatedBy>
+        <Form:XMLCreationDate>2026-02-22</Form:XMLCreationDate>
+        <Form:IntermediaryCity>Delhi</Form:IntermediaryCity>
+    </Form:CreationInfo>
+    <Form:Form_Details>
+        <Form:FormName>FORM15CB</Form:FormName>
+        <Form:Description>FORM15CB</Form:Description>
+        <Form:AssessmentYear>2017</Form:AssessmentYear>
+        <Form:SchemaVer>Ver1.1</Form:SchemaVer>
+        <Form:FormVer>1</Form:FormVer>
+    </Form:Form_Details>
+    <FORM15CB:RemitterDetails>
+        <FORM15CB:IorWe>02</FORM15CB:IorWe>
+        <FORM15CB:RemitterHonorific>03</FORM15CB:RemitterHonorific>
+        <FORM15CB:NameRemitter>A. B</FORM15CB:NameRemitter>
+        <FORM15CB:PAN>ABCDE1234F</FORM15CB:PAN>
+        <FORM15CB:BeneficiaryHonorific>03</FORM15CB:BeneficiaryHonorific>
+    </FORM15CB:RemitterDetails>
+    <FORM15CB:RemitteeDetls>
+        <FORM15CB:NameRemittee>C INVOICE NO. 1 DT 15.05.2023</FORM15CB:NameRemittee>
+        <FORM15CB:RemitteeAddrs>
+            <FORM15CB:TownCityDistrict>GERMANY</FORM15CB:TownCityDistrict>
+            <FORM15CB:FlatDoorBuilding>x</FORM15CB:FlatDoorBuilding>
+            <FORM15CB:AreaLocality>y</FORM15CB:AreaLocality>
+            <FORM15CB:ZipCode>999999</FORM15CB:ZipCode>
+            <Form:State>OUTSIDE INDIA</Form:State>
+            <FORM15CB:Country>49</FORM15CB:Country>
+        </FORM15CB:RemitteeAddrs>
+    </FORM15CB:RemitteeDetls>
+    <FORM15CB:RemittanceDetails>
+        <FORM15CB:CountryRemMadeSecb>49</FORM15CB:CountryRemMadeSecb>
+        <FORM15CB:CurrencySecbCode>50</FORM15CB:CurrencySecbCode>
+        <FORM15CB:AmtPayForgnRem>100</FORM15CB:AmtPayForgnRem>
+        <FORM15CB:AmtPayIndRem>8000</FORM15CB:AmtPayIndRem>
+        <FORM15CB:NameBankCode>41</FORM15CB:NameBankCode>
+        <FORM15CB:BranchName>MG ROAD</FORM15CB:BranchName>
+        <FORM15CB:BsrCode>6550003</FORM15CB:BsrCode>
+        <FORM15CB:PropDateRem>2026-03-01</FORM15CB:PropDateRem>
+        <FORM15CB:NatureRemCategory>16.21</FORM15CB:NatureRemCategory>
+        <FORM15CB:RevPurCategory>RB-10.1</FORM15CB:RevPurCategory>
+        <FORM15CB:RevPurCode>RB-10.1-S1023</FORM15CB:RevPurCode>
+        <FORM15CB:TaxPayGrossSecb>N</FORM15CB:TaxPayGrossSecb>
+    </FORM15CB:RemittanceDetails>
+    <FORM15CB:ItActDetails>
+        <FORM15CB:RemittanceCharIndia>Y</FORM15CB:RemittanceCharIndia>
+        <FORM15CB:SecRemCovered>SEC. 195 READ WITH SEC. 115A</FORM15CB:SecRemCovered>
+        <FORM15CB:AmtIncChrgIt>8000</FORM15CB:AmtIncChrgIt>
+        <FORM15CB:TaxLiablIt>1747.2</FORM15CB:TaxLiablIt>
+        <FORM15CB:BasisDeterTax>x</FORM15CB:BasisDeterTax>
+    </FORM15CB:ItActDetails>
+    <FORM15CB:DTAADetails>
+        <FORM15CB:TaxResidCert>Y</FORM15CB:TaxResidCert>
+        <FORM15CB:RelevantDtaa>ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY</FORM15CB:RelevantDtaa>
+        <FORM15CB:RelevantArtDtaa>ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY</FORM15CB:RelevantArtDtaa>
+        <FORM15CB:TaxIncDtaa>8000</FORM15CB:TaxIncDtaa>
+        <FORM15CB:TaxLiablDtaa>800</FORM15CB:TaxLiablDtaa>
+        <FORM15CB:RemForRoyFlg>Y</FORM15CB:RemForRoyFlg>
+        <FORM15CB:ArtDtaa>ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY</FORM15CB:ArtDtaa>
+        <FORM15CB:RateTdsADtaa>10</FORM15CB:RateTdsADtaa>
+        <FORM15CB:RemAcctBusIncFlg>N</FORM15CB:RemAcctBusIncFlg>
+        <FORM15CB:IncLiabIndiaFlg>-1</FORM15CB:IncLiabIndiaFlg>
+        <FORM15CB:RemOnCapGainFlg>N</FORM15CB:RemOnCapGainFlg>
+        <FORM15CB:OtherRemDtaa>N</FORM15CB:OtherRemDtaa>
+        <FORM15CB:TaxIndDtaaFlg>N</FORM15CB:TaxIndDtaaFlg>
+        <FORM15CB:RelArtDetlDDtaa>NOT APPLICABLE</FORM15CB:RelArtDetlDDtaa>
+    </FORM15CB:DTAADetails>
+    <FORM15CB:TDSDetails>
+        <FORM15CB:AmtPayForgnTds>10</FORM15CB:AmtPayForgnTds>
+        <FORM15CB:AmtPayIndianTds>800</FORM15CB:AmtPayIndianTds>
+        <FORM15CB:ActlAmtTdsForgn>90</FORM15CB:ActlAmtTdsForgn>
+    </FORM15CB:TDSDetails>
+    <FORM15CB:AcctntDetls>
+        <FORM15CB:NameAcctnt>SONDUR ANAND</FORM15CB:NameAcctnt>
+        <FORM15CB:NameFirmAcctnt>ANAND S &amp; ASSOCIATES</FORM15CB:NameFirmAcctnt>
+        <FORM15CB:AcctntAddrs>
+            <FORM15CB:PremisesBuildingVillage>S.V. COMPLEX</FORM15CB:PremisesBuildingVillage>
+            <FORM15CB:TownCityDistrict>BENGALURU</FORM15CB:TownCityDistrict>
+            <FORM15CB:FlatDoorBuilding>NO. 55, SECOND FLOOR</FORM15CB:FlatDoorBuilding>
+            <FORM15CB:AreaLocality>BASAVANAGUDI</FORM15CB:AreaLocality>
+            <FORM15CB:Pincode>560004</FORM15CB:Pincode>
+            <Form:State>15</Form:State>
+            <FORM15CB:RoadStreet>K.R. ROAD</FORM15CB:RoadStreet>
+            <FORM15CB:Country>91</FORM15CB:Country>
+        </FORM15CB:AcctntAddrs>
+        <FORM15CB:MembershipNumber>216066</FORM15CB:MembershipNumber>
+    </FORM15CB:AcctntDetls>
+</FORM15CB:FORM15CB>
