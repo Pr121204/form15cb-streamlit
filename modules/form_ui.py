@@ -381,6 +381,13 @@ def render_form() -> Dict[str, str]:
     with rem_col2:
         nature_options = sorted(nature_groups.keys())
         nature_guess = fields.get("NatureRemCategory", "")
+        
+        # Pre-select from Gemini suggestion if available
+        if not nature_guess and fields.get("_gemini_nature_of_remittance"):
+            gemini_nature = fields.get("_gemini_nature_of_remittance", "")
+            if gemini_nature in nature_options:
+                nature_guess = gemini_nature
+        
         nature_idx = nature_options.index(nature_guess) if nature_guess in nature_options else 0
         selected_nature = st.selectbox("Nature of Remittance", nature_options or [""], index=nature_idx if nature_options else 0)
         fields["NatureRemCategory"] = selected_nature
@@ -391,7 +398,18 @@ def render_form() -> Dict[str, str]:
 
         purpose_grouped = lookups["purpose_grouped"]
         group_options = sorted(list(purpose_grouped.keys()))
-        current_group = fields.get("_purpose_group_name", group_options[0] if group_options else "")
+        current_group = fields.get("_purpose_group_name", "")
+        
+        # Pre-select from Gemini suggestion if available
+        if not current_group and fields.get("_gemini_purpose_group"):
+            gemini_group = fields.get("_gemini_purpose_group", "")
+            if gemini_group in group_options:
+                current_group = gemini_group
+        
+        # Fallback to first option if still empty
+        if not current_group:
+            current_group = group_options[0] if group_options else ""
+        
         group_idx = group_options.index(current_group) if current_group in group_options else 0
         selected_group = st.selectbox("Purpose Group Name", group_options or [""], index=group_idx if group_options else 0)
         fields["_purpose_group_name"] = selected_group
@@ -400,10 +418,22 @@ def render_form() -> Dict[str, str]:
         code_labels = [f"{r['code']} - {r['description']}" for r in group_rows]
         current_code = fields.get("_purpose_s_code", "")
         code_idx = 0
-        for i, row in enumerate(group_rows):
-            if row["code"] == current_code or row["code"] in fields.get("RevPurCode", ""):
-                code_idx = i
-                break
+        
+        # Pre-select from Gemini suggestion if available
+        if not current_code and fields.get("_gemini_purpose_code"):
+            gemini_code = fields.get("_gemini_purpose_code", "")
+            for i, row in enumerate(group_rows):
+                if row["code"] == gemini_code:
+                    current_code = gemini_code
+                    code_idx = i
+                    break
+        
+        # Standard logic to find code index
+        if not current_code:
+            for i, row in enumerate(group_rows):
+                if row["code"] == current_code or row["code"] in fields.get("RevPurCode", ""):
+                    code_idx = i
+                    break
         selected_code_label = st.selectbox(
             "Purpose Code - Description",
             code_labels or [""],
@@ -426,7 +456,7 @@ def render_form() -> Dict[str, str]:
         invoice_default = _parse_date(fields.get("_invoice_date", "")) or date.today()
         invoice_date = st.date_input("Invoice Date", value=invoice_default)
         fields["_invoice_date"] = invoice_date.isoformat()
-        prop_date = invoice_date + timedelta(days=PROPOSED_DATE_OFFSET)
+        prop_date = date.today() + timedelta(days=PROPOSED_DATE_OFFSET)
         fields["PropDateRem"] = prop_date.isoformat()
         st.text_input("Proposed Date of Remittance (auto)", value=fields["PropDateRem"], disabled=True)
         st.caption(f"Display format: {_format_dd_mmm_yyyy(prop_date)}")

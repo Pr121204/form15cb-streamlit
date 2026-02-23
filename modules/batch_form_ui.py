@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Dict, List
-from datetime import date
+from datetime import date, timedelta
 
 import streamlit as st
 
@@ -9,6 +9,7 @@ from modules.form15cb_constants import (
     CA_FIRM_OPTIONS,
     MODE_NON_TDS,
     MODE_TDS,
+    PROPOSED_DATE_OFFSET_DAYS,
     REMITTEE_STATE,
     REMITTEE_ZIP_CODE,
 )
@@ -34,6 +35,26 @@ def _dtaa_rate_percent(raw: str) -> str:
         return str(float(str(raw)) * 100).rstrip("0").rstrip(".")
     except Exception:
         return ""
+
+
+def _purpose_group_for_code(purpose_grouped: Dict[str, List[Dict[str, str]]], purpose_code: str) -> str:
+    code = str(purpose_code or "").strip().upper()
+    if not code:
+        return ""
+    for group_name, rows in purpose_grouped.items():
+        for row in rows:
+            if str(row.get("purpose_code") or "").strip().upper() == code:
+                return group_name
+    return ""
+
+
+def _selectbox_index_from_value(options: List[str], value: str) -> int:
+    if not options:
+        return 0
+    try:
+        return options.index(value)
+    except ValueError:
+        return 0
 
 
 def _apply_remitter_match(state: Dict[str, object], remitter_name: str) -> None:
@@ -228,10 +249,10 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             disabled=True,
         )
         try:
-            # Prefer any existing form value, otherwise derive from extracted invoice date
-            prop_default = date.fromisoformat(str(form.get("PropDateRem") or extracted.get("invoice_date_iso") or ""))
+            # Prefer any existing form value, otherwise default to today + configured offset.
+            prop_default = date.fromisoformat(str(form.get("PropDateRem") or ""))
         except Exception:
-            prop_default = date.today()
+            prop_default = date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)
         form["PropDateRem"] = st.date_input(
             "Proposed Date of Remittance",
             value=prop_default,
@@ -266,12 +287,26 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
 
     nature_opts = [n for n in load_nature_options() if n.get("code") != "-1"]
     nature_labels = ["SELECT"] + [f"{n['code']} - {n['label']}" for n in nature_opts]
-    n_idx = 0
-    for i, n in enumerate(nature_opts):
-        if str(form.get("NatureRemCategory") or "") == str(n.get("code") or ""):
-            n_idx = i + 1
-            break
-    nature_sel = st.selectbox("Nature of Remittance", nature_labels or [""], index=n_idx if nature_labels else 0, key=f"{invoice_id}_nature")
+    nature_label_to_code = {str(n.get("label") or "").strip(): str(n.get("code") or "").strip() for n in nature_opts}
+    nature_key = f"{invoice_id}_nature"
+    current_nature = str(form.get("NatureRemCategory") or "").strip()
+    if not current_nature and extracted.get("nature_of_remittance"):
+        mapped_nature = nature_label_to_code.get(str(extracted.get("nature_of_remittance") or "").strip(), "")
+        if mapped_nature:
+            current_nature = mapped_nature
+            form["NatureRemCategory"] = mapped_nature
+    desired_nature_label = "SELECT"
+    if current_nature:
+        for n in nature_opts:
+            if str(n.get("code") or "").strip() == current_nature:
+                desired_nature_label = f"{n['code']} - {n['label']}"
+                break
+        if desired_nature_label == "SELECT":
+            logger.warning("ui_nature_stale_value invoice_id=%s nature_code=%s", invoice_id, current_nature)
+    n_idx = _selectbox_index_from_value(nature_labels, desired_nature_label)
+    if nature_key in st.session_state and str(st.session_state.get(nature_key)) not in nature_labels:
+        del st.session_state[nature_key]
+    nature_sel = st.selectbox("Nature of Remittance", nature_labels or [""], index=n_idx if nature_labels else 0, key=nature_key)
     if nature_sel and nature_sel != "SELECT":
         form["NatureRemCategory"] = nature_sel.split(" - ", 1)[0].strip()
     if str(form.get("NatureRemCategory") or "") == "16.99":
@@ -283,19 +318,38 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
 
     purpose_grouped = load_purpose_grouped()
     groups = ["SELECT"] + sorted(purpose_grouped.keys())
-    g_idx = 0
-    if form.get("_purpose_group") and form.get("_purpose_group") in purpose_grouped:
-        g_idx = groups.index(form["_purpose_group"]) if form["_purpose_group"] in groups else 0
-    group_sel = st.selectbox("Purpose Group", groups or [""], index=g_idx if groups else 0, key=f"{invoice_id}_pur_group")
+    group_key = f"{invoice_id}_pur_group"
+    code_key = f"{invoice_id}_pur_code"
+    current_code = str(form.get("_purpose_code") or extracted.get("purpose_code") or "").strip().upper()
+    current_group = str(form.get("_purpose_group") or extracted.get("purpose_group") or "").strip()
+    if not current_group and current_code:
+        current_group = _purpose_group_for_code(purpose_grouped, current_code)
+        if current_group:
+            form["_purpose_group"] = current_group
+    if current_group and current_group not in purpose_grouped:
+        logger.warning("ui_purpose_group_stale_value invoice_id=%s purpose_group=%s", invoice_id, current_group)
+        current_group = ""
+    desired_group = current_group if current_group else "SELECT"
+    g_idx = _selectbox_index_from_value(groups, desired_group)
+    if group_key in st.session_state and str(st.session_state.get(group_key)) not in groups:
+        del st.session_state[group_key]
+    group_sel = st.selectbox("Purpose Group", groups or [""], index=g_idx if groups else 0, key=group_key)
     form["_purpose_group"] = group_sel if group_sel != "SELECT" else ""
     rows = purpose_grouped.get(group_sel if group_sel != "SELECT" else "", [])
     row_labels = ["SELECT"] + [f"{r['purpose_code']} - {r['description']}" for r in rows]
-    r_idx = 0
-    for i, r in enumerate(rows):
-        if r.get("purpose_code") == form.get("_purpose_code"):
-            r_idx = i + 1
-            break
-    row_sel = st.selectbox("Purpose Code", row_labels or [""], index=r_idx if row_labels else 0, key=f"{invoice_id}_pur_code")
+    code_choices = {str(r.get("purpose_code") or "").strip().upper(): f"{r['purpose_code']} - {r['description']}" for r in rows}
+    desired_code_label = code_choices.get(current_code, "SELECT")
+    if current_code and desired_code_label == "SELECT":
+        logger.warning(
+            "ui_purpose_code_not_in_group invoice_id=%s purpose_code=%s purpose_group=%s",
+            invoice_id,
+            current_code,
+            group_sel,
+        )
+    r_idx = _selectbox_index_from_value(row_labels, desired_code_label)
+    if code_key in st.session_state and str(st.session_state.get(code_key)) not in row_labels:
+        del st.session_state[code_key]
+    row_sel = st.selectbox("Purpose Code", row_labels or [""], index=r_idx if row_labels else 0, key=code_key)
     if row_sel and row_sel != "SELECT":
         p_code = row_sel.split(" - ", 1)[0]
         form["_purpose_code"] = p_code
@@ -306,6 +360,8 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             gr = str(gr_val) if gr_val is not None else "00"
             form["RevPurCategory"] = f"RB-{gr}.1"
             form["RevPurCode"] = f"RB-{gr}.1-{p_code}"
+    else:
+        form["_purpose_code"] = ""
 
     mode_is_tds = mode == MODE_TDS
     form["TaxPayGrossSecb"] = st.selectbox("Grossed Up Tax", ["N", "Y"], index=0 if str(form.get("TaxPayGrossSecb", "N")) != "Y" else 1, key=f"{invoice_id}_gross")
@@ -366,14 +422,14 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
         st.markdown("#### TDS Computation")
         d1, d2, d3 = st.columns(3)
         with d1:
-            st.text_input("Tax liability under IT Act (INR)", value=str(form.get("TaxLiablIt") or ""), disabled=True, key=f"{invoice_id}_tax_liab_it")
-            st.text_input("Taxable income per DTAA (INR)", value=str(form.get("TaxIncDtaa") or ""), disabled=True, key=f"{invoice_id}_tax_inc_dtaa")
-            st.text_input("Tax liability per DTAA (INR)", value=str(form.get("TaxLiablDtaa") or ""), disabled=True, key=f"{invoice_id}_tax_liab_dtaa")
+            st.text_input("Tax liability under IT Act (INR)", disabled=True, key=f"{invoice_id}_tax_liab_it")
+            st.text_input("Taxable income per DTAA (INR)", disabled=True, key=f"{invoice_id}_tax_inc_dtaa")
+            st.text_input("Tax liability per DTAA (INR)", disabled=True, key=f"{invoice_id}_tax_liab_dtaa")
         with d2:
-            st.text_input("TDS Amount (foreign)", value=str(form.get("AmtPayForgnTds") or ""), disabled=True, key=f"{invoice_id}_amt_tds_fcy")
-            st.text_input("TDS Amount (INR)", value=str(form.get("AmtPayIndianTds") or ""), disabled=True, key=f"{invoice_id}_amt_tds_inr")
-            st.text_input("TDS Rate % (Section B)", value=str(form.get("RateTdsSecB") or ""), disabled=True, key=f"{invoice_id}_rate_tds_secb")
+            st.text_input("TDS Amount (foreign)", disabled=True, key=f"{invoice_id}_amt_tds_fcy")
+            st.text_input("TDS Amount (INR)", disabled=True, key=f"{invoice_id}_amt_tds_inr")
+            st.text_input("TDS Rate % (Section B)", disabled=True, key=f"{invoice_id}_rate_tds_secb")
         with d3:
-            st.text_input("Actual remittance after TDS (foreign)", value=str(form.get("ActlAmtTdsForgn") or ""), disabled=True, key=f"{invoice_id}_actl_amt_tds_forgn")
-            st.text_area("Basis of determining tax", value=str(form.get("BasisDeterTax") or ""), disabled=True, key=f"{invoice_id}_basis_tax", height=80)
+            st.text_input("Actual remittance after TDS (foreign)", disabled=True, key=f"{invoice_id}_actl_amt_tds_forgn")
+            st.text_area("Basis of determining tax", disabled=True, key=f"{invoice_id}_basis_tax", height=80)
     return state

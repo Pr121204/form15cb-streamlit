@@ -8,7 +8,7 @@ from collections import Counter
 from typing import Dict, List, Literal, Optional, Tuple, TypedDict
 
 
-DEFAULT_SAMPLE_ZIP_PATH = r"C:\Users\HP\Downloads\52-2025.zip"
+DEFAULT_SAMPLE_ZIP_PATH = ""
 DECLARATION = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
 PARENTS_FOR_PROFILE = (
     "RemitteeAddrs",
@@ -227,4 +227,3 @@ def strict_shape_compare(xml_a: str, xml_b: str) -> ShapeDiff:
     walk(root_a, root_b, "")
     counts = dict(Counter(str(m.get("type", "")) for m in mismatches))
     return {"ok": not mismatches, "mismatches": mismatches, "counts": counts}
-

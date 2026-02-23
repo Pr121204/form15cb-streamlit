@@ -7,7 +7,6 @@ from typing import Dict, Iterable
 
 from config.settings import OUTPUT_FOLDER
 from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
-from modules.xml_shape_normalizer import normalize_xml_to_reference_shape, select_reference_shape
 
 
 def escape_xml(value):
@@ -88,12 +87,6 @@ def generate_xml_content(xml_fields: Dict[str, str], mode: str = MODE_TDS, templ
     if mode == MODE_NON_TDS:
         for tag in ("RateTdsSecbFlg", "RateTdsSecB", "DednDateTds"):
             xml_text = _remove_tag_block(xml_text, tag)
-    try:
-        ref = select_reference_shape(xml_text)
-        xml_text = normalize_xml_to_reference_shape(xml_text, ref["xml_text"])
-    except Exception:
-        # Fail-safe blocking is enforced by app parity gate if sample source is unavailable.
-        pass
     return xml_text
 
 

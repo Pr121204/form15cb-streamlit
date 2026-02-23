@@ -18,7 +18,6 @@ from modules.logger import get_logger
 from modules.master_data import validate_bsr_code, validate_dtaa_rate, validate_pan
 from modules.ocr_engine import extract_text_from_image_file
 from modules.pdf_reader import extract_text_from_pdf
-from modules.sample_parity_checker import DEFAULT_SAMPLE_ZIP_PATH, check_xml_against_samples
 from modules.xml_generator import (
     build_xml_fields_by_mode,
     generate_xml_content,
@@ -257,22 +256,6 @@ if invoice_states:
                     logger.exception("xml_generate_failed invoice_id=%s", invoice_id)
                     st.error(f"XML generation failed: {exc}")
                     continue
-                parity = check_xml_against_samples(xml_content)
-                if parity.get("blocking"):
-                    st.error("Sample parity check failed. XML download blocked to avoid Java utility rejection.")
-                    for msg in parity.get("issues", []):
-                        st.error(msg)
-                    if parity.get("warnings"):
-                        for msg in parity.get("warnings", []):
-                            st.warning(msg)
-                    st.caption(f"Sample source: {DEFAULT_SAMPLE_ZIP_PATH}")
-                    continue
-                if parity.get("warnings"):
-                    for msg in parity.get("warnings", []):
-                        st.warning(msg)
-                    ref_name = str(parity.get("reference_sample") or "").strip()
-                    if ref_name:
-                        st.caption(f"Closest sample reference: {ref_name}")
                 file_stub = str(state["extracted"].get("invoice_number") or state["meta"]["invoice_id"]).replace(" ", "_")
                 xml_filename = f"form15cb_{file_stub}.xml"
                 st.download_button(

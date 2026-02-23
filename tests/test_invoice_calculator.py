@@ -10,6 +10,7 @@ class TestInvoiceCalculator(unittest.TestCase):
     def test_format_dotted_date(self) -> None:
         self.assertEqual(format_dotted_date("2023-05-15"), "15.05.2023")
         self.assertEqual(format_dotted_date("15/05/2023"), "15.05.2023")
+        self.assertEqual(format_dotted_date("15.05.2023"), "15.05.2023")
 
     def test_recompute_tds(self) -> None:
         state = {
@@ -51,6 +52,7 @@ class TestInvoiceCalculator(unittest.TestCase):
         }
         xmlf = invoice_state_to_xml_fields(state)
         self.assertEqual(xmlf["RemitteeZipCode"], REMITTEE_ZIP_CODE)
+        self.assertIn("INVOICE NO. 1", xmlf["NameRemittee"])
         self.assertIn("DT 15.05.2023", xmlf["NameRemittee"])
 
 

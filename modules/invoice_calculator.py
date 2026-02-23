@@ -70,6 +70,19 @@ def _fmt_num(n: Optional[float]) -> str:
     return str(int(n)) if float(n).is_integer() else f"{n:.2f}".rstrip("0").rstrip(".")
 
 
+def _build_name_remittee(beneficiary: str, invoice_no: str, dotted_date: str) -> str:
+    b = str(beneficiary or "").strip()
+    inv = str(invoice_no or "").strip()
+    d = str(dotted_date or "").strip()
+    if b and inv and d:
+        return f"{b} INVOICE NO. {inv} DT {d}"
+    if b and inv:
+        return f"{b} INVOICE NO. {inv}"
+    if b and d:
+        return f"{b} DT {d}"
+    return b
+
+
 def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     meta = state.setdefault("meta", {})
     extracted = state.setdefault("extracted", {})
@@ -87,9 +100,7 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     if not form.get("AmtPayForgnRem"):
         form["AmtPayForgnRem"] = _fmt_num(fcy)
 
-    invoice_date_iso = str(extracted.get("invoice_date_iso") or "")
-    invoice_date = _parse_date(invoice_date_iso) or date.today()
-    prop = invoice_date + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)
+    prop = date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)
     form.setdefault("PropDateRem", prop.isoformat())
 
     form["RemitteeZipCode"] = REMITTEE_ZIP_CODE
@@ -185,11 +196,17 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
     remitter_address = str(extracted.get("remitter_address") or form.get("RemitterAddress", "")).strip()
     beneficiary = str(form.get("NameRemitteeInput") or extracted.get("beneficiary_name") or form.get("NameRemittee", "")).strip()
     invoice_no = str(extracted.get("invoice_number") or "").strip()
-    dotted = format_dotted_date(str(extracted.get("invoice_date_iso") or extracted.get("invoice_date_raw") or ""))
+    dotted = format_dotted_date(
+        str(
+            extracted.get("invoice_date_iso")
+            or extracted.get("invoice_date_display")
+            or extracted.get("invoice_date_raw")
+            or ""
+        )
+    )
 
     name_remitter = f"{remitter_name}. {remitter_address}".strip(". ").strip()
-    # Align with accepted XML samples: "INVOICE NO" (without trailing dot).
-    name_remittee = f"{beneficiary} INVOICE NO {invoice_no} DT {dotted}".strip()
+    name_remittee = _build_name_remittee(beneficiary, invoice_no, dotted)
 
     out: Dict[str, str] = {
         "SWVersionNo": SW_VERSION_NO,
