@@ -22,6 +22,24 @@ def escape_xml(value):
     )
 
 
+def normalize_numeric_value(value: str) -> str:
+    """Convert numeric strings like '5355.0' or '535.50' to '5355' or '535.5'"""
+    if not value or not isinstance(value, str):
+        return value
+    try:
+        # Try to parse as float
+        num = float(value)
+        # Return as integer if whole number, otherwise format with 2 decimals and strip trailing zeros
+        if num == int(num):
+            return str(int(num))
+        else:
+            formatted = f"{num:.2f}".rstrip("0").rstrip(".")
+            return formatted
+    except (ValueError, TypeError):
+        # Not a numeric value, return as-is
+        return value
+
+
 def validate_required_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> None:
     required = ["SWVersionNo", "FormName", "AssessmentYear", "RemitterPAN", "NameRemitter", "CurrencySecbCode"]
     missing = [k for k in required if not str(fields.get(k, "")).strip()]
@@ -47,7 +65,10 @@ def _fill_template(fields: Dict[str, str], template_path: str) -> str:
     with open(template_path, "r", encoding="utf8") as f:
         xml_content = f.read()
     for field_name, field_value in fields.items():
-        xml_content = xml_content.replace("{{" + field_name + "}}", escape_xml(field_value))
+        # Normalize numeric values first, then escape for XML
+        normalized_value = normalize_numeric_value(field_value)
+        escaped_value = escape_xml(normalized_value)
+        xml_content = xml_content.replace("{{" + field_name + "}}", escaped_value)
     return re.sub(r"\{\{[^}]+\}\}", "", xml_content)
 
 

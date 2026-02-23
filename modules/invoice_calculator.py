@@ -277,4 +277,5 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
     out.update(CA_DEFAULTS)
     out["NameFirmAcctnt"] = str(form.get("NameFirmAcctnt") or CA_DEFAULTS["NameFirmAcctnt"])
     out["NameAcctnt"] = str(form.get("NameAcctnt") or CA_DEFAULTS["NameAcctnt"])
+    
     return out
