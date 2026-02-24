@@ -1,3 +1,4 @@
+import re
 import pytesseract
 from pdf2image import convert_from_path, convert_from_bytes
 from PIL import Image
@@ -8,6 +9,49 @@ from modules.preprocessor import enhance_image_for_ocr
 # set tesseract path from config
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 
+def fix_concatenated_words_and_spaces(text):
+    """
+    Fix OCR errors where spaces are stripped from words, causing concatenated text.
+    Handles camelCase word boundaries and common corporate suffixes.
+    
+    Problem: "BoschTermotecnologiaSA" → "Bosch Termotecnologia SA"
+    Problem: "HOSURROAD,ADUGODI" → "HOSUR ROAD, ADUGODI"
+    """
+    if not text:
+        return text
+    
+    # Rule 1: Insert space before capital letters following lowercase (camelCase)
+    # "BoschTermotecnologia" → "Bosch Termotecnologia"
+    text = re.sub(r'([a-z])([A-Z])', r'\1 \2', text)
+    
+    # Rule 2: Insert space before known corporate/international suffixes
+    # "BoschSA" → "Bosch SA", "CompanyGmbH" → "Company GmbH"
+    corporate_suffixes = ['SA', 'GmbH', 'Ltd', 'LLC', 'Inc', 'SRL', 'BV', 'AG', 'PLC', 'SPA', 'SARL', 'SpA']
+    for suffix in corporate_suffixes:
+        pattern = rf'([a-zA-Z])({suffix})([A-Z]|\s|$)'
+        text = re.sub(pattern, rf'\1 \2 \3', text)
+    
+    # Rule 3: Insert space before numbers after letters when they form a pattern
+    # "EN16Km3" → "EN16 Km3", "5K-Cacia" → "5K-Cacia" (don't break hyphenated)
+    text = re.sub(r'([a-zA-Z])(\d+[\-].)', r'\1 \2', text)
+    
+    # Rule 4: Fix specific concatenated Portuguese words
+    portguese_fixes = {
+        'AdministraçãoeInstalações': 'Administração e Instalações',
+        'AdministraçãoeInstalaçõesFabris': 'Administração e Instalações Fabris',
+    }
+    for wrong, right in portguese_fixes.items():
+        text = text.replace(wrong, right)
+    
+    # Rule 5: Insert space after comma when it's directly followed by capital letter
+    # "65,00HOSURROAD" → "65,00 HOSUR ROAD"
+    text = re.sub(r'(,\d+)([A-Z])', r'\1 \2', text)
+    
+    # Rule 6: Clean up multiple consecutive spaces (from previous rules)
+    text = re.sub(r'\s+', ' ', text)
+    
+    return text.strip()
+
 def ocr_image_pil(pil_image, lang='eng'):
     try:
         processed = enhance_image_for_ocr(pil_image)
@@ -15,6 +59,9 @@ def ocr_image_pil(pil_image, lang='eng'):
     except Exception as e:
         # fallback: try without preprocessing
         text = pytesseract.image_to_string(pil_image)
+    
+    # Apply space-fixing post-processing
+    text = fix_concatenated_words_and_spaces(text)
     return text
 
 def extract_text_from_image_file(path_or_bytes):

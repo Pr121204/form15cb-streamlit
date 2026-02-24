@@ -102,10 +102,86 @@ PROMPT = """Extract the following fields from this invoice as JSON only, no expl
   "purpose_code": "best matching RBI purpose code from the group above - return EXACT code (e.g. S1023, S0014, S1005) or empty string if unsure"
 }
 Return only valid JSON. If a field cannot be found, return an empty string for it.
-Important:
-- invoice_number must come from labels like "Invoice No", "Invoice Number", or "Reference Number".
-- invoice_date must come from invoice date labels and must preserve the printed date value.
-- For nature_of_remittance, purpose_group, purpose_code: return your best matching suggestion from the lists even if not 100% certain. Always return something unless the invoice gives absolutely no clue. Prefer returning a close match over returning empty.
+
+CRITICAL INSTRUCTIONS:
+
+1. MULTILINGUAL CONTEXT:
+   This invoice may contain text in a mix of English and local languages. We receive invoices from
+   approximately 60 countries from these regions:
+   - Europe: Portugal, Germany, France, Spain, Italy, Netherlands, Belgium, Austria, Switzerland, 
+     Sweden, Norway, Denmark, Poland, Czech Republic, Hungary, Romania, Bulgaria, Greece, Finland
+   - Asia: Japan, China, South Korea, Singapore, Malaysia, Thailand, Vietnam, Taiwan, Indonesia
+   - Americas: Brazil, Mexico, Argentina, Colombia, Chile
+   - Middle East: UAE, Saudi Arabia, Israel, Turkey
+   - Others: Australia, South Africa, Canada, New Zealand
+   
+   Key multilingual invoice terms you may encounter:
+   - "Fatura"/"Factura" (PT/ES) = Invoice
+   - "Rechnung" (DE) = Invoice
+   - "Facture" (FR) = Invoice
+   - "Fattura" (IT) = Invoice
+   - "Sede" (PT/ES) = Headquarters/Office Address
+   - "NIPC"/"NIF" (PT) = Portuguese Tax ID
+   - "Capital social" (PT/ES) = Share Capital
+   - "ATCUD" (PT) = Portuguese Invoice Authentication Code (NOT invoice number)
+   - "Doc No." / "Nr." / "N°" / "Nº" / "Número" = Invoice Number
+   - "Doc Date" / "Datum" / "Data" = Invoice Date
+
+2. EUROPEAN NUMBER FORMAT:
+   Some invoices use European number format where:
+   - Comma (,) is the DECIMAL separator: "65,00" means EUR 65.00 (not €65,000)
+   - Period (.) is the THOUSANDS separator: "1.000" means one thousand
+   - When you see "65,000" in a EUROPEAN invoice, it means 65.000 (sixty-five, not sixty-five thousand)
+   
+   CRITICAL: Always extract the NET TOTAL invoice amount (not line items).
+   Look for keywords: "Net", "Total", "Invoice amount", "Amount due", "Total due", "Montant"
+   Return the final invoice total as a pure number (e.g., "65.00" not "65,00").
+
+3. PORTUGAL-SPECIFIC FIELDS:
+   ATCUD (Portuguese Invoice Authentication Code) is a government-generated code like "JFXFDRRY-2881728917".
+   - ATCUD is NOT the invoice number.
+   - The invoice number appears separately after "Doc No." or "Número de Documento".
+   - Never extract ATCUD as the invoice_number.
+
+4. INVOICE NUMBER EXTRACTION:
+   The invoice_number must come from explicit labels such as:
+   - "Invoice No", "Invoice Number", "Invoice #", "Inv No", "Reference Number", "Ref No", "Nº", "Número".
+   - Do NOT extract: ATCUD codes, PO numbers, order IDs, or authentication codes.
+   - For Portuguese invoices, skip "ATCUD" and look for "Doc No." or similar.
+
+5. CRITICAL RULE: INDIAN OUTWARD REMITTANCE ROLE ASSIGNMENT
+   ⚠️ THIS IS THE MOST IMPORTANT RULE FOR THIS FORM ⚠️
+   
+   This form is for INDIAN COMPANIES making outward remittance payments to foreign beneficiaries.
+   
+   THUS:
+   - remitter_name MUST BE an INDIAN entity (the company paying/sending money)
+   - beneficiary_name MUST BE a FOREIGN entity (the company receiving/being paid)
+   
+   HOW TO IDENTIFY:
+   - Look for the address that contains "INDIA" or Indian city names: 
+     Mumbai, Bangalore, Bengaluru, New Delhi, Delhi, Chennai, Hyderabad, Jaipur, Pune, 
+     Chandigarh, Kolkata, Ahmedabad, Agra, Indore, Surat, Nashik, Vadodara, Nagpur
+   → This entity (with INDIA address) is ALWAYS the remitter
+   
+   - The other entity (with non-Indian address like Portugal, Germany, USA, etc.)
+   → This is ALWAYS the beneficiary
+   
+   DO NOT assume the entity appearing in the invoice letterhead (top) is either the remitter or 
+   beneficiary. IDENTIFY BASED ON ADDRESS LOCATION:
+   - Indian address → remitter (they are paying)
+   - Foreign address → beneficiary (they are being paid)
+   
+   SPECIAL NOTE ON LAYOUT:
+   Foreign supplier invoices often have the supplier's details at the top (letterhead).
+   The buyer's (Indian company's) details often appear lower on the invoice (bill-to section).
+   DO NOT let letter head position confuse role assignment. ALWAYS assign by address location.
+   
+6. BEST EFFORT:
+
+   - For nature_of_remittance, purpose_group, purpose_code: return your best matching suggestion even if 
+     not 100% certain. Always return something unless the invoice gives absolutely no clue.
+   - Prefer returning a close match over returning empty.
 """
 
 
@@ -176,8 +252,80 @@ def _extract_json(text: str) -> Dict[str, str]:
         return {}
 
 
+def _normalize_european_amount(amount_str: str) -> str:
+    """
+    Normalize European number format to standard decimal format.
+    
+    Handles:
+    - "65,00" (European: comma decimal) → "65.00"
+    - "1.234,56" (European: period thousands, comma decimal) → "1234.56"
+    - "1,234.56" (US: comma thousands, period decimal) → "1234.56"
+    - "65,000" (ambiguous: could be thousands or decimal in European) → "65.00" (context-based)
+    
+    Note: This only handles 2 decimal places for now (common for invoices).
+    """
+    if not amount_str:
+        return ""
+    
+    # Strip currency symbols and spaces
+    s = str(amount_str).strip()
+    s = re.sub(r'[^\d.,]', '', s)  # Remove currency symbols, spaces, etc.
+    
+    if not s:
+        return ""
+    
+    # If there are both . and ,
+    if '.' in s and ',' in s:
+        dot_pos = s.rfind('.')
+        comma_pos = s.rfind(',')
+        
+        if dot_pos > comma_pos:
+            # Pattern: "1,234.56" → US format (already correct)
+            # Just remove comma
+            return s.replace(',', '')
+        else:
+            # Pattern: "1.234,56" → European format
+            # Remove dots (thousands sep), replace comma with dot (decimal sep)
+            s = s.replace('.', '').replace(',', '.')
+            return s
+    
+    # Only comma present
+    if ',' in s:
+        # Could be European decimal: "65,00"
+        # Or European thousands: "65,000" (if 3 digits after comma)
+        parts = s.split(',')
+        
+        if len(parts) == 2:
+            # Single comma - check if it looks like a decimal
+            integer_part = parts[0]
+            decimal_part = parts[1]
+            
+            # If decimal part has exactly 2 digits (common invoice pattern), treat as decimal
+            if len(decimal_part) == 2 or len(decimal_part) <= 3:
+                # Likely European decimal separator
+                return s.replace(',', '.')
+            elif len(decimal_part) == 3 and decimal_part.isdigit():
+                # Could be thousands separator (1,000)
+                # But in European context with 2-decimal items, likely NOT thousands
+                # Default to decimal for conservative (smaller) amounts
+                return s.replace(',', '.')
+        
+        # Fallback: treat comma as decimal
+        return s.replace(',', '.')
+    
+    # Only period (or neither)
+    return s
+
+
 def _normalize_amount(raw: str) -> str:
-    return re.sub(r"[^0-9.]", "", str(raw or ""))
+    """
+    Normalize amount from invoice (handles both European and US formats).
+    Returns a string representation of the decimal number.
+    """
+    # First convert European format to standard decimal
+    normalized = _normalize_european_amount(str(raw or ""))
+    # Then strip any remaining non-numeric characters (except decimal point)
+    return re.sub(r"[^0-9.]", "", normalized)
 
 
 def _normalize_company_name(name: str) -> str:
@@ -188,6 +336,59 @@ def _normalize_company_name(name: str) -> str:
     n = re.sub(r"Bosch[\.\s]*lIO", "Bosch.IO", n, flags=re.IGNORECASE)
     n = re.sub(r"\s+", " ", n).strip()
     return n
+
+
+def _detect_country_signals_from_text(text: str) -> str:
+    """
+    Scan full OCR text for country-specific signals that are unique to certain countries.
+    Returns the detected country name if found, otherwise empty string.
+    
+    This is mainly useful for countries with unique government codes or terminology.
+    """
+    if not text:
+        return ""
+    
+    text_upper = str(text or "").upper()
+    
+    # Portugal-specific signals (extremely unique)
+    # NIPC is only Portuguese tax ID, ATCUD is only Portuguese invoice code
+    portugal_strong_signals = ["NIPC", "ATCUD"]
+    for signal in portugal_strong_signals:
+        if signal in text_upper:
+            return "PORTUGAL"
+    
+    # Portugal secondary signals (city names + Portuguese words)
+    if "FATURA" in text_upper:  # Portuguese for "Invoice"
+        return "PORTUGAL"
+    
+    portuguese_cities = ["LISBOA", "AVEIRO", "COVILHA", "BRAGA", "PORTO", "MADEIRA", "ACORES"]
+    portuguese_location_keywords = ["SEDE", "CAPITAL SOCIAL", "PRODUCAO"]
+    
+    if any(city in text_upper for city in portuguese_cities + portuguese_location_keywords):
+        # Double-check it's not just a company name by looking for context
+        if any(sig in text_upper for sig in ["FATURA", "PORTUGAL", "PT"]):
+            return "PORTUGAL"
+    
+    # Germany-specific signals
+    if re.search(r'\bDE\s*-?\s*\d{5}\b', text, re.IGNORECASE):  # German ZIP code format
+        return "GERMANY"
+    
+    # Spain-specific signals
+    if re.search(r'\bES\s*-?\s*\d{5}\b', text, re.IGNORECASE):
+        return "SPAIN"
+    
+    # France-specific signals
+    if re.search(r'\bFR\s*-?\s*\d{5}\b', text, re.IGNORECASE):
+        return "FRANCE"
+    
+    # More general country markers
+    if "UNITED KINGDOM" in text_upper or "UNITED STATES" in text_upper:
+        if "UNITED KINGDOM" in text_upper:
+            return "UNITED KINGDOM"
+        else:
+            return "UNITED STATES OF AMERICA"
+    
+    return ""
 
 
 def parse_invoice_date(raw: str) -> tuple[str, str]:
@@ -339,6 +540,13 @@ def _enrich_addresses_from_text(text: str, extracted: Dict[str, str]) -> Dict[st
             out["beneficiary_country_text"] = "Germany"
         elif re.search(r"\bDE\s*-\s*\d{5}\b", t, flags=re.IGNORECASE):
             out["beneficiary_country_text"] = "Germany"
+    
+    # Scan full text for unique country signals (Portugal NIPC/ATCUD, etc.)
+    if not str(out.get("beneficiary_country_text") or "").strip():
+        detected_country = _detect_country_signals_from_text(t)
+        if detected_country:
+            out["beneficiary_country_text"] = detected_country
+            logger.info("country_signal_detected country=%s", detected_country)
 
     # Remitter (Indian) address pattern from ship/services block with 6-digit PIN.
     if not str(out.get("remitter_address") or "").strip():

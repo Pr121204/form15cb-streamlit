@@ -254,15 +254,42 @@ def get_bank_options() -> List[Tuple[str, str]]:
     return sorted(rows, key=lambda x: x[0])
 
 
-def infer_country_from_beneficiary_name(name: str) -> str:
+def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
     """
     Infer country code for beneficiary when explicit selection is missing.
-    Uses deterministic heuristics only.
+    Uses deterministic heuristics based on company name and address.
+    
+    Args:
+        name: Beneficiary company name
+        address: Optional address string to scan for country indicators
+    
+    Returns:
+        Country code (e.g., "49" for Germany, "175" for Portugal) or empty string
     """
-    n = _normalize(name)
+    combined = f"{name} {address}".strip()
+    n = _normalize(combined)
     if not n:
         return ""
-
+    
+    # Portugal-specific indicators (high confidence)
+    portugal_indicators = [
+        "NIPC",           # Portuguese tax ID
+        "ATCUD",          # Portuguese invoice authentication code
+        "PORTUGAL",
+        "LISBOA",
+        "AVEIRO",
+        "COVILHA",
+        "BRAGA",
+        "PORTO",
+        "MADEIRA",
+        "ACORES",
+    ]
+    for indicator in portugal_indicators:
+        if indicator in n:
+            code = resolve_country_code("PORTUGAL")
+            if code:
+                return code
+    
     # Direct country token match from DTAA master.
     dtaa = load_dtaa_map()
     for key, rec in dtaa.items():
@@ -275,10 +302,15 @@ def infer_country_from_beneficiary_name(name: str) -> str:
         " GMBH": "GERMANY",
         " S L": "SPAIN",
         " SP Z O O": "POLAND",
-        " PLC": "UK",
+        " PLC": "UNITED KINGDOM",
         " LLC": "USA",
+        " SA": "SPAIN",  # Common Spanish suffix
+        " BV": "NETHERLANDS",
+        " AG": "GERMANY",  # Also Swiss
     }
     for suffix, country in suffix_country.items():
         if n.endswith(suffix) or f"{suffix} " in n:
-            return resolve_country_code(country)
+            code = resolve_country_code(country)
+            if code:
+                return code
     return ""

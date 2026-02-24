@@ -122,11 +122,12 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
         form["NameRemitterInput"] = remitter_name
         _apply_remitter_match(state, remitter_name)
         lock = form.get("_lock_pan_bank_branch_bsr") == "1"
+        # Allow PAN to be editable even when pre-filled/matched
         form["RemitterPAN"] = st.text_input(
             "PAN/TAN",
             key=f"{invoice_id}_pan",
             value=str(form.get("RemitterPAN") or ""),
-            disabled=lock,
+            disabled=False,
         )
         form["RemitterAddress"] = st.text_input(
             "Remitter Address (as per invoice, appended to name in XML)",
@@ -154,8 +155,9 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             key=f"{invoice_id}_remittee_town",
             value=str(form.get("RemitteeTownCityDistrict") or ""),
         )
-        st.text_input("State", value=REMITTEE_STATE, disabled=True, key=f"{invoice_id}_remittee_state")
-        st.text_input("ZIP Code", value=REMITTEE_ZIP_CODE, disabled=True, key=f"{invoice_id}_remittee_zip")
+        # Make state and zip editable so users can override defaults if needed
+        st.text_input("State", value=REMITTEE_STATE, disabled=False, key=f"{invoice_id}_remittee_state")
+        st.text_input("ZIP Code", value=REMITTEE_ZIP_CODE, disabled=False, key=f"{invoice_id}_remittee_zip")
 
     st.markdown("#### Section B - Remittance")
     b1, b2, b3 = st.columns(3)
@@ -242,11 +244,12 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             key=f"{invoice_id}_fcy_amt",
             value=str(form.get("AmtPayForgnRem") or ""),
         )
+        # Allow INR amount to be editable so CA can correct computed conversion
         st.text_input(
             "Amount in Indian ₹",
             key=f"{invoice_id}_inr_amt",
             value=str(form.get("AmtPayIndRem") or ""),
-            disabled=True,
+            disabled=False,
         )
         try:
             # Prefer any existing form value, otherwise default to today + configured offset.
@@ -268,7 +271,8 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
         if code == cur_bank_code:
             b_idx = i
             break
-    bank_sel = st.selectbox("Name of Bank", bank_labels, index=b_idx, key=f"{invoice_id}_bank_dropdown", disabled=bank_lock)
+    # Always allow bank selection/editing
+    bank_sel = st.selectbox("Name of Bank", bank_labels, index=b_idx, key=f"{invoice_id}_bank_dropdown")
     if bank_sel != "OTHER BANK":
         bank_name, bank_code = bank_sel.rsplit("(", 1)
         form["NameBankDisplay"] = bank_name.strip()
@@ -278,12 +282,13 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             "Other Bank (manual)",
             key=f"{invoice_id}_bank_display",
             value=str(form.get("NameBankDisplay") or ""),
-            disabled=bank_lock,
+            disabled=False,
         )
         if not bank_lock:
             form["NameBankCode"] = resolve_bank_code(str(form.get("NameBankDisplay") or ""))
-    form["BranchName"] = st.text_input("Branch", key=f"{invoice_id}_branch", value=str(form.get("BranchName") or ""), disabled=bank_lock)
-    form["BsrCode"] = st.text_input("BSR Code", key=f"{invoice_id}_bsr", value=str(form.get("BsrCode") or ""), disabled=bank_lock)
+    # Branch and BSR should always be editable to allow overrides
+    form["BranchName"] = st.text_input("Branch", key=f"{invoice_id}_branch", value=str(form.get("BranchName") or ""), disabled=False)
+    form["BsrCode"] = st.text_input("BSR Code", key=f"{invoice_id}_bsr", value=str(form.get("BsrCode") or ""), disabled=False)
 
     nature_opts = [n for n in load_nature_options() if n.get("code") != "-1"]
     nature_labels = ["SELECT"] + [f"{n['code']} - {n['label']}" for n in nature_opts]
@@ -422,14 +427,15 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
         st.markdown("#### TDS Computation")
         d1, d2, d3 = st.columns(3)
         with d1:
-            st.text_input("Tax liability under IT Act (INR)", disabled=True, key=f"{invoice_id}_tax_liab_it")
-            st.text_input("Taxable income per DTAA (INR)", disabled=True, key=f"{invoice_id}_tax_inc_dtaa")
-            st.text_input("Tax liability per DTAA (INR)", disabled=True, key=f"{invoice_id}_tax_liab_dtaa")
+            # Allow editing of computed tax display fields so CA can override if necessary
+            st.text_input("Tax liability under IT Act (INR)", disabled=False, key=f"{invoice_id}_tax_liab_it")
+            st.text_input("Taxable income per DTAA (INR)", disabled=False, key=f"{invoice_id}_tax_inc_dtaa")
+            st.text_input("Tax liability per DTAA (INR)", disabled=False, key=f"{invoice_id}_tax_liab_dtaa")
         with d2:
-            st.text_input("TDS Amount (foreign)", disabled=True, key=f"{invoice_id}_amt_tds_fcy")
-            st.text_input("TDS Amount (INR)", disabled=True, key=f"{invoice_id}_amt_tds_inr")
-            st.text_input("TDS Rate % (Section B)", disabled=True, key=f"{invoice_id}_rate_tds_secb")
+            st.text_input("TDS Amount (foreign)", disabled=False, key=f"{invoice_id}_amt_tds_fcy")
+            st.text_input("TDS Amount (INR)", disabled=False, key=f"{invoice_id}_amt_tds_inr")
+            st.text_input("TDS Rate % (Section B)", disabled=False, key=f"{invoice_id}_rate_tds_secb")
         with d3:
-            st.text_input("Actual remittance after TDS (foreign)", disabled=True, key=f"{invoice_id}_actl_amt_tds_forgn")
-            st.text_area("Basis of determining tax", disabled=True, key=f"{invoice_id}_basis_tax", height=80)
+            st.text_input("Actual remittance after TDS (foreign)", disabled=False, key=f"{invoice_id}_actl_amt_tds_forgn")
+            st.text_area("Basis of determining tax", disabled=False, key=f"{invoice_id}_basis_tax", height=80)
     return state

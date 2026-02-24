@@ -244,7 +244,8 @@ def render_form() -> Dict[str, str]:
 
     row1 = st.columns([1.0, 3.8, 1.2, 2.7, 0.2])
     with row1[0]:
-        st.selectbox("I / We", ["I", "We"], index=1, disabled=True, label_visibility="collapsed", key="ui_iorwe_fixed")
+        # Allow user to change the I/We selection if required
+        st.selectbox("I / We", ["I", "We"], index=1, disabled=False, label_visibility="collapsed", key="ui_iorwe_fixed")
     with row1[1]:
         st.markdown(
             "<div class='f15cb-line-text'>* have examined the agreement (wherever applicable) between</div>",
@@ -255,7 +256,7 @@ def render_form() -> Dict[str, str]:
             "Remitter honorific",
             ["Mr", "Ms", "M/s"],
             index=2,
-            disabled=True,
+            disabled=False,
             label_visibility="collapsed",
             key="ui_remitter_honorific_fixed",
         )
@@ -275,10 +276,11 @@ def render_form() -> Dict[str, str]:
     with row2[0]:
         st.markdown("<div class='f15cb-line-text'>with PAN/TAN</div>", unsafe_allow_html=True)
     with row2[1]:
+        # Make Remitter PAN editable so CA can override pre-filled PANs
         st.text_input(
             "Remitter PAN/TAN",
             value=fields.get("RemitterPAN", ""),
-            disabled=True,
+            disabled=False,
             label_visibility="collapsed",
         )
     with row2[2]:
@@ -288,7 +290,7 @@ def render_form() -> Dict[str, str]:
             "Beneficiary honorific",
             ["Mr", "Ms", "M/s"],
             index=2,
-            disabled=True,
+            disabled=False,
             label_visibility="collapsed",
             key="ui_beneficiary_honorific_fixed",
         )
@@ -373,7 +375,8 @@ def render_form() -> Dict[str, str]:
             fields["NameBankCode"] = st.text_input("Bank (manual)", value=fields.get("NameBankCode", ""))
         else:
             fields["NameBankCode"] = chosen_bank
-        fields["BsrCode"] = st.text_input("BSR Code", value=fields.get("BsrCode", ""), disabled=True)
+        # Allow BSR editing so users can fix or override detected values
+        fields["BsrCode"] = st.text_input("BSR Code", value=fields.get("BsrCode", ""), disabled=False)
         if fields["BsrCode"]:
             st.caption("Valid BSR code" if validate_bsr_code(fields["BsrCode"]) else "BSR should be exactly 7 digits")
         fields["BranchName"] = st.text_input("Branch Name", value=fields.get("BranchName", ""))
@@ -458,7 +461,8 @@ def render_form() -> Dict[str, str]:
         fields["_invoice_date"] = invoice_date.isoformat()
         prop_date = date.today() + timedelta(days=PROPOSED_DATE_OFFSET)
         fields["PropDateRem"] = prop_date.isoformat()
-        st.text_input("Proposed Date of Remittance (auto)", value=fields["PropDateRem"], disabled=True)
+        # Keep the proposed date editable in case CA needs to change it
+        st.text_input("Proposed Date of Remittance (auto)", value=fields["PropDateRem"], disabled=False)
         st.caption(f"Display format: {_format_dd_mmm_yyyy(prop_date)}")
 
         currency_map = lookups["currency_map"]
@@ -509,18 +513,20 @@ def render_form() -> Dict[str, str]:
         fields["TaxIndDtaaFlg"] = _yes_no_to_yn(dtaa_label)
         if not dtaa_enabled:
             _reset_dtaa_fields(fields)
+        # Make DTAA-related toggles editable regardless of automatic enabling
         trc_label = st.selectbox(
             "Tax Residency Certificate?",
             ["Y", "N"],
             index=0 if fields.get("TaxResidCert", "N") == "Y" else 1,
-            disabled=not dtaa_enabled,
+            disabled=False,
         )
         fields["TaxResidCert"] = trc_label if dtaa_enabled else "N"
     with tax_col3:
-        fields["RelevantDtaa"] = st.text_input("Relevant DTAA (country)", value=fields.get("RelevantDtaa", ""), disabled=not dtaa_enabled)
-        fields["RelevantArtDtaa"] = st.text_input("Relevant Article of DTAA", value=fields.get("RelevantArtDtaa", ""), disabled=not dtaa_enabled)
-        fields["TaxIncDtaa"] = st.text_input("Taxable income per DTAA", value=fields.get("TaxIncDtaa", ""), disabled=not dtaa_enabled)
-        fields["TaxLiablDtaa"] = st.text_input("Tax liability per DTAA", value=fields.get("TaxLiablDtaa", ""), disabled=not dtaa_enabled)
+        # Allow manual editing of DTAA and tax fields regardless of auto-enablement
+        fields["RelevantDtaa"] = st.text_input("Relevant DTAA (country)", value=fields.get("RelevantDtaa", ""), disabled=False)
+        fields["RelevantArtDtaa"] = st.text_input("Relevant Article of DTAA", value=fields.get("RelevantArtDtaa", ""), disabled=False)
+        fields["TaxIncDtaa"] = st.text_input("Taxable income per DTAA", value=fields.get("TaxIncDtaa", ""), disabled=False)
+        fields["TaxLiablDtaa"] = st.text_input("Tax liability per DTAA", value=fields.get("TaxLiablDtaa", ""), disabled=False)
 
     st.markdown("#### 5. DTAA Sub-flags")
     flag_col1, flag_col2, flag_col3, flag_col4, flag_col5 = st.columns(5)
@@ -542,16 +548,17 @@ def render_form() -> Dict[str, str]:
 
     det_col1, det_col2, det_col3 = st.columns(3)
     with det_col1:
-        fields["ArtDtaa"] = st.text_input("Article of DTAA (Royalty)", value=fields.get("ArtDtaa", ""), disabled=rem_for_roy != "YES")
-        fields["RateTdsADtaa"] = st.text_input("Rate of TDS per DTAA (%)", value=fields.get("RateTdsADtaa", ""), disabled=rem_for_roy != "YES")
+        # Make DTAA article and rate editable even if flags are not set
+        fields["ArtDtaa"] = st.text_input("Article of DTAA (Royalty)", value=fields.get("ArtDtaa", ""), disabled=False)
+        fields["RateTdsADtaa"] = st.text_input("Rate of TDS per DTAA (%)", value=fields.get("RateTdsADtaa", ""), disabled=False)
     with det_col2:
         fields["_inc_liab_india_detail"] = st.text_input(
             "Income liable in India details",
             value=fields.get("_inc_liab_india_detail", ""),
-            disabled=inc_india != "YES",
+            disabled=False,
         )
     with det_col3:
-        fields["RelArtDetlDDtaa"] = st.text_input("Other remittance details", value=fields.get("RelArtDetlDDtaa", ""), disabled=other_rem != "YES")
+        fields["RelArtDetlDDtaa"] = st.text_input("Other remittance details", value=fields.get("RelArtDetlDDtaa", ""), disabled=False)
 
     st.markdown("#### 6. TDS Rate and Location")
     tds_col1, tds_col2, tds_col3 = st.columns(3)
@@ -575,7 +582,8 @@ def render_form() -> Dict[str, str]:
         if gross is not None and tds is not None:
             net = gross - tds
             fields["ActlAmtTdsForgn"] = str(int(net)) if float(net).is_integer() else str(net)
-        fields["ActlAmtTdsForgn"] = st.text_input("Actual remittance after TDS (auto)", value=fields.get("ActlAmtTdsForgn", ""), disabled=True)
+        # Allow actual remittance to be editable so CA can correct computed values
+        fields["ActlAmtTdsForgn"] = st.text_input("Actual remittance after TDS (auto)", value=fields.get("ActlAmtTdsForgn", ""), disabled=False)
         dedn_default = _parse_date(fields.get("DednDateTds", "")) or date.today()
         fields["DednDateTds"] = st.date_input("Date of TDS deduction", value=dedn_default).isoformat()
         st.caption(f"Display format: {_format_dd_mmm_yyyy(dedn_default)}")

@@ -158,5 +158,311 @@
         "Name of Bank": "Standard Chartered Bank",
         "Branch of the bank": "BANGALORE",
         "BSR code of the bank branch (7 digit)": 6470038
-    }
+    },
+    {
+    "SL NO": 21,
+    "Name": "BOSCHLTD.",
+    "PAN": "AAACM9840P",
+    "Name of Bank": "CITI Bank",
+    "Branch of the bank": "BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6480001
+    },
+    {
+    "SL NO": 22,
+    "Name": "BOSCHLTD",
+    "PAN": "AAACM9840P",
+    "Name of Bank": "CITI Bank",
+    "Branch of the bank": "BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6480001
+    },
+    {
+    "SL NO": 23,
+    "Name": "BOSCH LTD",
+    "PAN": "AAACM9840P",
+    "Name of Bank": "CITI Bank",
+    "Branch of the bank": "BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6480001
+    },
+    
+  {
+    "SL NO": 24,
+    "Name": "RBEI",
+    "PAN": "AAACR7108R",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "M G ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6550003
+  },
+  {
+    "SL NO": 25,
+    "Name": "RBAI",
+    "PAN": "AADCB4330L",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "M G ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6550003
+  },
+  {
+    "SL NO": 26,
+    "Name": "BOSCH CHASSIS",
+    "PAN": "AAACK7312E",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "MAIN ITI ROAD, AUNDH PUNE",
+    "BSR code of the bank branch (7 digit)": 6550014
+  },
+  {
+    "SL NO": 27,
+    "Name": "DCIN- Rexroth",
+    "PAN": "AAACM9898F",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "HAZARIMAL SOMANI MARG",
+    "BSR code of the bank branch (7 digit)": 6550001
+  },
+  {
+    "SL NO": 110,
+    "Name": "RBDI",
+    "PAN": "AADCB4239N",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "NUNGAMBAKKAM, CHENNAI",
+    "BSR code of the bank branch (7 digit)": 6550006
+  },
+  {
+    "SL NO": 111,
+    "Name": "ETAS",
+    "PAN": "AABCE7260L",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6550003
+  },
+  {
+    "SL NO": 112,
+    "Name": "TATA HITACHI",
+    "PAN": "AAACT9077B",
+    "Name of Bank": "STANDARD CHARTERED BANK",
+    "Branch of the bank": "BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6470038
+  },
+  {
+    "SL NO": 113,
+    "Name": "FK Internet",
+    "PAN": "AACCF0683K",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  },
+  {
+    "SL NO": 114,
+    "Name": "FX Mart Pvt. Ltd.",
+    "PAN": "AACCF1132H",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 115,
+    "Name": "(PHONEPE)",
+    "PAN": "",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  },
+  {
+    "SL NO": 116,
+    "Name": "MiViN",
+    "PAN": "AADCM2694Q",
+    "Name of Bank": "Deutsche Bank",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6550003
+  },
+  {
+    "SL NO": 117,
+    "Name": "Terpl",
+    "PAN": "AABCT9674P",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 118,
+    "Name": "WSR",
+    "PAN": "AAACW8725F",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 119,
+    "Name": "Starter Motors",
+    "PAN": "AAHCR6993H",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 120,
+    "Name": "Novarris",
+    "PAN": "AAFCN2761B",
+    "Name of Bank": "ICICI Bank Ltd",
+    "Branch of the bank": "SEC-18, GURGAON",
+    "BSR code of the bank branch (7 digit)": 6392526
+  },
+  {
+    "SL NO": 121,
+    "Name": "Jade eServices",
+    "PAN": "AACCJ6683M",
+    "Name of Bank": "ICICI Bank Ltd",
+    "Branch of the bank": "SEC-18, GURGAON",
+    "BSR code of the bank branch (7 digit)": 6392526
+  },
+  {
+    "SL NO": 122,
+    "Name": "Myntra",
+    "PAN": "AAECM9636P",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 123,
+    "Name": "Mintkart",
+    "PAN": "AABCB2307H",
+    "Name of Bank": "Bank of America",
+    "Branch of the bank": "MUMBAI BRANCH",
+    "BSR code of the bank branch (7 digit)": 6430002
+  },
+  {
+    "SL NO": 124,
+    "Name": "Flipkart Logistics",
+    "PAN": "AABCF8595R",
+    "Name of Bank": "Kotak Mahindra Bank",
+    "Branch of the bank": "KORMANGALA, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 180099
+  },
+  {
+    "SL NO": 125,
+    "Name": "AdIQuity",
+    "PAN": "AACCT4054A",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 126,
+    "Name": "Jeeves Consumer Services",
+    "PAN": "AABCJ9421C",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 127,
+    "Name": "IP infusion",
+    "PAN": "AACCI5170N",
+    "Name of Bank": "CITI BANK",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6480001
+  },
+  {
+    "SL NO": 128,
+    "Name": "Syntegon",
+    "PAN": "AAJCR6955M",
+    "Name of Bank": "ICICI Bank Ltd",
+    "Branch of the bank": "VERNA BRANCH, GOA",
+    "BSR code of the bank branch (7 digit)": 6390016
+  },
+  {
+    "SL NO": 129,
+    "Name": "PHONEPE INSURANCE BS PVT LTD.",
+    "PAN": "AALCP0641E",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  },
+  {
+    "SL NO": 130,
+    "Name": "CLEAR TRIP",
+    "PAN": "AACCC6016B",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 131,
+    "Name": "WEALTH TECHNOLOGY AND SERVICES PVT. LTD",
+    "PAN": "AABCW8384K",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 132,
+    "Name": "TATA COFFEE LIMITED.",
+    "PAN": "AABCC0241R",
+    "Name of Bank": "HDFC Bank Ltd",
+    "Branch of the bank": "RICHMOND ROAD",
+    "BSR code of the bank branch (7 digit)": 510501
+  },
+  {
+    "SL NO": 133,
+    "Name": "EXPLORIUM INNOVATIVE TECHNOLOGIES PRIVATE LTD",
+    "PAN": "AAECE4207C",
+    "Name of Bank": "SBM (India) Ltd",
+    "Branch of the bank": "Mumbai",
+    "BSR code of the bank branch (7 digit)": 6700001
+  },
+  {
+    "SL NO": 134,
+    "Name": "CHILDRENITE PVT LTD",
+    "PAN": "AAJCC4778P",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 135,
+    "Name": "MJPL",
+    "PAN": "AAACQ3774A",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  },
+  {
+    "SL NO": 136,
+    "Name": "INSTAKART",
+    "PAN": "AADCI8374D",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "M G ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6550003
+  },
+  {
+    "SL NO": 137,
+    "Name": "ALIVENOW",
+    "PAN": "AHJPA3477B",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 138,
+    "Name": "AUTOMOBILITY S&S PVT LTD",
+    "PAN": "AAOCA2522L",
+    "Name of Bank": "",
+    "Branch of the bank": "",
+    "BSR code of the bank branch (7 digit)": 0
+  },
+  {
+    "SL NO": 139,
+    "Name": "PHONEPE WEALTH BROKING PRIVATE LIMITED.",
+    "PAN": "AALCP9647E",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  },
+  {
+    "SL NO": 140,
+    "Name": "PhonePe Insurance Broking Services Private Limited",
+    "PAN": "AAECE4207C",
+    "Name of Bank": "HSBC",
+    "Branch of the bank": "MG ROAD, BANGALORE",
+    "BSR code of the bank branch (7 digit)": 6500120
+  }
+
 ]

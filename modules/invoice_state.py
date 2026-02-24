@@ -65,7 +65,11 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
     form["DednDateTds"] = date.today().isoformat()
     form["PropDateRem"] = (date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)).isoformat()
 
-    inferred_country_code = infer_country_from_beneficiary_name(extracted.get("beneficiary_name", ""))
+    # Infer country from beneficiary name and address combined
+    inferred_country_code = infer_country_from_beneficiary_name(
+        extracted.get("beneficiary_name", ""),
+        extracted.get("beneficiary_address", "")  # Also scan address for country indicators
+    )
     logger.info(
         "state_country_inference invoice_id=%s beneficiary=%s inferred_country_code=%s",
         invoice_id,
@@ -100,7 +104,10 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
     if extracted.get("beneficiary_city"):
         form.setdefault("RemitteeTownCityDistrict", str(extracted.get("beneficiary_city") or ""))
     if extracted.get("beneficiary_country_text") and not form.get("RemitteeCountryCode"):
-        inferred_by_text = infer_country_from_beneficiary_name(str(extracted.get("beneficiary_country_text") or ""))
+        inferred_by_text = infer_country_from_beneficiary_name(
+            str(extracted.get("beneficiary_country_text") or ""),
+            str(extracted.get("beneficiary_address") or "")  # Also scan address
+        )
         if inferred_by_text:
             form["RemitteeCountryCode"] = inferred_by_text
             logger.info(
