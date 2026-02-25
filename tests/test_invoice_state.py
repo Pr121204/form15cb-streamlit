@@ -32,6 +32,7 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Ullsteinstra3e 128")
         self.assertEqual(form.get("RemitteeAreaLocality"), "12109")
         self.assertEqual(form.get("RemitteeTownCityDistrict"), "Berlin")
+        self.assertTrue(bool(str(form.get("RateTdsADtaa") or "").strip()))
 
     def test_derives_purpose_group_from_code_even_when_group_missing(self) -> None:
         grouped = load_purpose_grouped()
@@ -57,6 +58,152 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("_purpose_code"), sample_code)
         self.assertEqual(form.get("RevPurCategory"), f"RB-{sample_gr}.1")
         self.assertEqual(form.get("RevPurCode"), f"RB-{sample_gr}.1-{sample_code}")
+
+    def test_splits_beneficiary_address_into_remittee_fields(self) -> None:
+        state = build_invoice_state(
+            "inv3",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "Robert Bosch GmbH",
+                "beneficiary_address": "Ullsteinstra3e 128, 12109, Berlin, Germany",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Ullsteinstra3e 128")
+        self.assertEqual(form.get("RemitteeAreaLocality"), "12109")
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "Berlin")
+        self.assertEqual(form.get("CountryRemMadeSecb"), "49")
+
+    def test_country_fallback_defaults_to_others_when_unknown(self) -> None:
+        state = build_invoice_state(
+            "inv4",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "Unknown Counterparty",
+                "beneficiary_address": "Unknown Address",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("CountryRemMadeSecb"), "9999")
+        self.assertEqual(form.get("RemitteeCountryCode"), "9999")
+
+    def test_splits_slash_separated_beneficiary_address(self) -> None:
+        state = build_invoice_state(
+            "inv6",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Limited",
+                "beneficiary_name": "Bosch Foreign Entity",
+                "beneficiary_country_text": "Turkey",
+                "beneficiary_address": "MinarelicavusBursaOSBMah.YesilCad. No:15 Nilüfer/Bursa/16140",
+                "amount": "100",
+                "currency_short": "USD",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "Bursa")
+        self.assertEqual(form.get("RemitteeAreaLocality"), "16140")
+
+    def test_india_safeguard_uses_alternate_foreign_country(self) -> None:
+        state = build_invoice_state(
+            "inv5",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Sanayi ve Ticaret Anonim Sirketi",
+                "remitter_country_text": "Turkey",
+                "remitter_address": "Bursa, Turkey",
+                "beneficiary_name": "Bosch Limited",
+                "beneficiary_country_text": "India",
+                "beneficiary_address": "Bangalore, India",
+                "amount": "100",
+                "currency_short": "USD",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("CountryRemMadeSecb"), "90")
+        self.assertEqual(form.get("RemitteeCountryCode"), "90")
+
+    def test_india_is_disallowed_in_tds_when_no_foreign_fallback(self) -> None:
+        state = build_invoice_state(
+            "inv7",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Limited",
+                "remitter_country_text": "India",
+                "remitter_address": "Bangalore, India",
+                "beneficiary_name": "Domestic Counterparty",
+                "beneficiary_country_text": "India",
+                "beneficiary_address": "Mumbai, India",
+                "amount": "100",
+                "currency_short": "USD",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("CountryRemMadeSecb"), "9999")
+        self.assertEqual(form.get("RemitteeCountryCode"), "9999")
+
+    def test_empty_core_extraction_skips_dtaa_seed_even_with_country(self) -> None:
+        state = build_invoice_state(
+            "inv8",
+            "a.pdf",
+            {
+                "beneficiary_country_text": "Portugal",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("CountryRemMadeSecb"), "14")
+        self.assertEqual(form.get("RateTdsADtaa", ""), "")
+        self.assertEqual(form.get("RelevantDtaa", ""), "")
+
+    def test_splits_mexico_cp_address_into_three_fields(self) -> None:
+        state = build_invoice_state(
+            "inv9",
+            "7120002741.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "ROBERT BOSCH MEXICO",
+                "beneficiary_country_text": "Mexico",
+                "beneficiary_address": "CircuitoG.GonzalezCamarena333 SANTAFE ALVAROOBREGON C.P.:01210 DISTRITOFEDERAL",
+                "amount": "18900",
+                "currency_short": "USD",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "90", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "CircuitoG.GonzalezCamarena333")
+        self.assertEqual(form.get("RemitteeAreaLocality"), "SANTAFE ALVAROOBREGON")
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "C.P.:01210 DISTRITOFEDERAL")
+
+    def test_splits_accented_address_after_ascii_normalization(self) -> None:
+        state = build_invoice_state(
+            "inv10",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Limited",
+                "beneficiary_name": "Bosch Foreign Entity",
+                "beneficiary_country_text": "Turkiye",
+                "beneficiary_address": "Minarelicavus Bursa OSB Mah. Yesil Cad. No:15 Nilufer/Bursa/16140",
+                "amount": "100",
+                "currency_short": "USD",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "USD"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Minarelicavus Bursa OSB Mah. Yesil Cad. No:15 Nilufer")
+        self.assertEqual(form.get("RemitteeAreaLocality"), "16140")
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "Bursa")
 
 
 if __name__ == "__main__":

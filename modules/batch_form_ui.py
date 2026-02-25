@@ -226,6 +226,9 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             form["_manual_dtaa_rate_required"] = "0"
             st.error("Country required - select to enable tax calculations.")
             logger.warning("ui_country_not_selected invoice_id=%s", invoice_id)
+    if mode == MODE_TDS and str(form.get("CountryRemMadeSecb") or "") == "91":
+        st.warning("Detected remittance country as INDIA in TDS/outward flow. Verify remitter/beneficiary role assignment.")
+        logger.warning("ui_country_india_tds invoice_id=%s country_code=91", invoice_id)
     currency_opts = get_currency_options()
     currency_labels = [f"{k} ({v})" for k, v in currency_opts]
     current_currency_code = str(form.get("CurrencySecbCode") or "")

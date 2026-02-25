@@ -12,7 +12,8 @@ from modules.currency_mapping import is_currency_code_valid_for_xml
 from modules.file_manager import ensure_folders, save_uploaded_file
 from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS, SHORT_CURRENCY_OPTIONS
 from modules.invoice_calculator import invoice_state_to_xml_fields, recompute_invoice
-from modules.invoice_gemini_extractor import extract_invoice_core_fields
+from modules.invoice_gemini_extractor import extract_invoice_core_fields, extract_invoice_core_fields_from_image
+from pdf2image import convert_from_bytes
 from modules.invoice_state import build_invoice_state
 from modules.logger import get_logger
 from modules.master_data import validate_bsr_code, validate_dtaa_rate, validate_pan
@@ -168,14 +169,45 @@ if uploaded_files:
 
             with st.spinner(f"Processing {file.name}..."):
                 start = time.time()
-                text = _extract_text_for_file(file)
-                extracted = extract_invoice_core_fields(text)
+                # Handle PDFs differently: try text extraction first, else convert
+                # the first PDF page to an image and send to Gemini vision.
+                file_bytes = file.read()
+                if file.name.lower().endswith('.pdf'):
+                    text = ""
+                    try:
+                        text = extract_text_from_pdf(io.BytesIO(file_bytes))
+                    except Exception:
+                        logger.exception("pdf_text_extraction_failed file=%s", file.name)
+                        text = ""
+
+                    if text and len(text.strip()) >= 20:
+                        # Use text-based extraction when PDF text is sufficient
+                        extracted = extract_invoice_core_fields(text)
+                    else:
+                        # Convert first PDF page to image and call image extractor
+                        try:
+                            images = convert_from_bytes(file_bytes, dpi=300)
+                            if images:
+                                buf = io.BytesIO()
+                                images[0].save(buf, format='JPEG', quality=90)
+                                image_bytes = buf.getvalue()
+                                extracted = extract_invoice_core_fields_from_image(image_bytes)
+                            else:
+                                extracted = extract_invoice_core_fields(text)
+                        except Exception as e:
+                            logger.exception("pdf_to_image_failed file=%s error=%s", file.name, str(e))
+                            extracted = extract_invoice_core_fields(text)
+                else:
+                    # For image uploads (jpg/png/etc.), send bytes directly to image extractor
+                    extracted = extract_invoice_core_fields_from_image(file_bytes)
                 logger.info(
                     "invoice_extracted file=%s fields=%s",
                     file.name,
                     {
                         "remitter_name": extracted.get("remitter_name", ""),
+                        "remitter_country": extracted.get("remitter_country_text", ""),
                         "beneficiary_name": extracted.get("beneficiary_name", ""),
+                        "beneficiary_country": extracted.get("beneficiary_country_text", ""),
                         "invoice_number": extracted.get("invoice_number", ""),
                         "amount": extracted.get("amount", ""),
                         "currency_short": extracted.get("currency_short", ""),

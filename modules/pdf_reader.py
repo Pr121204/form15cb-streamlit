@@ -1,5 +1,6 @@
 import pdfplumber
 import io
+from modules.text_normalizer import normalize_invoice_text
 
 def extract_text_from_pdf(source):
     """Extract text from a PDF. source can be a file path (str) or BytesIO."""
@@ -12,4 +13,4 @@ def extract_text_from_pdf(source):
                     text += page_text + "\n"
     except Exception:
         return ""
-    return text
+    return normalize_invoice_text(text, keep_newlines=True)

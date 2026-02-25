@@ -231,6 +231,16 @@ def resolve_country_code(country: str) -> str:
     return load_country_code_map().get(_normalize(country), "")
 
 
+def resolve_country_name(code: str) -> str:
+    code_s = str(code or "").strip()
+    if not code_s:
+        return ""
+    for country_name, country_code in load_country_code_map().items():
+        if str(country_code).strip() == code_s:
+            return country_name
+    return ""
+
+
 def resolve_currency_code(currency_name: str) -> str:
     return load_currency_code_map().get(_normalize(currency_name), "")
 
@@ -267,9 +277,57 @@ def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
         Country code (e.g., "49" for Germany, "175" for Portugal) or empty string
     """
     combined = f"{name} {address}".strip()
+    raw_upper = combined.upper()
     n = _normalize(combined)
     if not n:
         return ""
+
+    # Common aliases/abbreviations seen in invoices.
+    alias_to_country = {
+        "USA": "UNITED STATES OF AMERICA",
+        "US": "UNITED STATES OF AMERICA",
+        "U S A": "UNITED STATES OF AMERICA",
+        "UK": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
+        "U K": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
+        "UAE": "UNITED ARAB EMIRATES",
+        "KSA": "SAUDI ARABIA",
+    }
+    for alias, country in alias_to_country.items():
+        if re.search(rf"\b{re.escape(alias)}\b", n):
+            code = resolve_country_code(country)
+            if code:
+                return code
+
+    # Postal prefix hints, e.g. "DE-12345 Berlin".
+    postal_prefix_country = {
+        "DE": "GERMANY",
+        "FR": "FRANCE",
+        "ES": "SPAIN",
+        "PT": "PORTUGAL",
+        "IT": "ITALY",
+        "NL": "NETHERLANDS",
+        "BE": "BELGIUM",
+        "AT": "AUSTRIA",
+        "CH": "SWITZERLAND",
+        "PL": "POLAND",
+        "UK": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
+        "US": "UNITED STATES OF AMERICA",
+    }
+    for prefix, country in postal_prefix_country.items():
+        if re.search(rf"\b{prefix}\s*-\s*\d{{4,6}}\b", raw_upper):
+            code = resolve_country_code(country)
+            if code:
+                return code
+
+    # Direct token matching against country master.
+    country_map = load_country_code_map()
+    for country_name in sorted(country_map.keys(), key=len, reverse=True):
+        if len(country_name) < 4:
+            continue
+        if re.search(rf"\b{re.escape(country_name)}\b", n):
+            code = country_map.get(country_name, "")
+            if code and code != "-1":
+                return code
     
     # Portugal-specific indicators (high confidence)
     portugal_indicators = [

@@ -5,6 +5,7 @@ from PIL import Image
 import io
 from config.settings import TESSERACT_PATH
 from modules.preprocessor import enhance_image_for_ocr
+from modules.text_normalizer import normalize_invoice_text
 
 # set tesseract path from config
 pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
@@ -62,6 +63,7 @@ def ocr_image_pil(pil_image, lang='eng'):
     
     # Apply space-fixing post-processing
     text = fix_concatenated_words_and_spaces(text)
+    text = normalize_invoice_text(text, keep_newlines=True)
     return text
 
 def extract_text_from_image_file(path_or_bytes):

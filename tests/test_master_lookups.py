@@ -10,6 +10,7 @@ from modules.master_lookups import (
     load_dtaa_map,
     load_purpose_grouped,
     match_remitter,
+    resolve_country_name,
 )
 
 
@@ -39,6 +40,17 @@ class TestMasterLookups(unittest.TestCase):
     def test_infer_country_from_gmbh(self) -> None:
         code = infer_country_from_beneficiary_name("Bosch IO GmbH")
         self.assertEqual(code, "49")
+
+    def test_infer_country_from_postal_prefix(self) -> None:
+        code = infer_country_from_beneficiary_name("Hans Muller", "DE-12207 Berlin")
+        self.assertEqual(code, "49")
+
+    def test_infer_country_from_alias_usa(self) -> None:
+        code = infer_country_from_beneficiary_name("Acme LLC", "New York, USA")
+        self.assertEqual(code, "2")
+
+    def test_resolve_country_name_from_code(self) -> None:
+        self.assertEqual(resolve_country_name("49"), "GERMANY")
 
 
 if __name__ == "__main__":
