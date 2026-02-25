@@ -13,6 +13,7 @@ from modules.form15cb_constants import (
     REMITTEE_STATE,
     REMITTEE_ZIP_CODE,
 )
+from modules.currency_mapping import load_currency_exact_index, resolve_currency_selection
 from modules.invoice_calculator import recompute_invoice
 from modules.logger import get_logger
 from modules.master_lookups import (
@@ -25,6 +26,7 @@ from modules.master_lookups import (
     resolve_bank_code,
     resolve_country_code,
     resolve_dtaa,
+    split_dtaa_article_text,
 )
 
 logger = get_logger()
@@ -100,7 +102,12 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
     st.caption(f"Mode: {'TDS' if mode == MODE_TDS else 'Non-TDS'}")
     extracted_currency = str(extracted.get("currency_short") or "").strip().upper()
     selected_currency = str(meta.get("source_currency_short") or "").strip().upper()
-    if extracted_currency and selected_currency and extracted_currency != selected_currency:
+    currency_index = load_currency_exact_index()
+    extracted_resolved = resolve_currency_selection(extracted_currency, currency_index)
+    selected_resolved = resolve_currency_selection(selected_currency, currency_index)
+    extracted_code = str(extracted_resolved.get("code") or "")
+    selected_code = str(selected_resolved.get("code") or "")
+    if extracted_currency and selected_currency and extracted_code and selected_code and extracted_code != selected_code:
         st.warning(
             f"Gemini detected {extracted_currency} from invoice but {selected_currency} was selected in Step 1. "
             "Please confirm which is correct."
@@ -179,8 +186,9 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             form["_manual_dtaa_rate_required"] = "0"
             dtaa = resolve_dtaa(country_name.strip())
             if dtaa:
-                form["RelevantDtaa"] = dtaa.get("dtaa_applicable", "")
-                form["RelevantArtDtaa"] = dtaa.get("dtaa_applicable", "")
+                dtaa_without_article, dtaa_with_article = split_dtaa_article_text(str(dtaa.get("dtaa_applicable") or ""))
+                form["RelevantDtaa"] = dtaa_without_article
+                form["RelevantArtDtaa"] = dtaa_with_article
                 percent = _dtaa_rate_percent(dtaa.get("percentage", ""))
                 if percent:
                     # Persist DTAA rate into canonical places used by recompute and XML
@@ -188,7 +196,7 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
                     form["RateTdsADtaa"] = percent
                     form["RateTdsSecB"] = percent
                     form["dtaa_rate"] = percent
-                    form["ArtDtaa"] = dtaa.get("dtaa_applicable", "")
+                    form["ArtDtaa"] = dtaa_with_article
                     # Sync to session_state so Rate field widget displays it immediately
                     st.session_state[f"{invoice_id}_rate_tds_dtaa"] = str(percent)
                     # Ensure recompute runs with updated state immediately

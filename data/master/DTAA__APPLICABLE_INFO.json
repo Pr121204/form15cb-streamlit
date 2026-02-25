@@ -35,6 +35,11 @@
         "percentage": 0.1
     },
     {
+        "country": "Viet nam",
+        "dtaa_applicable": "ARTICLE 13 OF DTAA BTWN INDIA AND VIETNAM",
+        "percentage": 0.1
+    },   
+    {
         "country": "Singapore",
         "dtaa_applicable": "ARTICLE 12 OF DTAA BTWN INDIA AND SINGAPORE",
         "percentage": 0.1

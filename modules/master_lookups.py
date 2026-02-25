@@ -249,6 +249,24 @@ def resolve_dtaa(country: str) -> Optional[Dict[str, str]]:
     return load_dtaa_map().get(_normalize(country))
 
 
+def split_dtaa_article_text(dtaa_text: str) -> Tuple[str, str]:
+    """
+    Split DTAA text into:
+    - without_article: suitable for RelevantDtaa
+    - with_article: suitable for RelevantArtDtaa and ArtDtaa
+    """
+    with_article = str(dtaa_text or "").strip()
+    if not with_article:
+        return "", ""
+    without_article = re.sub(
+        r"^ARTICLE\s+\d+[A-Z]?\s+OF\s+",
+        "",
+        with_article,
+        flags=re.IGNORECASE,
+    ).strip()
+    return without_article, with_article
+
+
 def get_country_options() -> List[Tuple[str, str]]:
     rows = [(k, v) for k, v in load_country_code_map().items() if v != "-1"]
     return sorted(rows, key=lambda x: x[0])

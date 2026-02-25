@@ -4,7 +4,7 @@ from datetime import date, timedelta
 from typing import Dict
 import re
 
-from modules.currency_mapping import load_currency_exact_index, resolve_short_code_currency
+from modules.currency_mapping import load_currency_exact_index, resolve_currency_selection
 from modules.form15cb_constants import (
     MODE_NON_TDS,
     MODE_TDS,
@@ -20,6 +20,7 @@ from modules.master_lookups import (
     resolve_bank_code,
     resolve_country_name,
     resolve_dtaa,
+    split_dtaa_article_text,
 )
 from modules.text_normalizer import normalize_single_line_text
 
@@ -95,7 +96,7 @@ def _split_beneficiary_address(address: str) -> tuple[str, str, str]:
 def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, str], config: Dict[str, str]) -> Dict[str, object]:
     mode = config.get("mode", MODE_TDS)
     source_short = config.get("currency_short", "")
-    resolved_currency = resolve_short_code_currency(source_short, load_currency_exact_index())
+    resolved_currency = resolve_currency_selection(source_short, load_currency_exact_index())
     state: Dict[str, object] = {
         "meta": {
             "invoice_id": invoice_id,
@@ -199,12 +200,13 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
         else:
             dtaa = resolve_dtaa(country_hint) or None
             if dtaa:
-                form["RelevantDtaa"] = str(dtaa.get("dtaa_applicable") or "")
-                form["RelevantArtDtaa"] = str(dtaa.get("dtaa_applicable") or "")
+                dtaa_without_article, dtaa_with_article = split_dtaa_article_text(str(dtaa.get("dtaa_applicable") or ""))
+                form["RelevantDtaa"] = dtaa_without_article
+                form["RelevantArtDtaa"] = dtaa_with_article
                 try:
                     resolved["dtaa_rate_percent"] = str(float(str(dtaa.get("percentage"))) * 100).rstrip("0").rstrip(".")
                     form["RateTdsADtaa"] = resolved["dtaa_rate_percent"]
-                    form["ArtDtaa"] = form["RelevantArtDtaa"]
+                    form["ArtDtaa"] = dtaa_with_article
                 except Exception:
                     pass
             else:

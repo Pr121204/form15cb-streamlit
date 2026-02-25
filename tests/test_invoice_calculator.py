@@ -36,6 +36,17 @@ class TestInvoiceCalculator(unittest.TestCase):
         self.assertEqual(out["form"]["AmtPayForgnTds"], "0")
         self.assertEqual(out["form"]["AmtPayIndianTds"], "0")
 
+    def test_inr_amount_is_rounded_integer(self) -> None:
+        state = {
+            "meta": {"mode": MODE_TDS, "exchange_rate": "90"},
+            "extracted": {"amount": "100.51", "invoice_date_iso": "2026-02-10"},
+            "resolved": {"dtaa_rate_percent": "10"},
+            "form": {"AmtPayForgnRem": "100.51"},
+            "computed": {},
+        }
+        out = recompute_invoice(state)
+        self.assertEqual(out["form"]["AmtPayIndRem"], "9046")
+
     def test_xml_fields_hardcoded_zip(self) -> None:
         state = {
             "meta": {"mode": MODE_TDS},
@@ -55,6 +66,23 @@ class TestInvoiceCalculator(unittest.TestCase):
         self.assertTrue(xmlf["NameRemittee"].startswith("BOSCH IO GMBH"))
         self.assertIn("INVOICE NO. 1", xmlf["NameRemittee"])
         self.assertIn("DT 15.05.2023", xmlf["NameRemittee"])
+
+    def test_xml_fields_split_dtaa_variants(self) -> None:
+        state = {
+            "meta": {"mode": MODE_TDS},
+            "extracted": {},
+            "resolved": {},
+            "form": {
+                "RemitterPAN": "ABCDE1234F",
+                "RelevantDtaa": "ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY",
+                "CurrencySecbCode": "50",
+            },
+            "computed": {},
+        }
+        xmlf = invoice_state_to_xml_fields(state)
+        self.assertEqual(xmlf["RelevantDtaa"], "DTAA BTWN INDIA AND GERMANY")
+        self.assertEqual(xmlf["RelevantArtDtaa"], "ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY")
+        self.assertEqual(xmlf["ArtDtaa"], "ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY")
 
 
 if __name__ == "__main__":

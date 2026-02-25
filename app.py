@@ -8,9 +8,14 @@ from typing import Dict, List
 import streamlit as st
 
 from modules.batch_form_ui import render_invoice_tab
-from modules.currency_mapping import is_currency_code_valid_for_xml
+from modules.currency_mapping import (
+    get_upload_currency_select_options,
+    is_currency_code_valid_for_xml,
+    load_currency_exact_index,
+    resolve_currency_selection,
+)
 from modules.file_manager import ensure_folders, save_uploaded_file
-from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS, SHORT_CURRENCY_OPTIONS
+from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
 from modules.invoice_calculator import invoice_state_to_xml_fields, recompute_invoice
 from modules.invoice_gemini_extractor import extract_invoice_core_fields, extract_invoice_core_fields_from_image
 from pdf2image import convert_from_bytes
@@ -34,6 +39,14 @@ LAST_UPDATED = "February 2026"
 
 logger = get_logger()
 ensure_folders()
+UPLOAD_CURRENCY_OPTIONS = get_upload_currency_select_options()
+UPLOAD_CURRENCY_VALUES = [opt["value"] for opt in UPLOAD_CURRENCY_OPTIONS]
+UPLOAD_CURRENCY_LABELS = {opt["value"]: opt["label"] for opt in UPLOAD_CURRENCY_OPTIONS}
+CURRENCY_INDEX = load_currency_exact_index()
+DEFAULT_UPLOAD_CURRENCY = next(
+    (opt["value"] for opt in UPLOAD_CURRENCY_OPTIONS if str(opt.get("label", "")).upper().startswith("EUR")),
+    (UPLOAD_CURRENCY_VALUES[0] if UPLOAD_CURRENCY_VALUES else ""),
+)
 
 st.set_page_config(page_title="Form 15CB Batch Generator", layout="wide", initial_sidebar_state="collapsed")
 st.title("Form 15CB Batch Generator")
@@ -123,16 +136,22 @@ if uploaded_files:
         cfg_key = f"cfg_{file.name}_{idx}"
         existing = st.session_state["uploaded_configs"].get(
             cfg_key,
-            {"currency_short": "EUR", "exchange_rate": "1", "mode": MODE_TDS},
+            {"currency_short": DEFAULT_UPLOAD_CURRENCY, "exchange_rate": "1", "mode": MODE_TDS},
         )
         c1, c2, c3 = st.columns([3, 2, 2])
         with c1:
             st.text_input("Filename", value=file.name, disabled=True, key=f"{cfg_key}_file")
         with c2:
+            existing_currency = str(existing.get("currency_short") or "").strip()
+            resolved_existing_currency = resolve_currency_selection(existing_currency, CURRENCY_INDEX)
+            selected_currency_value = resolved_existing_currency.get("code", "")
+            if selected_currency_value not in UPLOAD_CURRENCY_VALUES:
+                selected_currency_value = DEFAULT_UPLOAD_CURRENCY
             currency_short = st.selectbox(
                 "Currency",
-                SHORT_CURRENCY_OPTIONS,
-                index=SHORT_CURRENCY_OPTIONS.index(existing["currency_short"]) if existing["currency_short"] in SHORT_CURRENCY_OPTIONS else 0,
+                UPLOAD_CURRENCY_VALUES or [""],
+                index=(UPLOAD_CURRENCY_VALUES.index(selected_currency_value) if selected_currency_value in UPLOAD_CURRENCY_VALUES else 0),
+                format_func=lambda code: UPLOAD_CURRENCY_LABELS.get(code, code),
                 key=f"{cfg_key}_currency",
             )
             exchange_rate = st.text_input("1 unit of FCY = ₹ X", value=str(existing["exchange_rate"]), key=f"{cfg_key}_rate")

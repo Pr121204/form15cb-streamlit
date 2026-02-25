@@ -205,6 +205,24 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("RemitteeAreaLocality"), "16140")
         self.assertEqual(form.get("RemitteeTownCityDistrict"), "Bursa")
 
+    def test_dtaa_fields_are_split_into_relevant_and_article_variants(self) -> None:
+        state = build_invoice_state(
+            "inv11",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "Robert Bosch GmbH",
+                "beneficiary_country_text": "Germany",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RelevantDtaa"), "DTAA BTWN INDIA AND GERMANY")
+        self.assertEqual(form.get("RelevantArtDtaa"), "ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY")
+        self.assertEqual(form.get("ArtDtaa"), "ARTICLE 12 OF DTAA BTWN INDIA AND GERMANY")
+
 
 if __name__ == "__main__":
     unittest.main()

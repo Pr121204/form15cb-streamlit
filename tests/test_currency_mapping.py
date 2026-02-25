@@ -4,6 +4,8 @@ import unittest
 
 from modules.currency_mapping import (
     CONFIRMED_SHORT_CODE_TO_CODE,
+    get_upload_currency_options,
+    get_upload_currency_select_options,
     is_currency_code_valid_for_xml,
     load_currency_exact_index,
     preselect_currency_code,
@@ -34,6 +36,19 @@ class TestCurrencyMapping(unittest.TestCase):
         self.assertFalse(is_currency_code_valid_for_xml(""))
         self.assertFalse(is_currency_code_valid_for_xml("-1"))
         self.assertTrue(is_currency_code_valid_for_xml("50"))
+
+    def test_upload_currency_options_include_master_entries(self) -> None:
+        options = get_upload_currency_options(load_currency_exact_index())
+        self.assertIn("HUNGARIAN FORINT", options)
+        self.assertNotIn("SELECT", options)
+
+    def test_upload_currency_select_options_use_short_codes(self) -> None:
+        options = get_upload_currency_select_options()
+        labels = [row["label"] for row in options]
+        values = [row["value"] for row in options]
+        self.assertIn("HUF", labels)
+        self.assertIn("68", values)
+        self.assertNotIn("-1", values)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, timedelta
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, Optional
 
 from modules.form15cb_constants import (
@@ -33,6 +34,7 @@ from modules.form15cb_constants import (
     XML_CREATED_BY,
 )
 from modules.logger import get_logger
+from modules.master_lookups import split_dtaa_article_text
 
 
 logger = get_logger()
@@ -70,6 +72,13 @@ def _fmt_num(n: Optional[float]) -> str:
     return str(int(n)) if float(n).is_integer() else f"{n:.2f}".rstrip("0").rstrip(".")
 
 
+def _round_to_int(value: float) -> int:
+    try:
+        return int(Decimal(str(value)).quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    except (InvalidOperation, ValueError):
+        return int(round(value))
+
+
 def _build_name_remittee(beneficiary: str, invoice_no: str, dotted_date: str) -> str:
     b = str(beneficiary or "").strip().upper()
     inv = str(invoice_no or "").strip()
@@ -94,8 +103,9 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     invoice_id = str(meta.get("invoice_id") or "")
     exchange_rate = _to_float(str(meta.get("exchange_rate") or "")) or 0.0
     fcy = _to_float(str(form.get("AmtPayForgnRem") or extracted.get("amount") or "")) or 0.0
-    inr = fcy * exchange_rate
-    computed["inr_amount"] = _fmt_num(inr)
+    inr_exact = fcy * exchange_rate
+    inr = float(_round_to_int(inr_exact))
+    computed["inr_amount"] = str(int(inr))
     form["AmtPayIndRem"] = computed["inr_amount"]
     if not form.get("AmtPayForgnRem"):
         form["AmtPayForgnRem"] = _fmt_num(fcy)
@@ -124,7 +134,7 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         invoice_id,
         mode,
         _fmt_num(fcy),
-        _fmt_num(inr),
+        computed["inr_amount"],
         _fmt_num(exchange_rate),
         computed["dtaa_rate_percent"],
     )
@@ -138,12 +148,12 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         actual_fcy = fcy - tds_fcy
 
         # INR tax amounts should be whole rupees (rounded)
-        form["TaxLiablIt"] = _fmt_num(int(round(it_liab)))
-        form["TaxIncDtaa"] = _fmt_num(int(round(inr)))
-        form["TaxLiablDtaa"] = _fmt_num(int(round(dtaa_liab)))
+        form["TaxLiablIt"] = _fmt_num(_round_to_int(it_liab))
+        form["TaxIncDtaa"] = _fmt_num(_round_to_int(inr))
+        form["TaxLiablDtaa"] = _fmt_num(_round_to_int(dtaa_liab))
         # Foreign currency TDS and actual remittance keep up to 2 decimals
         form["AmtPayForgnTds"] = _fmt_num(tds_fcy)
-        form["AmtPayIndianTds"] = _fmt_num(int(round(tds_inr)))
+        form["AmtPayIndianTds"] = _fmt_num(_round_to_int(tds_inr))
         form["ActlAmtTdsForgn"] = _fmt_num(actual_fcy)
         form["RateTdsSecB"] = _fmt_num(dtaa_rate_percent)
         form["RateTdsADtaa"] = _fmt_num(dtaa_rate_percent)
@@ -207,6 +217,14 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
 
     name_remitter = f"{remitter_name}. {remitter_address}".strip(". ").strip()
     name_remittee = _build_name_remittee(beneficiary, invoice_no, dotted)
+    raw_relevant_dtaa = str(form.get("RelevantDtaa") or "").strip()
+    raw_relevant_article = str(form.get("RelevantArtDtaa") or form.get("ArtDtaa") or "").strip()
+    dtaa_source = raw_relevant_article or raw_relevant_dtaa
+    dtaa_without_article, dtaa_with_article = split_dtaa_article_text(dtaa_source)
+    if not dtaa_without_article:
+        dtaa_without_article = raw_relevant_dtaa
+    if not dtaa_with_article:
+        dtaa_with_article = raw_relevant_article
 
     out: Dict[str, str] = {
         "SWVersionNo": SW_VERSION_NO,
@@ -253,12 +271,12 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
         "TaxLiablIt": str(form.get("TaxLiablIt") or ""),
         "BasisDeterTax": str(form.get("BasisDeterTax") or ""),
         "TaxResidCert": TAX_RESID_CERT_Y,
-        "RelevantDtaa": str(form.get("RelevantDtaa") or ""),
-        "RelevantArtDtaa": str(form.get("RelevantArtDtaa") or ""),
+        "RelevantDtaa": dtaa_without_article,
+        "RelevantArtDtaa": dtaa_with_article,
         "TaxIncDtaa": str(form.get("TaxIncDtaa") or ""),
         "TaxLiablDtaa": str(form.get("TaxLiablDtaa") or ""),
         "RemForRoyFlg": str(form.get("RemForRoyFlg") or ("Y" if mode == MODE_TDS else "N")),
-        "ArtDtaa": str(form.get("ArtDtaa") or ""),
+        "ArtDtaa": dtaa_with_article,
         "RateTdsADtaa": str(form.get("RateTdsADtaa") or ""),
         "RemAcctBusIncFlg": str(form.get("RemAcctBusIncFlg") or "N"),
         "IncLiabIndiaFlg": INC_LIAB_INDIA_ALWAYS,
