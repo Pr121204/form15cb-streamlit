@@ -4,5 +4,6 @@ __pycache__/
 *.pyc
 data/input/
 data/output/
+data/logs/
 config/
 .streamlit/secrets.toml
