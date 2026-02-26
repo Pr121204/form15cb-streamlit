@@ -1389,6 +1389,131 @@ def keyword_fallback(ocr_text: str) -> tuple[str, str, str]:
     return nature, group, code
 
 
+def merge_multi_page_image_extractions(page_results: List[Dict[str, str]]) -> Tuple[Dict[str, str], Dict[str, object]]:
+    """
+    Merge per-page image extraction results for scanned multi-page PDFs.
+
+    Rules:
+    - amount: choose highest-confidence non-empty candidate; if tie, earliest page.
+    - currency_short: prefer the currency from amount-selected page, else first non-empty.
+    - invoice_number/date: first non-empty stable value.
+    - party/address/country fields: longest non-empty value wins.
+    - nature/purpose: first non-empty value.
+    """
+    merged: Dict[str, str] = {
+        "remitter_name": "",
+        "remitter_address": "",
+        "beneficiary_name": "",
+        "invoice_number": "",
+        "invoice_date_raw": "",
+        "invoice_date_iso": "",
+        "invoice_date_display": "",
+        "amount": "",
+        "currency_short": "",
+        "nature_of_remittance": "",
+        "purpose_group": "",
+        "purpose_code": "",
+        "beneficiary_country_text": "",
+        "remitter_country_text": "",
+    }
+    meta: Dict[str, object] = {
+        "pages_considered": len(page_results),
+        "amount_selected_page": 0,
+        "currency_selected_page": 0,
+        "amount_conflict": False,
+        "amount_candidates": [],
+    }
+    if not page_results:
+        return merged, meta
+
+    amount_candidates: List[Dict[str, object]] = []
+    for idx, row in enumerate(page_results, start=1):
+        amount = _normalize_amount(str(row.get("amount") or ""))
+        if not amount:
+            continue
+        score = 0
+        if str(row.get("currency_short") or "").strip():
+            score += 2
+        if str(row.get("invoice_number") or "").strip():
+            score += 2
+        if str(row.get("invoice_date_iso") or row.get("invoice_date_raw") or "").strip():
+            score += 1
+        if str(row.get("beneficiary_name") or "").strip():
+            score += 1
+        if str(row.get("remitter_name") or "").strip():
+            score += 1
+        amount_candidates.append(
+            {
+                "page": idx,
+                "amount": amount,
+                "score": score,
+                "currency_short": str(row.get("currency_short") or "").strip().upper(),
+            }
+        )
+    meta["amount_candidates"] = amount_candidates
+    unique_amounts = {str(c["amount"]) for c in amount_candidates}
+    meta["amount_conflict"] = len(unique_amounts) > 1
+    if meta["amount_conflict"]:
+        logger.warning("image_multi_page_amount_conflict candidates=%s", amount_candidates)
+
+    selected_amount_page = 0
+    selected_currency_page = 0
+    if amount_candidates:
+        best = sorted(amount_candidates, key=lambda c: (-int(c["score"]), int(c["page"])))[0]
+        selected_amount_page = int(best["page"])
+        merged["amount"] = str(best["amount"])
+        meta["amount_selected_page"] = selected_amount_page
+        if str(best.get("currency_short") or "").strip():
+            merged["currency_short"] = str(best.get("currency_short") or "").strip().upper()
+            selected_currency_page = selected_amount_page
+            meta["currency_selected_page"] = selected_currency_page
+
+    def _pick_first_non_empty(keys: List[str]) -> str:
+        for row in page_results:
+            for k in keys:
+                v = str(row.get(k) or "").strip()
+                if v:
+                    return v
+        return ""
+
+    def _pick_longest(key: str) -> str:
+        best_val = ""
+        for row in page_results:
+            v = str(row.get(key) or "").strip()
+            if len(v) > len(best_val):
+                best_val = v
+        return best_val
+
+    if not merged["currency_short"]:
+        for idx, row in enumerate(page_results, start=1):
+            v = str(row.get("currency_short") or "").strip().upper()
+            if v:
+                merged["currency_short"] = v
+                selected_currency_page = idx
+                meta["currency_selected_page"] = selected_currency_page
+                break
+
+    merged["invoice_number"] = _pick_first_non_empty(["invoice_number"])
+    merged["invoice_date_iso"] = _pick_first_non_empty(["invoice_date_iso"])
+    merged["invoice_date_raw"] = _pick_first_non_empty(["invoice_date_raw"])
+    merged["invoice_date_display"] = _pick_first_non_empty(["invoice_date_display"])
+    merged["remitter_name"] = _pick_longest("remitter_name")
+    merged["beneficiary_name"] = _pick_longest("beneficiary_name")
+    merged["remitter_address"] = _pick_longest("remitter_address")
+    merged["beneficiary_address"] = _pick_longest("beneficiary_address")
+    merged["remitter_country_text"] = _pick_longest("remitter_country_text")
+    merged["beneficiary_country_text"] = _pick_longest("beneficiary_country_text")
+    merged["nature_of_remittance"] = _pick_first_non_empty(["nature_of_remittance"])
+    merged["purpose_code"] = _pick_first_non_empty(["purpose_code"])
+    if merged["purpose_code"]:
+        derived_group = _purpose_group_for_code(merged["purpose_code"])
+        merged["purpose_group"] = derived_group or _pick_first_non_empty(["purpose_group"])
+    else:
+        merged["purpose_group"] = _pick_first_non_empty(["purpose_group"])
+
+    return merged, meta
+
+
 def extract_invoice_core_fields(text: str) -> Dict[str, str]:
     text = normalize_invoice_text(str(text or ""), keep_newlines=True)
     out = {

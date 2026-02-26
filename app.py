@@ -7,6 +7,13 @@ from typing import Dict, List
 
 import streamlit as st
 
+from modules.auth import require_login, render_logout_button
+
+if not require_login():
+    st.stop()
+
+render_logout_button()   # shows user photo + Sign Out in sidebar
+
 from modules.batch_form_ui import render_invoice_tab
 from modules.currency_mapping import (
     get_upload_currency_select_options,
@@ -17,7 +24,11 @@ from modules.currency_mapping import (
 from modules.file_manager import ensure_folders, save_uploaded_file
 from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
 from modules.invoice_calculator import invoice_state_to_xml_fields, recompute_invoice
-from modules.invoice_gemini_extractor import extract_invoice_core_fields, extract_invoice_core_fields_from_image
+from modules.invoice_gemini_extractor import (
+    extract_invoice_core_fields,
+    extract_invoice_core_fields_from_image,
+    merge_multi_page_image_extractions,
+)
 from pdf2image import convert_from_bytes
 from modules.invoice_state import build_invoice_state
 from modules.logger import get_logger
@@ -34,6 +45,7 @@ from modules.xml_generator import (
 
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
+MAX_SCANNED_PDF_PAGES = max(1, int(os.getenv("MAX_SCANNED_PDF_PAGES", "6")))
 VERSION = "3.0"
 LAST_UPDATED = "February 2026"
 
@@ -203,14 +215,41 @@ if uploaded_files:
                         # Use text-based extraction when PDF text is sufficient
                         extracted = extract_invoice_core_fields(text)
                     else:
-                        # Convert first PDF page to image and call image extractor
+                        # Convert scanned PDF pages to images and aggregate extraction.
                         try:
                             images = convert_from_bytes(file_bytes, dpi=300)
                             if images:
-                                buf = io.BytesIO()
-                                images[0].save(buf, format='JPEG', quality=90)
-                                image_bytes = buf.getvalue()
-                                extracted = extract_invoice_core_fields_from_image(image_bytes)
+                                selected_pages = images[:MAX_SCANNED_PDF_PAGES]
+                                logger.info(
+                                    "pdf_image_fallback_pages file=%s total_pages=%s processed_pages=%s",
+                                    file.name,
+                                    len(images),
+                                    len(selected_pages),
+                                )
+                                page_results: List[Dict[str, str]] = []
+                                for page_idx, page_img in enumerate(selected_pages, start=1):
+                                    buf = io.BytesIO()
+                                    page_img.save(buf, format='JPEG', quality=90)
+                                    image_bytes = buf.getvalue()
+                                    page_extracted = extract_invoice_core_fields_from_image(image_bytes)
+                                    page_results.append(page_extracted)
+                                    logger.info(
+                                        "pdf_image_page_extracted file=%s page=%s summary=%s",
+                                        file.name,
+                                        page_idx,
+                                        {
+                                            "invoice_number": page_extracted.get("invoice_number", ""),
+                                            "amount": page_extracted.get("amount", ""),
+                                            "currency_short": page_extracted.get("currency_short", ""),
+                                            "remitter_name": page_extracted.get("remitter_name", ""),
+                                            "beneficiary_name": page_extracted.get("beneficiary_name", ""),
+                                        },
+                                    )
+                                if len(page_results) == 1:
+                                    extracted = page_results[0]
+                                else:
+                                    extracted, merge_meta = merge_multi_page_image_extractions(page_results)
+                                    logger.info("pdf_image_multi_page_merged file=%s meta=%s", file.name, merge_meta)
                             else:
                                 extracted = extract_invoice_core_fields(text)
                         except Exception as e:

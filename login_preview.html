@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form 15CB — Sign In Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;background:#080c14;font-family:'Jost',sans-serif;}
+
+.shell{
+  display:grid;
+  grid-template-columns:1fr 480px;
+  height:100vh;
+}
+
+/* ── LEFT ── */
+.left{position:relative;overflow:hidden;}
+.left-img{
+  position:absolute;inset:0;
+  background-image:url('https://oqpi.in/wp-content/uploads/2021/08/young-successful-businessman-sitting-workplace-office-background-1-1.jpg');
+  background-size:cover;background-position:center 20%;
+  filter:brightness(0.52) saturate(0.8);
+  transform:scale(1.04);
+  animation:zoomIn 14s ease-out forwards;
+}
+@keyframes zoomIn{from{transform:scale(1.04);}to{transform:scale(1.0);}}
+.g1{position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,12,20,.6) 0%,rgba(8,12,20,.15) 50%,rgba(201,168,76,.07) 100%);}
+.g2{position:absolute;inset:0;background:linear-gradient(to right,rgba(8,12,20,0) 55%,rgba(8,12,20,.97) 100%);}
+.g3{position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(8,12,20,.94) 0%,transparent 100%);}
+
+.left-content{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px 52px;
+  animation:fadeUp 1s .3s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-icon{
+  width:38px;height:38px;
+  border:1.5px solid rgba(201,168,76,.7);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;
+  background:rgba(201,168,76,.1);
+  backdrop-filter:blur(4px);
+}
+.brand-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:500;
+  color:#f0ede8;letter-spacing:.04em;
+}
+.brand-name span{color:#c9a84c;}
+
+.hero{max-width:520px;}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(201,168,76,.12);
+  border:1px solid rgba(201,168,76,.3);
+  border-radius:999px;padding:5px 14px;
+  font-size:11px;color:rgba(201,168,76,.9);
+  letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:22px;
+}
+.pill-dot{
+  width:5px;height:5px;background:#c9a84c;
+  border-radius:50%;animation:blink 2.2s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(36px,4vw,58px);font-weight:600;
+  color:#f0ede8;line-height:1.08;
+  margin:0 0 20px;
+  text-shadow:0 2px 28px rgba(0,0,0,.5);
+}
+.hero h1 em{font-style:italic;color:#c9a84c;}
+.hero p{
+  font-size:15px;font-weight:300;
+  color:rgba(240,237,232,.68);
+  line-height:1.78;margin:0 0 36px;max-width:400px;
+}
+.features{display:flex;flex-wrap:wrap;gap:10px;}
+.feat{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:8px 14px;
+  font-size:12.5px;color:rgba(240,237,232,.72);
+}
+
+.left-footer{
+  font-size:11.5px;
+  color:rgba(240,237,232,.28);
+  letter-spacing:.06em;
+}
+
+/* ── RIGHT ── */
+.right{
+  background:#080c14;
+  border-left:1px solid rgba(201,168,76,.1);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:56px 48px;
+  animation:slideIn .6s .1s ease both;
+  position:relative;overflow:hidden;
+}
+@keyframes slideIn{from{opacity:0;transform:translateX(24px);}to{opacity:1;transform:translateX(0);}}
+.right::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;
+}
+.right::after{
+  content:'';position:absolute;
+  top:-120px;right:-120px;
+  width:360px;height:360px;
+  background:radial-gradient(circle,rgba(201,168,76,.07) 0%,transparent 65%);
+  pointer-events:none;
+}
+.right-inner{position:relative;z-index:1;}
+
+.tag{
+  font-size:11px;letter-spacing:.12em;
+  color:#c9a84c;text-transform:uppercase;
+  margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.tag::after{content:'';flex:1;height:1px;background:rgba(201,168,76,.2);}
+
+.right h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:38px;font-weight:600;
+  color:#f0ede8;margin:0 0 6px;line-height:1.12;
+}
+.right-sub{
+  font-size:14px;color:#6b7485;
+  margin-bottom:38px;line-height:1.65;
+}
+
+.btn-wrap{
+  background:#0f1520;
+  border:1px solid rgba(201,168,76,.2);
+  border-radius:12px;
+  padding:22px;margin-bottom:26px;
+}
+.btn-label{
+  font-size:11px;letter-spacing:.08em;
+  color:#6b7485;text-transform:uppercase;
+  margin-bottom:13px;
+}
+.google-btn{
+  width:100%;
+  background:#131926;
+  color:#f0ede8;
+  border:1px solid rgba(201,168,76,.25);
+  border-radius:10px;
+  font-family:'Jost',sans-serif;
+  font-size:14.5px;font-weight:400;
+  padding:14px 20px;
+  letter-spacing:.02em;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  transition:all .25s ease;
+}
+.google-btn:hover{
+  background:#1a2235;
+  border-color:rgba(201,168,76,.55);
+  box-shadow:0 0 0 3px rgba(201,168,76,.07),0 4px 24px rgba(0,0,0,.4);
+  transform:translateY(-1px);
+}
+
+.trust{display:flex;flex-direction:column;gap:10px;margin-bottom:30px;}
+.trust-item{
+  display:flex;align-items:center;gap:10px;
+  font-size:12.5px;color:#4a5166;
+}
+.trust-icon{
+  width:24px;height:24px;
+  border:1px solid rgba(201,168,76,.15);
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;
+  background:rgba(201,168,76,.04);
+  flex-shrink:0;
+}
+
+.right-footer{
+  font-size:11px;
+  color:rgba(107,116,133,.45);
+  letter-spacing:.04em;
+  border-top:1px solid rgba(201,168,76,.08);
+  padding-top:18px;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div class="left-img"></div>
+    <div class="g1"></div><div class="g2"></div><div class="g3"></div>
+    <div class="left-content">
+      <div class="brand">
+        <div class="brand-icon">📋</div>
+        <div class="brand-name">Form <span>15CB</span></div>
+      </div>
+      <div class="hero">
+        <div class="pill"><div class="pill-dot"></div>Certified CA Platform</div>
+        <h1>Remittance<br>certificates,<br><em>done right.</em></h1>
+        <p>Upload invoices, let AI extract every field, auto-apply DTAA rates, and generate Income Tax–compliant Form 15CB XMLs — in minutes, not hours.</p>
+        <div class="features">
+          <div class="feat">🤖 Gemini AI Extraction</div>
+          <div class="feat">🌍 35+ Country DTAA</div>
+          <div class="feat">⚡ Batch Processing</div>
+          <div class="feat">✅ XML Validation</div>
+        </div>
+      </div>
+      <div class="left-footer">ANAND S & ASSOCIATES &nbsp;·&nbsp; FORM 15CB v3.0</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="right-inner">
+      <div class="tag">Secure Access</div>
+      <h2>Welcome<br>back.</h2>
+      <div class="right-sub">Sign in to access the Form 15CB<br>batch generator platform.</div>
+
+      <div class="btn-wrap">
+        <div class="btn-label">Continue with</div>
+        <button class="google-btn">
+          <svg width="19" height="19" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Sign in with Google
+        </button>
+      </div>
+
+      <div class="trust">
+        <div class="trust-item"><div class="trust-icon">🔒</div>Secured with Google OAuth 2.0</div>
+        <div class="trust-item"><div class="trust-icon">🛡️</div>Session encrypted &amp; protected</div>
+        <div class="trust-item"><div class="trust-icon">📋</div>Access restricted to authorised CA team</div>
+      </div>
+
+      <div class="right-footer">© 2026 Anand S & Associates &nbsp;·&nbsp; All rights reserved</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -13,6 +13,7 @@ from modules.invoice_gemini_extractor import (
     _infer_nature_from_text,
     _is_valid_purpose_code,
     _purpose_group_for_code,
+    merge_multi_page_image_extractions,
     normalize_party_roles,
     parse_invoice_date,
 )
@@ -201,6 +202,58 @@ Invoice No: INV-10"""
     def test_infer_nature_from_text_consulting(self) -> None:
         inferred = _infer_nature_from_text("Consulting services rendered for product implementation")
         self.assertTrue(bool(inferred))
+
+    def test_multi_page_merge_picks_amount_from_second_page(self) -> None:
+        page1 = {
+            "remitter_name": "BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED",
+            "beneficiary_name": "BOSCH GLOBAL SOFTWARE TECHNOLOGIES GMBH",
+            "invoice_number": "299997708",
+            "amount": "",
+            "currency_short": "",
+        }
+        page2 = {
+            "invoice_number": "299997708",
+            "amount": "178269.98",
+            "currency_short": "EUR",
+        }
+        merged, meta = merge_multi_page_image_extractions([page1, page2])
+        self.assertEqual(merged.get("amount"), "178269.98")
+        self.assertEqual(merged.get("currency_short"), "EUR")
+        self.assertEqual(meta.get("amount_selected_page"), 2)
+        self.assertEqual(meta.get("currency_selected_page"), 2)
+
+    def test_multi_page_merge_preserves_page1_names_and_uses_page2_amount(self) -> None:
+        page1 = {
+            "remitter_name": "BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED",
+            "beneficiary_name": "BOSCH GLOBAL SOFTWARE TECHNOLOGIES GMBH",
+            "remitter_address": "123 INDUSTRIAL LAYOUT HOSUR ROAD BANGALORE INDIA",
+            "invoice_number": "299997708",
+        }
+        page2 = {
+            "amount": "178269.98",
+            "currency_short": "EUR",
+        }
+        merged, _ = merge_multi_page_image_extractions([page1, page2])
+        self.assertEqual(merged.get("remitter_name"), page1["remitter_name"])
+        self.assertEqual(merged.get("beneficiary_name"), page1["beneficiary_name"])
+        self.assertEqual(merged.get("amount"), "178269.98")
+        self.assertEqual(merged.get("currency_short"), "EUR")
+
+    def test_multi_page_merge_conflicting_amounts_flags_conflict_and_selects_best(self) -> None:
+        page1 = {
+            "invoice_number": "INV-1",
+            "amount": "100.00",
+            "currency_short": "",
+        }
+        page2 = {
+            "invoice_number": "INV-1",
+            "amount": "200.00",
+            "currency_short": "EUR",
+        }
+        merged, meta = merge_multi_page_image_extractions([page1, page2])
+        self.assertTrue(bool(meta.get("amount_conflict")))
+        self.assertEqual(merged.get("amount"), "200.00")
+        self.assertEqual(meta.get("amount_selected_page"), 2)
 
 
 if __name__ == "__main__":

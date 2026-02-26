@@ -7,3 +7,4 @@ opencv-python-headless
 google-genai
 python-dotenv
 python-dateutil
+streamlit-google-auth
