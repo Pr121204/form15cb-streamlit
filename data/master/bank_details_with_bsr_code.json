@@ -265,6 +265,14 @@
     "BSR code of the bank branch (7 digit)": 6500120
   },
   {
+        "SL NO": 9,
+        "Name": "BOSCH GLOBAL SOFTWARE TECH. PVT LTD",
+        "PAN": "AAACR7108R",
+        "Name of Bank": "Deutsche Bank",
+        "Branch of the bank": "MG ROAD, BANGALORE",
+        "BSR code of the bank branch (7 digit)": 6550003
+    },
+  {
     "SL NO": 116,
     "Name": "MiViN",
     "PAN": "AADCM2694Q",
