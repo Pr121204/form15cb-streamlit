@@ -7,12 +7,12 @@ from typing import Dict, List
 
 import streamlit as st
 
-from modules.auth import require_login, render_logout_button
-
-if not require_login():
-    st.stop()
-
-render_logout_button()   # shows user photo + Sign Out in sidebar
+# from modules.auth import require_login, render_logout_button
+#
+# if not require_login():
+#     st.stop()
+#
+# render_logout_button()   # shows user photo + Sign Out in sidebar
 
 from modules.batch_form_ui import render_invoice_tab
 from modules.currency_mapping import (
