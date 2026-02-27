@@ -113,8 +113,10 @@ class TestInvoiceState(unittest.TestCase):
             {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
         )
         form = state["form"]
-        self.assertEqual(form.get("CountryRemMadeSecb"), "9999")
-        self.assertEqual(form.get("RemitteeCountryCode"), "9999")
+        # When no country and no phone prefix can be inferred, leave country blank
+        # so the user must explicitly select it.
+        self.assertEqual(form.get("CountryRemMadeSecb"), "")
+        self.assertEqual(form.get("RemitteeCountryCode"), "")
 
     def test_splits_slash_separated_beneficiary_address(self) -> None:
         state = build_invoice_state(
@@ -225,6 +227,24 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Minarelicavus Bursa OSB Mah. Yesil Cad. No:15 Nilufer")
         self.assertEqual(form.get("RemitteeAreaLocality"), "16140")
         self.assertEqual(form.get("RemitteeTownCityDistrict"), "Bursa")
+
+    def test_parse_german_style_beneficiary_address_street_zip_city(self) -> None:
+        state = build_invoice_state(
+            "inv12",
+            "a.pdf",
+            {
+                "remitter_name": "Bosch Limited",
+                "beneficiary_name": "Back Office Associates Germany GmbH",
+                "beneficiary_address": "Musterstrasse 12, 70376 Stuttgart",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Musterstrasse 12")
+        self.assertEqual(form.get("RemitteeAreaLocality"), "70376")
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "Stuttgart")
 
     def test_dtaa_fields_are_split_into_relevant_and_article_variants(self) -> None:
         state = build_invoice_state(

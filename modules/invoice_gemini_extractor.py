@@ -180,9 +180,8 @@ def _generate_with_gemini_image(prompt: str, image_path_or_bytes: Union[str, byt
         base64_image = _encode_image_to_base64(image_path_or_bytes)
         genai.configure(api_key=GEMINI_API_KEY)
         model = genai.GenerativeModel(GEMINI_MODEL_NAME)
-        from google.generativeai.types import content_types
-
-        image_part = content_types.PartDict(mime_type=mime_type, data=base64_image)
+        # Pass image content as a simple dict payload to avoid extra type-only imports.
+        image_part = {"mime_type": mime_type, "data": base64_image}
         response = model.generate_content(
             [prompt, image_part],
             generation_config=genai.types.GenerationConfig(
@@ -293,15 +292,16 @@ CRITICAL REQUIREMENTS:
 1. Extract COMPLETE addresses - do not truncate or abbreviate
 2. Extract FULL company names - no abbreviations
 3. Identify countries explicitly from addresses, not assumptions
-4. Return data as clean JSON only (no explanations or markdown)
+4. Use ALL visual elements of the PDF (header, footer, letterhead, logo area, registration blocks) when identifying company names.
+5. Return data as clean JSON only (no explanations or markdown)
 
 EXTRACT THESE FIELDS:
 {
   "remitter_name": "exact FULL legal company name of the sender/issuer/from-party (the company paying the invoice)",
   "remitter_address": "COMPLETE full address of the sender/issuer including street, city, postal code, and country",
   "remitter_country": "country name of remitter extracted from their address",
-  "beneficiary_name": "exact FULL legal company name of the recipient/to-party/bill-to party (the company being paid); **NEVER use an email address or domain as the beneficiary name** (ignore strings like "SSC-ADMIN@EXPLEOGROUP.COM").",
-  "beneficiary_address": "COMPLETE full address of the recipient including street, city, postal code",
+  "beneficiary_name": "exact FULL legal company name of the recipient/to-party/bill-to party (the FOREIGN company being paid).",
+  "beneficiary_address": "COMPLETE full address of the recipient as a single string in the format 'Street Name + Number, ZIP City' (e.g. 'Stollwerckstrasse 11, 51149 Koln'). If multiple address lines exist, join them with commas. Always put street first, then ZIP code, then city name. Do not include the country name here; that must go in beneficiary_country separately.",
   "beneficiary_country": "country name of beneficiary extracted from their address (NOT from remitter address)",
   "invoice_number": "invoice number or reference number as printed on the document",
   "invoice_date": "date in DD/MM/YYYY format",
@@ -344,17 +344,38 @@ CRITICAL INSTRUCTIONS FOR ACCURACY:
    - Return FULL country name (e.g., "Germany" not "DE")
    - Do NOT infer country from email domains or addresses containing only an email; rely on physical location text such as street, postal code, VAT ID, or country name.
 
-5. EUROPEAN NUMBER FORMAT:
+5. BENEFICIARY NAME EXTRACTION RULES (VISUAL PDF INPUT):
+   - You are reading the full PDF visually. Use ALL visual elements — header, footer, letterhead,
+     logo area, and any registration or small-print legal blocks.
+   - The beneficiary is the FOREIGN company who issued this invoice / is being paid (the seller/exporter),
+     not the Indian remitter.
+   - Look specifically in these locations to identify the beneficiary name:
+     (a) Top-left or top-center: usually the company logo + brand + name.
+     (b) Bottom footer: registration line such as
+         "Expleo Technology Germany GmbH • HRB 98200 • ...".
+     (c) Any block that contains HRB/HRA (German court registration), VAT ID (e.g. "DE..."),
+         IBAN, or BIC/SWIFT codes — the full legal company name is almost always very close
+         to these identifiers.
+   - Legal suffixes to look for when deciding on the final beneficiary name include:
+     GmbH, LLC, Ltd, PLC, AG, SA, BV, NV, SRL, AB, Corp, Inc, SAS, KG, SARL, Oy, AS.
+   - NEVER return an email address or domain (like "EXPLEOGROUP.COM") as the beneficiary name.
+     If you see an email or domain near the logo or footer, treat it as a clue and look nearby
+     for the actual company name with a legal suffix, and return that company name instead.
+   - If the top of the invoice shows only a logo/brand name without a legal suffix (for example
+     "{ expleo }"), scan the footer and registration blocks for the full legal entity name
+     (for example "Expleo Technology Germany GmbH") and return that full legal name.
+
+6. EUROPEAN NUMBER FORMAT:
    - Some invoices use European format: comma for decimal (65,00 = 65.00), period for thousands (1.234,56 = 1234.56)
    - Should return normalized: "65.00" not "65,00"
    - Always extract NET TOTAL, not line items
 
-6. INVOICE DATES:
+7. INVOICE DATES:
    - Look for "Invoice Date", "Date", "Datum", "Data", "Fecha"
    - Return in DD/MM/YYYY format
    - Common formats you might see: DD/MM/YYYY, DD.MM.YYYY, YYYY-MM-DD
 
-7. AMOUNT AND CURRENCY:
+8. AMOUNT AND CURRENCY:
    - Extract TOTAL invoice amount (not line items)
    - Remove all currency symbols and formatting
    - Return pure number: "1245.67" (not "1.245,67 EUR")
