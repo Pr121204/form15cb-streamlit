@@ -16,6 +16,7 @@ from modules.invoice_gemini_extractor import (
     merge_multi_page_image_extractions,
     normalize_party_roles,
     parse_invoice_date,
+    keyword_fallback,
 )
 from modules.invoice_gemini_extractor import extract_invoice_core_fields
 from modules.text_normalizer import is_ascii_clean
@@ -179,6 +180,13 @@ class TestInvoiceGeminiExtractor(unittest.TestCase):
         self.assertEqual(out.get("beneficiary_zip_text"), "70049")
         self.assertEqual(out.get("beneficiary_city"), "Stuttgart")
 
+    def test_keyword_fallback_detects_training_and_variants(self) -> None:
+        text = "Invoice for SWE-RE English training workshop and trainer fees"
+        nat, grp, cd = keyword_fallback(text)
+        self.assertEqual(nat, "FEES FOR TECHNICAL SERVICES")
+        self.assertEqual(grp, "Other Business Services")
+        self.assertEqual(cd, "S1023")
+
     def test_purpose_code_validation_and_group_derivation(self) -> None:
         grouped = load_purpose_grouped()
         sample_group = next(iter(grouped.keys()))
@@ -198,6 +206,21 @@ Invoice No: INV-10"""
     def test_finalize_sets_remitter_country_india_for_indian_entity(self) -> None:
         out = _finalize_extracted_fields({"remitter_name": "Myntra Jabong India Private Limited"}, "")
         self.assertEqual(out.get("remitter_country_text", ""), "India")
+
+    def test_normalize_company_name_strips_domains_and_spaces_suffix(self) -> None:
+        # domain suffix should be removed and GROUP split
+        from modules.invoice_gemini_extractor import _normalize_company_name
+
+        self.assertEqual(_normalize_company_name("EXPLEOGROUP.COM"), "EXPLEO GROUP")
+        self.assertEqual(_normalize_company_name("foo.bar.NET"), "FOO BAR")
+        self.assertEqual(_normalize_company_name("ACMEINC"), "ACME INC")
+
+    def test_finalize_cleans_domain_name_and_infers_country(self) -> None:
+        text = "Some header line\n+49 3581 76726\nDE-50968\n"
+        out = _finalize_extracted_fields({"beneficiary_name": "EXPLEOGROUP.COM"}, text)
+        self.assertEqual(out.get("beneficiary_name"), "EXPLEO GROUP")
+        # context contains german indicators so country should be set
+        self.assertEqual(out.get("beneficiary_country_text"), "Germany")
 
     def test_infer_nature_from_text_consulting(self) -> None:
         inferred = _infer_nature_from_text("Consulting services rendered for product implementation")

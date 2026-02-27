@@ -24,6 +24,65 @@ from modules.master_lookups import (
 )
 from modules.text_normalizer import normalize_single_line_text
 
+# CHANGE 2: Phone prefix to country code mapping for low-confidence inference
+PHONE_PREFIX_TO_COUNTRY = {
+    "+1": "1",      # United States
+    "+7": "146",    # Russia
+    "+20": "45",    # Egypt
+    "+27": "164",   # South Africa
+    "+30": "72",    # Greece
+    "+31": "131",   # Netherlands
+    "+32": "29",    # Belgium
+    "+33": "64",    # France
+    "+34": "166",   # Spain
+    "+39": "112",   # Italy
+    "+41": "169",   # Switzerland
+    "+43": "20",    # Austria
+    "+44": "114",   # United Kingdom
+    "+49": "49",    # Germany
+    "+51": "143",   # Peru
+    "+52": "127",   # Mexico
+    "+54": "12",    # Argentina
+    "+55": "35",    # Brazil
+    "+56": "39",    # Chile
+    "+60": "126",   # Malaysia
+    "+61": "22",    # Australia
+    "+62": "107",   # Indonesia
+    "+63": "141",   # Philippines
+    "+64": "133",   # New Zealand
+    "+65": "157",   # Singapore
+    "+66": "177",   # Thailand
+    "+81": "111",   # Japan
+    "+82": "121",   # South Korea
+    "+84": "188",   # Vietnam
+    "+86": "38",    # China
+    "+90": "179",   # Turkey
+    "+91": "91",    # India
+    "+92": "138",   # Pakistan
+    "+93": "19",    # Afghanistan
+    "+94": "158",   # Sri Lanka
+    "+95": "130",   # Myanmar
+    "+98": "109",   # Iran
+}
+
+
+def _infer_country_from_phone_prefix(text: str) -> str:
+    """
+    CHANGE 2: Search text for international phone prefixes and infer country code.
+    Returns country code (e.g., '49' for Germany) or empty string if not found.
+    """
+    if not text:
+        return ""
+    text_upper = str(text or "").upper()
+    # Look for patterns like +49, +1, etc.
+    for prefix, country_code in PHONE_PREFIX_TO_COUNTRY.items():
+        # Build pattern to match the prefix followed by optional space and digit
+        escaped_prefix = re.escape(prefix)
+        pattern = escaped_prefix + r"\s*\d"
+        if re.search(pattern, text_upper):
+            return country_code
+    return ""
+
 logger = get_logger()
 
 
@@ -32,10 +91,14 @@ def _split_beneficiary_address(address: str) -> tuple[str, str, str]:
     if not text:
         return "", "", ""
 
+    # replace bullet-like separators with commas so later splitting works
+    # common bullet codepoints include • (U+2022) and variants
+    text = re.sub(r"[•\u2022\u2023\u25E6]+", ",", text)
+
     # Mexico-style fallback: "... <LOCALITY> C.P.:<ZIP> <CITY/DISTRICT>"
     # Example:
     #   CircuitoG.GonzalezCamarena333 SANTAFE ALVAROOBREGON C.P.:01210 DISTRITOFEDERAL
-    cp_match = re.search(r"\bC\.?\s*P\.?\s*:?\s*\d{4,6}\b.*$", text, flags=re.IGNORECASE)
+    cp_match = re.search(r"\bC\.?\s*P\.?\s*:?s*\d{4,6}\b.*$", text, flags=re.IGNORECASE)
     if cp_match:
         cp_segment = cp_match.group(0).strip(" ,")
         pre_cp = text[: cp_match.start()].strip(" ,")
@@ -87,9 +150,22 @@ def _split_beneficiary_address(address: str) -> tuple[str, str, str]:
     if len(parts) == 2:
         return parts[0], parts[1], parts[1]
 
+    # default assignment
     street = parts[0]
     locality = ", ".join(parts[1:-1]).strip(" ,")
     city = parts[-1]
+
+    # heuristic: if an earlier segment (before the city) contains a digit, it's
+    # very likely the street/flat information; shift accordingly so that the
+    # company name (or other prefix) is ignored.
+    if len(parts) >= 2:
+        for idx, seg in enumerate(parts[:-1]):
+            if re.search(r"\d", seg):
+                street = seg
+                # locality becomes any segments between this one and the city
+                mids = parts[idx+1:-1]
+                locality = ", ".join(mids).strip(" ,")
+                break
     return street, locality, city
 
 
@@ -213,14 +289,28 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
                 logger.warning("state_dtaa_not_found invoice_id=%s country_hint=%s", invoice_id, country_hint)
     else:
         # Never leave country blank; use OTHERS so user can still proceed and correct in UI.
-        form["RemitteeCountryCode"] = "9999"
-        form["CountryRemMadeSecb"] = "9999"
-        logger.warning(
-            "state_country_fallback_others invoice_id=%s beneficiary=%s country_text=%s",
-            invoice_id,
-            beneficiary_name,
-            beneficiary_country_text,
+        # CHANGE 2: Before falling back to 9999, try phone prefix inference
+        phone_country = _infer_country_from_phone_prefix(
+            f"{beneficiary_address} {beneficiary_country_text} {beneficiary_name}"
         )
+        if phone_country:
+            form["RemitteeCountryCode"] = phone_country
+            form["CountryRemMadeSecb"] = phone_country
+            form["_country_inference_confidence"] = "low"
+            logger.info(
+                "state_country_inferred_from_phone invoice_id=%s country_code=%s confidence=low",
+                invoice_id,
+                phone_country,
+            )
+        else:
+            form["RemitteeCountryCode"] = "9999"
+            form["CountryRemMadeSecb"] = "9999"
+            logger.warning(
+                "state_country_fallback_others invoice_id=%s beneficiary=%s country_text=%s",
+                invoice_id,
+                beneficiary_name,
+                beneficiary_country_text,
+            )
 
     # Seed remittee address fields from OCR/Gemini enrichment when available.
     if extracted.get("beneficiary_street"):

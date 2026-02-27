@@ -37,15 +37,23 @@ def _canonical_company_name(s: str) -> str:
     t = _normalize(s)
     if not t:
         return ""
+    token_map = {
+        "PVT": "PRIVATE",
+        "LTD": "LIMITED",
+        # Common invoice abbreviation seen in remitter names:
+        # "BOSCH GLOBAL SOFTWARE TECHN. PVT LTD" -> "... TECHNOLOGIES PRIVATE LIMITED"
+        "TECHN": "TECHNOLOGIES",
+        "TECHNOLOG": "TECHNOLOGIES",
+        "TECHNOLOGY": "TECHNOLOGIES",
+        # Solutions variants
+        "SOLUTION": "SOLUTIONS",
+        "SOLN": "SOLUTIONS",
+        "SOLNS": "SOLUTIONS",
+    }
     words = t.split()
     mapped: List[str] = []
     for w in words:
-        if w == "PVT":
-            mapped.append("PRIVATE")
-        elif w == "LTD":
-            mapped.append("LIMITED")
-        else:
-            mapped.append(w)
+        mapped.append(token_map.get(w, w))
     # Compact form is intentionally used to absorb master-data spacing errors.
     return "".join(mapped)
 
@@ -282,6 +290,105 @@ def get_bank_options() -> List[Tuple[str, str]]:
     return sorted(rows, key=lambda x: x[0])
 
 
+def _resolve_country_from_candidates(candidates: List[str]) -> str:
+    for country in candidates:
+        code = resolve_country_code(country)
+        if code:
+            return code
+    return ""
+
+
+# Broad alias coverage for invoice variants.
+# Values are candidate country names resolved via country master so code mapping stays data-driven.
+COUNTRY_ALIASES: Dict[str, List[str]] = {
+    # United States
+    "U.S.": ["USA"],
+    "U.S.A": ["USA"],
+    "U.S.A.": ["USA"],
+    "USA": ["USA"],
+    "UNITED STATES": ["USA"],
+    "US": ["USA"],
+    # United Kingdom
+    "U.K.": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "UK": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "GREAT BRITAIN": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "G.B.": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "GB": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "ENGLAND": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "SCOTLAND": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    "WALES": ["UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND", "UNITED KINGDOM"],
+    # Europe aliases
+    "DEUTSCHLAND": ["GERMANY"],
+    "FEDERAL REPUBLIC OF GERMANY": ["GERMANY"],
+    "ITALIA": ["ITALY"],
+    "ESPANA": ["SPAIN"],
+    "NEDERLAND": ["NETHERLANDS"],
+    "THE NETHERLANDS": ["NETHERLANDS"],
+    "HOLLAND": ["NETHERLANDS"],
+    "BELGIQUE": ["BELGIUM"],
+    "BELGIE": ["BELGIUM"],
+    "SCHWEIZ": ["SWITZERLAND"],
+    "SUISSE": ["SWITZERLAND"],
+    "SVIZZERA": ["SWITZERLAND"],
+    "OSTERREICH": ["AUSTRIA"],
+    "SVERIGE": ["SWEDEN"],
+    "NORGE": ["NORWAY"],
+    "DANMARK": ["DENMARK"],
+    "SUOMI": ["FINLAND"],
+    "POLSKA": ["POLAND"],
+    "CZECHIA": ["CZECH REPUBLIC"],
+    "CESKA REPUBLIKA": ["CZECH REPUBLIC"],
+    "EIRE": ["IRELAND"],
+    "LUXEMBURG": ["LUXEMBOURG"],
+    "MAGYARORSZAG": ["HUNGARY"],
+    "HELLAS": ["GREECE"],
+    "HRVATSKA": ["CROATIA"],
+    "SLOVENSKO": ["SLOVAKIA"],
+    "SLOVENIJA": ["SLOVENIA"],
+    # APAC
+    "SGP": ["SINGAPORE"],
+    "NIPPON": ["JAPAN"],
+    "PRC": ["CHINA"],
+    "PEOPLES REPUBLIC OF CHINA": ["CHINA"],
+    "REPUBLIC OF KOREA": ["SOUTH KOREA", "KOREA"],
+    "ROC": ["TAIWAN"],
+    "AOTEAROA": ["NEW ZEALAND"],
+    # Americas / MEA
+    "BRASIL": ["BRAZIL"],
+    "UAE": ["UNITED ARAB EMIRATES"],
+    "U.A.E.": ["UNITED ARAB EMIRATES"],
+    "KSA": ["SAUDI ARABIA"],
+    "KINGDOM OF SAUDI ARABIA": ["SAUDI ARABIA"],
+    "TURKIYE": ["TURKEY"],
+    "RSA": ["SOUTH AFRICA"],
+    "RUSSIAN FEDERATION": ["RUSSIA"],
+    "VIET NAM": ["VIETNAM"],
+    "BHARAT": ["INDIA"],
+}
+
+# High-confidence unique invoice markers.
+UNIQUE_COUNTRY_MARKERS: Dict[str, List[str]] = {
+    "NIPC": ["PORTUGAL"],
+    "ATCUD": ["PORTUGAL"],
+    "CNPJ": ["BRAZIL"],
+    "RFC": ["MEXICO"],
+    "CUIT": ["ARGENTINA"],
+    "VKN": ["TURKEY"],
+    "INN": ["RUSSIA"],
+    "PTE LTD": ["SINGAPORE"],
+    "PTE. LTD.": ["SINGAPORE"],
+    "SDN BHD": ["MALAYSIA"],
+    "SDN. BHD.": ["MALAYSIA"],
+}
+
+
+def _has_us_state_zip(raw_upper: str) -> bool:
+    us_states = (
+        "AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC"
+    )
+    return bool(re.search(rf"\b(?:{us_states})\s*[- ]?\d{{5}}(?:-\d{{4}})?\b", raw_upper))
+
+
 def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
     """
     Infer country code for beneficiary when explicit selection is missing.
@@ -300,21 +407,20 @@ def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
     if not n:
         return ""
 
-    # Common aliases/abbreviations seen in invoices.
-    alias_to_country = {
-        "USA": "UNITED STATES OF AMERICA",
-        "US": "UNITED STATES OF AMERICA",
-        "U S A": "UNITED STATES OF AMERICA",
-        "UK": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
-        "U K": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
-        "UAE": "UNITED ARAB EMIRATES",
-        "KSA": "SAUDI ARABIA",
-    }
-    for alias, country in alias_to_country.items():
-        if re.search(rf"\b{re.escape(alias)}\b", n):
-            code = resolve_country_code(country)
+    # High-confidence markers first (tax IDs / unique company suffixes).
+    for marker, countries in UNIQUE_COUNTRY_MARKERS.items():
+        if marker in raw_upper:
+            code = _resolve_country_from_candidates(countries)
             if code:
                 return code
+
+    # Common dotted USA abbreviations are lost by tokenization into "U S" / "U S A".
+    # Detect from raw text before punctuation is stripped.
+    usa_dotted_pattern = r"\bU\.?\s*S\.?(?:\s*A\.?)?\b"
+    if re.search(usa_dotted_pattern, raw_upper):
+        code = resolve_country_code("USA")
+        if code:
+            return code
 
     # Postal prefix hints, e.g. "DE-12345 Berlin".
     postal_prefix_country = {
@@ -329,11 +435,39 @@ def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
         "CH": "SWITZERLAND",
         "PL": "POLAND",
         "UK": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND",
-        "US": "UNITED STATES OF AMERICA",
+        "US": "USA",
     }
     for prefix, country in postal_prefix_country.items():
         if re.search(rf"\b{prefix}\s*-\s*\d{{4,6}}\b", raw_upper):
             code = resolve_country_code(country)
+            if code:
+                return code
+
+    # VAT ID pattern e.g. DE123456789 or USt-Id: DE123456789
+    if re.search(r"\bDE\s*-?\d{4,}\b", raw_upper):
+        code = resolve_country_code("GERMANY")
+        if code:
+            return code
+
+    # International phone prefix hints, particularly +49 for Germany
+    if re.search(r"\+49\b", raw_upper) or re.search(r"\b49\s", raw_upper):
+        code = resolve_country_code("GERMANY")
+        if code:
+            return code
+
+    # US state + ZIP detector (e.g. "MI 48331" or "CA-94043"), often present in addresses.
+    # Keep this after postal-prefix handling so values like "DE-12207" still map to Germany.
+    if _has_us_state_zip(raw_upper):
+        code = resolve_country_code("USA")
+        if code:
+            return code
+
+    # Alias map (prefer longer aliases first; avoid noisy 2-letter fallbacks here).
+    for alias in sorted(COUNTRY_ALIASES.keys(), key=len, reverse=True):
+        # Handle dotted/space variants in a tolerant way.
+        alias_pattern = re.escape(alias).replace(r"\ ", r"\s+")
+        if re.search(rf"\b{alias_pattern}\b", raw_upper):
+            code = _resolve_country_from_candidates(COUNTRY_ALIASES[alias])
             if code:
                 return code
 
@@ -347,31 +481,47 @@ def infer_country_from_beneficiary_name(name: str, address: str = "") -> str:
             if code and code != "-1":
                 return code
     
-    # Portugal-specific indicators (high confidence)
-    portugal_indicators = [
-        "NIPC",           # Portuguese tax ID
-        "ATCUD",          # Portuguese invoice authentication code
-        "PORTUGAL",
-        "LISBOA",
-        "AVEIRO",
-        "COVILHA",
-        "BRAGA",
-        "PORTO",
-        "MADEIRA",
-        "ACORES",
-    ]
-    for indicator in portugal_indicators:
+    # Portugal geographic indicators
+    for indicator in ("PORTUGAL", "LISBOA", "AVEIRO", "COVILHA", "BRAGA", "PORTO", "MADEIRA", "ACORES"):
         if indicator in n:
             code = resolve_country_code("PORTUGAL")
             if code:
                 return code
-    
+
     # Direct country token match from DTAA master.
     dtaa = load_dtaa_map()
     for key, rec in dtaa.items():
         country = _normalize(str(rec.get("country") or ""))
         if country and country in n:
             return resolve_country_code(country)
+
+    # Two-letter conflict-aware fallback.
+    tokens = set(n.split())
+    if "CA" in tokens:
+        if _has_us_state_zip(raw_upper):
+            code = resolve_country_code("USA")
+            if code:
+                return code
+        code = resolve_country_code("CANADA")
+        if code:
+            return code
+    if "IL" in tokens:
+        if _has_us_state_zip(raw_upper):
+            code = resolve_country_code("USA")
+            if code:
+                return code
+        code = resolve_country_code("ISRAEL")
+        if code:
+            return code
+    if "IN" in tokens:
+        if _has_us_state_zip(raw_upper):
+            code = resolve_country_code("USA")
+            if code:
+                return code
+        if re.search(r"\b\d{6}\b", raw_upper):
+            code = resolve_country_code("INDIA")
+            if code:
+                return code
 
     # Legal suffix heuristics for common counterparties.
     suffix_country = {

@@ -100,6 +100,29 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
     st.markdown("### FORM NO. 15CB")
     st.caption("Certificate of an accountant")
     st.caption(f"Mode: {'TDS' if mode == MODE_TDS else 'Non-TDS'}")
+
+    # ── Invoice Reference Section (at the TOP of the form) ──
+    st.markdown("### 📄 Invoice Reference")
+    col1, col2 = st.columns(2)
+    with col1:
+        invoice_number = st.text_input(
+            "Invoice Number",
+            value=form.get('InvoiceNumber', extracted.get('invoice_number', '')),
+            key=f"{invoice_id}_invoice_number"
+        )
+        form['InvoiceNumber'] = invoice_number
+
+    with col2:
+        invoice_date = st.text_input(
+            "Invoice Date",
+            value=form.get('InvoiceDate', extracted.get('invoice_date_iso', '')),
+            key=f"{invoice_id}_invoice_date",
+            help="Format: YYYY-MM-DD"
+        )
+        form['InvoiceDate'] = invoice_date
+
+    st.divider()
+
     extracted_currency = str(extracted.get("currency_short") or "").strip().upper()
     selected_currency = str(meta.get("source_currency_short") or "").strip().upper()
     currency_index = load_currency_exact_index()
@@ -395,20 +418,31 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
     )
 
     if mode_is_tds:
-        rate_key = f"{invoice_id}_rate_tds_dtaa"
-        if rate_key not in st.session_state:
-            st.session_state[rate_key] = str(form.get("RateTdsADtaa") or state.get("resolved", {}).get("dtaa_rate_percent") or "")
-        form["RateTdsADtaa"] = st.text_input(
-            "Rate of TDS per DTAA (%)",
-            key=rate_key,
-        )
-        if str(form.get("_manual_dtaa_rate_required") or "") == "1":
-            st.caption("No DTAA data/rate found for selected country. Enter DTAA rate (%) manually to compute tax fields.")
-        state["resolved"]["dtaa_rate_percent"] = str(form.get("RateTdsADtaa") or "").strip()
-        if state["resolved"]["dtaa_rate_percent"]:
-            logger.info("ui_rate_entered invoice_id=%s rate=%s", invoice_id, state["resolved"]["dtaa_rate_percent"])
-        else:
-            logger.warning("ui_rate_missing invoice_id=%s", invoice_id)
+        # show DTAA article and rate side-by-side so CA can verify both values
+        art_col, rate_col = st.columns(2)
+        with art_col:
+            form["RelevantArtDtaa"] = st.text_input(
+                "Relevant Article of DTAA",
+                value=str(form.get("RelevantArtDtaa") or ""),
+                key=f"{invoice_id}_relevant_art",
+                disabled=False,
+            )
+        with rate_col:
+            rate_key = f"{invoice_id}_rate_tds_dtaa"
+            if rate_key not in st.session_state:
+                st.session_state[rate_key] = str(form.get("RateTdsADtaa") or state.get("resolved", {}).get("dtaa_rate_percent") or "")
+            form["RateTdsADtaa"] = st.text_input(
+                "Rate of TDS per DTAA (%)",
+                key=rate_key,
+            )
+            if str(form.get("_manual_dtaa_rate_required") or "") == "1":
+                st.caption("No DTAA data/rate found for selected country. Enter DTAA rate (%) manually to compute tax fields.")
+            state["resolved"]["dtaa_rate_percent"] = str(form.get("RateTdsADtaa") or "").strip()
+            if state["resolved"]["dtaa_rate_percent"]:
+                logger.info("ui_rate_entered invoice_id=%s rate=%s", invoice_id, state["resolved"]["dtaa_rate_percent"])
+            else:
+                logger.warning("ui_rate_missing invoice_id=%s", invoice_id)
+        # date remains outside the two-column row so it spans full width
         form["DednDateTds"] = st.date_input("Date of deduction of TDS", key=f"{invoice_id}_dedn_date").isoformat()
     else:
         st.caption("Non-TDS mode - TDS fields are shown but disabled and will output as zero.")

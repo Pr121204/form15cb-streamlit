@@ -300,7 +300,7 @@ EXTRACT THESE FIELDS:
   "remitter_name": "exact FULL legal company name of the sender/issuer/from-party (the company paying the invoice)",
   "remitter_address": "COMPLETE full address of the sender/issuer including street, city, postal code, and country",
   "remitter_country": "country name of remitter extracted from their address",
-  "beneficiary_name": "exact FULL legal company name of the recipient/to-party/bill-to party (the company being paid)",
+  "beneficiary_name": "exact FULL legal company name of the recipient/to-party/bill-to party (the company being paid); **NEVER use an email address or domain as the beneficiary name** (ignore strings like "SSC-ADMIN@EXPLEOGROUP.COM").",
   "beneficiary_address": "COMPLETE full address of the recipient including street, city, postal code",
   "beneficiary_country": "country name of beneficiary extracted from their address (NOT from remitter address)",
   "invoice_number": "invoice number or reference number as printed on the document",
@@ -342,6 +342,7 @@ CRITICAL INSTRUCTIONS FOR ACCURACY:
    - Common countries: Germany (DE), Portugal (PT), Spain (ES), France (FR), Italy (IT), Netherlands (NL), Poland (PL), Brazil (BR), USA (US), etc.
    - Look for country codes like "DE-", "FR-", "ES-", "IT-" in postal codes or explicitly stated
    - Return FULL country name (e.g., "Germany" not "DE")
+   - Do NOT infer country from email domains or addresses containing only an email; rely on physical location text such as street, postal code, VAT ID, or country name.
 
 5. EUROPEAN NUMBER FORMAT:
    - Some invoices use European format: comma for decimal (65,00 = 65.00), period for thousands (1.234,56 = 1234.56)
@@ -692,7 +693,23 @@ def _finalize_extracted_fields(extracted: Dict[str, str], context_text: str = ""
             if joined:
                 out["beneficiary_address"] = joined
 
+    # Clean up obvious domain/email patterns if Gemini misidentified them as the
+    # beneficiary's legal name.  These tend to be noisy and confuse later
+    # country-inference steps, so strip the suffix and attempt to space the
+    # remaining text for readability.
+    name_val = str(out.get("beneficiary_name") or "").strip()
+    if name_val:
+        # domain-like if it contains a dot and ends with a known TLD
+        if re.fullmatch(r"[A-Z0-9\-_.]+\.(COM|NET|ORG|IO|CO|DE|EU|IN|UK)", name_val, flags=re.IGNORECASE):
+            cleaned = re.sub(r"\.(?:COM|NET|ORG|IO|CO|DE|EU|IN|UK)$", "", name_val, flags=re.IGNORECASE)
+            # insert a space before GROUP if necessary
+            if cleaned.upper().endswith("GROUP") and not cleaned.upper().endswith(" GROUP"):
+                cleaned = cleaned[:-5] + " GROUP"
+            out["beneficiary_name"] = cleaned
+
     if not str(out.get("beneficiary_country_text") or "").strip():
+        # First try the heuristics defined within this module (postal prefixes,
+        # explicit mentions, signal detection, etc.).
         country = _country_from_free_text(
             f"{out.get('beneficiary_address', '')} {out.get('beneficiary_name', '')} {context}"
         )
@@ -700,6 +717,23 @@ def _finalize_extracted_fields(extracted: Dict[str, str], context_text: str = ""
             country = _extract_country_from_text(context)
         if not country:
             country = _detect_country_signals_from_text(context)
+        # If all of the above failed, fall back to the more comprehensive
+        # country-inference logic from master_lookups which includes VAT ID and
+        # phone-prefix rules.  We pass the same context as the "address"
+        # argument so that it can scan freely for patterns.
+        if not country:
+            try:
+                from modules.master_lookups import infer_country_from_beneficiary_name, resolve_country_code
+
+                code = infer_country_from_beneficiary_name(
+                    str(out.get("beneficiary_name") or ""),
+                    f"{out.get('beneficiary_address','')} {context}".strip(),
+                )
+                if code:
+                    # convert numeric code to a human-readable country name
+                    country = resolve_country_code(code)
+            except Exception:
+                country = ""
         if country:
             out["beneficiary_country_text"] = str(country).title()
 
@@ -846,12 +880,49 @@ def _normalize_amount(raw: str) -> str:
     return re.sub(r"[^0-9.]", "", normalized)
 
 
+def _is_email_domain(text: str) -> bool:
+    """
+    CHANGE 1: Check if text looks like an email domain (not a legal company name).
+    A domain is: no spaces, contains dot, ends with known TLD.
+    """
+    s = str(text or "").strip()
+    if not s or " " in s or "." not in s:
+        return False
+    tlds = ["COM", "NET", "ORG", "IO", "DE", "FR", "UK", "IN", "CO"]
+    for tld in tlds:
+        if s.upper().endswith("." + tld):
+            return True
+    return False
+
+
 def _normalize_company_name(name: str) -> str:
     n = normalize_single_line_text(str(name or ""))
     if not n:
         return ""
     # Common OCR confusion in Bosch IO invoices: lIO vs IO.
     n = re.sub(r"Bosch[\.\s]*lIO", "Bosch.IO", n, flags=re.IGNORECASE)
+
+    # Strip obvious web/domain suffixes that are not part of a legal name.
+    # We prefer to keep the core identifier and let downstream heuristics
+    # possibly split into words.
+    original = n
+    n = re.sub(r"\.(?:COM|NET|ORG|IO|CO|DE|EU|IN|UK)$", "", n, flags=re.IGNORECASE)
+    # Replace leftover domain-style punctuation with spaces *only* if we removed
+    # a suffix or if the name otherwise looks like a compact domain (i.e. no
+    # internal whitespace).  This avoids mangling valid names such as
+    # "Bosch.IO GmbH" or "S.L".
+    if n != original or ("." in n and " " not in n):
+        n = re.sub(r"[\.\-_]+", " ", n)
+
+    # If the result still looks like a concatenated company name with a
+    # familiar suffix, insert a space to improve readability.
+    # This handles cases such as "EXPLEOGROUP" -> "EXPLEO GROUP".
+    suffixes = ["GROUP", "LTD", "LLC", "PVT", "GMBH", "AG", "SA", "PLC", "CORP", "INC"]
+    for suf in suffixes:
+        if n.upper().endswith(suf) and not n.upper().endswith(" " + suf):
+            n = n[: -len(suf)] + " " + suf
+            break
+
     # Repair common missing-space artifacts from OCR/LLM output.
     n = re.sub(r"(?<=[a-z])(?=[A-Z][a-z])", " ", n)
     n = re.sub(r"(?<=[A-Z])(?=[A-Z][a-z])", " ", n)
@@ -1318,6 +1389,11 @@ def _fuzzy_match_purpose_code(gemini_suggestion: str, purpose_group: str = "") -
 KEYWORD_NATURE_MAP = {
     "participant fee": "FEES FOR TECHNICAL SERVICES",
     "training": "FEES FOR TECHNICAL SERVICES",
+    "trainer": "FEES FOR TECHNICAL SERVICES",
+    "professional serv": "FEES FOR TECHNICAL SERVICES",
+    "swe-re": "FEES FOR TECHNICAL SERVICES",
+    "coaching": "FEES FOR TECHNICAL SERVICES",
+    "workshop": "FEES FOR TECHNICAL SERVICES",
     "seminar": "FEES FOR TECHNICAL SERVICES",
     "subscription": "SUBSCRIPTION FEES",
     "licence": "SOFTWARE LICENCES",
@@ -1351,6 +1427,11 @@ KEYWORD_NATURE_MAP = {
 KEYWORD_PURPOSE_MAP = {
     "participant fee": ("Other Business Services", "S1023"),
     "training": ("Other Business Services", "S1023"),
+    "trainer": ("Other Business Services", "S1023"),
+    "professional serv": ("Other Business Services", "S1023"),
+    "swe-re": ("Other Business Services", "S1023"),
+    "coaching": ("Other Business Services", "S1023"),
+    "workshop": ("Other Business Services", "S1023"),
     "seminar": ("Other Business Services", "S1023"),
     "subscription": ("Telecommunication, Computer & Information Services", "S1022"),
     "software": ("Telecommunication, Computer & Information Services", "S1022"),
@@ -1592,7 +1673,13 @@ def extract_invoice_core_fields(text: str) -> Dict[str, str]:
     out["remitter_name"] = _normalize_company_name(str(parsed.get("remitter_name") or "").strip())
     out["remitter_address"] = _normalize_extracted_text(str(parsed.get("remitter_address") or "").strip())
     out["remitter_country_text"] = _normalize_extracted_text(str(parsed.get("remitter_country") or "").strip())
-    out["beneficiary_name"] = _normalize_company_name(str(parsed.get("beneficiary_name") or "").strip())
+    # CHANGE 1: Reject email domains as beneficiary_name
+    beneficiary_raw = str(parsed.get("beneficiary_name") or "").strip()
+    if beneficiary_raw and _is_email_domain(beneficiary_raw):
+        logger.warning("beneficiary_name_rejected reason=email_domain raw=%s", beneficiary_raw)
+        out["beneficiary_name"] = ""
+    else:
+        out["beneficiary_name"] = _normalize_company_name(beneficiary_raw)
     out["beneficiary_address"] = _normalize_extracted_text(str(parsed.get("beneficiary_address") or "").strip())
     out["beneficiary_country_text"] = _normalize_extracted_text(str(parsed.get("beneficiary_country") or "").strip())
     out["invoice_number"] = str(parsed.get("invoice_number") or "").strip()
@@ -1686,6 +1773,8 @@ def extract_invoice_core_fields(text: str) -> Dict[str, str]:
             "purpose_code": out.get("purpose_code", ""),
         },
     )
+    # Store raw invoice text for later country inference (e.g., phone prefix lookup)
+    out["_raw_invoice_text"] = text
     return out
 
 

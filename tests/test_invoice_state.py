@@ -78,6 +78,27 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("RemitteeTownCityDistrict"), "Berlin")
         self.assertEqual(form.get("CountryRemMadeSecb"), "49")
 
+    def test_handles_bullet_separated_address(self) -> None:
+        state = build_invoice_state(
+            "inv7",
+            "a.pdf",
+            {
+                "remitter_name": "Some Remitter",
+                "beneficiary_name": "Planisware Deutschland GmbH",
+                "beneficiary_address": "Planisware Deutschland GmbH • Leonrodstr. 52-54 • D-80636 München",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "100", "currency_short": "EUR"},
+        )
+        form = state["form"]
+        self.assertEqual(form.get("RemitteeFlatDoorBuilding"), "Leonrodstr. 52-54")
+        # area/locality may be blank (None or empty string)
+        self.assertFalse(form.get("RemitteeAreaLocality"))
+        # city text is normalized (accents removed)
+        self.assertEqual(form.get("RemitteeTownCityDistrict"), "D-80636 Munchen")
+        self.assertEqual(form.get("CountryRemMadeSecb"), "49")
+
     def test_country_fallback_defaults_to_others_when_unknown(self) -> None:
         state = build_invoice_state(
             "inv4",

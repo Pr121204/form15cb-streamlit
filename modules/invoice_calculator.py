@@ -205,15 +205,17 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
     remitter_name = str(form.get("NameRemitterInput") or extracted.get("remitter_name") or form.get("NameRemitter", "")).strip()
     remitter_address = str(extracted.get("remitter_address") or form.get("RemitterAddress", "")).strip()
     beneficiary = str(form.get("NameRemitteeInput") or extracted.get("beneficiary_name") or form.get("NameRemittee", "")).strip()
-    invoice_no = str(extracted.get("invoice_number") or "").strip()
-    dotted = format_dotted_date(
-        str(
-            extracted.get("invoice_date_iso")
-            or extracted.get("invoice_date_display")
-            or extracted.get("invoice_date_raw")
-            or ""
-        )
-    )
+    # Read invoice number and date from form (user-editable), with fallback to extracted
+    invoice_no = str(form.get("InvoiceNumber") or extracted.get("invoice_number") or "").strip()
+    invoice_date_iso = str(form.get("InvoiceDate") or extracted.get("invoice_date_iso") or extracted.get("invoice_date_display") or extracted.get("invoice_date_raw") or "").strip()
+    # Convert YYYY-MM-DD → DD.MM.YYYY for XML
+    dotted = ""
+    if invoice_date_iso:
+        try:
+            parsed_date = datetime.strptime(invoice_date_iso, "%Y-%m-%d").date()
+            dotted = parsed_date.strftime("%d.%m.%Y")
+        except Exception:
+            dotted = format_dotted_date(invoice_date_iso)
 
     name_remitter = f"{remitter_name}. {remitter_address}".strip(". ").strip()
     name_remittee = _build_name_remittee(beneficiary, invoice_no, dotted)

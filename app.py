@@ -90,11 +90,13 @@ def _extract_text_for_file(uploaded) -> str:
 
 
 def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[str]:
+    """CHANGE 3: Validate XML fields conditionally based on BasisDeterTax.
+    If BasisDeterTax is empty, return early with a clear message.
+    Otherwise, validate only the fields relevant to the selected basis.
+    """
     errors: List[str] = []
-    try:
-        validate_required_fields(fields, mode=mode)
-    except ValueError as exc:
-        errors.append(str(exc))
+    
+    # Preliminary field validations (always needed)
     if fields.get("RemitterPAN") and not validate_pan(fields["RemitterPAN"]):
         errors.append("RemitterPAN format is invalid (expected AAAAA9999A).")
     if fields.get("BsrCode") and not validate_bsr_code(fields["BsrCode"]):
@@ -107,26 +109,55 @@ def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[s
         errors.append("Country to which remittance is made must be selected.")
     if not str(fields.get("NatureRemCategory") or "").strip():
         errors.append("Nature of remittance must be selected.")
+    
+    # CHANGE 3: Check BasisDeterTax and validate conditionally
+    basis = str(fields.get("BasisDeterTax") or "").strip()
+    
+    if not basis:
+        # User hasn't selected DTAA or Act yet - this is the root cause
+        errors.insert(0, "Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.")
+    elif basis == "DTAA":
+        # DTAA basis: check only DTAA-specific fields
+        dtaa_fields = ["RateTdsADtaa", "TaxIncDtaa", "TaxLiablDtaa"]
+        for field in dtaa_fields:
+            if not str(fields.get(field) or "").strip():
+                errors.append(f"{field} is required for DTAA basis.")
+    elif basis == "Act":
+        # Act basis: check Act-specific fields
+        act_fields = ["RateTdsSecB", "TaxLiablIt"]
+        for field in act_fields:
+            if not str(fields.get(field) or "").strip():
+                errors.append(f"{field} is required for Income Tax Act basis.")
+    
+    # Always required in TDS mode (regardless of basis)
+    if mode == MODE_TDS:
+        if not str(fields.get("AmtPayForgnTds") or "").strip():
+            errors.append("Amount of remittance must be entered.")
+        if not str(fields.get("ActlAmtTdsForgn") or "").strip():
+            errors.append("Actual amount remitted must be entered.")
+    
     if errors:
         logger.warning(
-            "xml_validation_failed mode=%s errors=%s key_fields=%s",
+            "xml_validation_failed mode=%s basis=%s errors=%s key_fields=%s",
             mode,
+            basis,
             errors,
             {
                 "RemitterPAN": str(fields.get("RemitterPAN") or ""),
+                "BasisDeterTax": basis,
                 "CountryRemMadeSecb": str(fields.get("CountryRemMadeSecb") or ""),
-                "RateTdsADtaa": str(fields.get("RateTdsADtaa") or ""),
                 "NatureRemCategory": str(fields.get("NatureRemCategory") or ""),
             },
         )
     else:
         logger.info(
-            "xml_validation_ok mode=%s key_fields=%s",
+            "xml_validation_ok mode=%s basis=%s key_fields=%s",
             mode,
+            basis,
             {
                 "RemitterPAN": str(fields.get("RemitterPAN") or ""),
+                "BasisDeterTax": basis,
                 "CountryRemMadeSecb": str(fields.get("CountryRemMadeSecb") or ""),
-                "RateTdsADtaa": str(fields.get("RateTdsADtaa") or ""),
                 "NatureRemCategory": str(fields.get("NatureRemCategory") or ""),
             },
         )

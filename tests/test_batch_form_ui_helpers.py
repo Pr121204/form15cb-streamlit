@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from modules.batch_form_ui import _purpose_group_for_code, _selectbox_index_from_value
+from modules.batch_form_ui import _purpose_group_for_code, _selectbox_index_from_value, _dtaa_rate_percent
 
 
 class TestBatchFormUiHelpers(unittest.TestCase):
@@ -18,6 +18,12 @@ class TestBatchFormUiHelpers(unittest.TestCase):
         }
         self.assertEqual(_purpose_group_for_code(grouped, "S1002"), "Group B")
         self.assertEqual(_purpose_group_for_code(grouped, "S9999"), "")
+
+    def test_dtaa_rate_percent(self) -> None:
+        # fractional input should be converted to percentage string without trailing zeros
+        self.assertEqual(_dtaa_rate_percent("0.1"), "10")
+        self.assertEqual(_dtaa_rate_percent("0.1575"), "15.75")
+        self.assertEqual(_dtaa_rate_percent(""), "")
 
 
 if __name__ == "__main__":
