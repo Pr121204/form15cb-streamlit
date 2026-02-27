@@ -33,6 +33,49 @@ def _compact(s: str) -> str:
     return _normalize(s).replace(" ", "")
 
 
+@functools.lru_cache(maxsize=1)
+def _load_beneficiary_domain_mappings() -> Dict[str, str]:
+    """Load beneficiary domain → company name mappings from JSON."""
+    mapping_path = MASTER_DIR / "beneficiary_domain_mappings.json"
+    data = _load_json(mapping_path, {})
+    if not isinstance(data, dict):
+        return {}
+    # Normalize keys to lowercase for case-insensitive matching
+    return {k.lower().strip(): v.strip() for k, v in data.items() if k and v}
+
+
+def normalize_beneficiary_company_name(name: str) -> str:
+    """
+    Normalize beneficiary company name with priority:
+    1. Check explicit domain → company name mapping
+    2. Strip known domain extensions (existing behavior)
+    3. Normalize spacing and case
+    
+    Args:
+        name: Raw beneficiary company name (may contain domain)
+    
+    Returns:
+        Normalized company name
+    """
+    if not name:
+        return ""
+    
+    name_lower = str(name or "").strip().lower()
+    if not name_lower:
+        return ""
+    
+    # Priority 1: Check domain mapping dictionary
+    domain_mappings = _load_beneficiary_domain_mappings()
+    if name_lower in domain_mappings:
+        mapped_name = domain_mappings[name_lower]
+        logger.info("beneficiary_domain_mapping_applied input=%s output=%s", name, mapped_name)
+        return mapped_name.upper()
+    
+    # Priority 2-3: Fall through to standard normalization
+    # (domain stripping and space normalization happens in calling code)
+    return name
+
+
 def _canonical_company_name(s: str) -> str:
     t = _normalize(s)
     if not t:

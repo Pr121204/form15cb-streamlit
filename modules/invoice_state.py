@@ -580,7 +580,6 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
     # Fallback split from full beneficiary_address when granular components are missing.
     if beneficiary_address and (
         not form.get("RemitteeFlatDoorBuilding")
-        or not form.get("RemitteeAreaLocality")
         or not form.get("RemitteeTownCityDistrict")
     ):
         flat, area, city = _split_beneficiary_address(beneficiary_address)

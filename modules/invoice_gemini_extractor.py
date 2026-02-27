@@ -920,6 +920,14 @@ def _normalize_company_name(name: str) -> str:
     n = normalize_single_line_text(str(name or ""))
     if not n:
         return ""
+    
+    # Priority 1: Check explicit beneficiary domain → company name mapping
+    from modules.master_lookups import normalize_beneficiary_company_name
+    mapped = normalize_beneficiary_company_name(n)
+    if mapped != n:
+        # Mapping was applied, return the result
+        return mapped
+    
     # Common OCR confusion in Bosch IO invoices: lIO vs IO.
     n = re.sub(r"Bosch[\.\s]*lIO", "Bosch.IO", n, flags=re.IGNORECASE)
 
