@@ -283,12 +283,18 @@ def _infer_country_from_phone_prefix(text: str) -> str:
     """
     CHANGE 2: Search text for international phone prefixes and infer country code.
     Returns country code (e.g., '49' for Germany) or empty string if not found.
+    
+    Note: Skips +91 (India) because +91 phone numbers on invoices are typically the remitter's
+    (always from India) phone numbers, not the beneficiary's. The beneficiary is the foreign party.
     """
     if not text:
         return ""
     text_upper = str(text or "").upper()
     # Look for patterns like +49, +1, etc.
     for prefix, country_code in PHONE_PREFIX_TO_COUNTRY.items():
+        # Skip +91 (India) — always the remitter's country in this workflow
+        if prefix == "+91":
+            continue
         # Build pattern to match the prefix followed by optional space and digit
         escaped_prefix = re.escape(prefix)
         pattern = escaped_prefix + r"\s*\d"
