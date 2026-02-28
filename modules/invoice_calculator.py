@@ -6,6 +6,9 @@ from typing import Dict, Optional
 
 from modules.form15cb_constants import (
     ASSESSMENT_YEAR,
+    BASIS_ACT_HIGH,
+    BASIS_ACT_LOW,
+    BASIS_ACT_MID,
     BASIS_HIGH,
     BASIS_LOW,
     CA_DEFAULTS,
@@ -16,6 +19,11 @@ from modules.form15cb_constants import (
     INC_LIAB_INDIA_ALWAYS,
     INTERMEDIARY_CITY,
     IOR_WE_CODE,
+    IT_ACT_AMOUNT_SLAB_HIGH,
+    IT_ACT_AMOUNT_SLAB_LOW,
+    IT_ACT_RATE_SLAB_HIGH,
+    IT_ACT_RATE_SLAB_LOW,
+    IT_ACT_RATE_SLAB_MID,
     IT_RATE_HIGH,
     IT_RATE_LOW,
     MODE_NON_TDS,
@@ -92,6 +100,27 @@ def _build_name_remittee(beneficiary: str, invoice_no: str, dotted_date: str) ->
     return b
 
 
+def get_effective_it_rate(inr_amount: float) -> tuple[float, str]:
+    """
+    Returns (effective_rate_percent, basis_text) based on INR remittance amount.
+    Implements dynamic surcharge slabs for foreign companies under Section 195.
+    
+    Formula: Income Tax 20% + Surcharge + Cess 4%
+    - Up to ₹1 crore: 20% + 0% surcharge + 4% cess = 20.80%
+    - ₹1 crore to ₹10 crore: 20% + 2% surcharge + 4% cess = 21.22%
+    - Above ₹10 crore: 20% + 5% surcharge + 4% cess = 21.84%
+    """
+    if inr_amount <= IT_ACT_AMOUNT_SLAB_LOW:
+        # Up to ₹1 crore: 0% surcharge
+        return IT_ACT_RATE_SLAB_LOW, BASIS_ACT_LOW
+    elif inr_amount <= IT_ACT_AMOUNT_SLAB_HIGH:
+        # ₹1 crore to ₹10 crore: 2% surcharge
+        return IT_ACT_RATE_SLAB_MID, BASIS_ACT_MID
+    else:
+        # Above ₹10 crore: 5% surcharge
+        return IT_ACT_RATE_SLAB_HIGH, BASIS_ACT_HIGH
+
+
 def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     meta = state.setdefault("meta", {})
     extracted = state.setdefault("extracted", {})
@@ -140,7 +169,7 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     )
 
     if mode == MODE_TDS and dtaa_rate_percent is not None:
-        it_factor = IT_RATE_LOW if dtaa_rate_percent <= 10 else IT_RATE_HIGH
+        it_factor, it_basis = get_effective_it_rate(inr)
         it_liab = inr * (it_factor / 100.0)
         dtaa_liab = inr * (dtaa_rate_percent / 100.0)
         tds_fcy = fcy * (dtaa_rate_percent / 100.0)
@@ -158,7 +187,7 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         form["RateTdsSecB"] = _fmt_num(dtaa_rate_percent)
         form["RateTdsADtaa"] = _fmt_num(dtaa_rate_percent)
         form.setdefault("RateTdsSecbFlg", RATE_TDS_SECB_FLG_TDS)
-        form.setdefault("BasisDeterTax", BASIS_LOW if dtaa_rate_percent <= 10 else BASIS_HIGH)
+        form.setdefault("BasisDeterTax", it_basis)
         form.setdefault("RemittanceCharIndia", "Y")
         logger.info(
             "recompute_tds_done invoice_id=%s values=%s",
@@ -172,6 +201,30 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
                 "RateTdsSecB": form.get("RateTdsSecB", ""),
                 "ActlAmtTdsForgn": form.get("ActlAmtTdsForgn", ""),
             },
+        )
+    elif mode == MODE_TDS and str(form.get("BasisDeterTax") or "").strip() == "Act":
+        # Income Tax Act Section 195 path - use dynamic rates based on INR amount
+        effective_rate, basis_text = get_effective_it_rate(inr)
+        tax_liable_it = _round_to_int(inr * (effective_rate / 100.0))
+        
+        form["TaxLiablIt"] = _fmt_num(tax_liable_it)
+        form["BasisDeterTax"] = basis_text
+        form["RateTdsSecB"] = _fmt_num(effective_rate)
+        form.setdefault("RateTdsSecbFlg", RATE_TDS_SECB_FLG_TDS)
+        form.setdefault("RemittanceCharIndia", "Y")
+        # Clear DTAA-specific fields since we're using IT Act
+        form["TaxIncDtaa"] = ""
+        form["TaxLiablDtaa"] = ""
+        form["RateTdsADtaa"] = ""
+        form["AmtPayForgnTds"] = ""
+        form["AmtPayIndianTds"] = ""
+        form["ActlAmtTdsForgn"] = _fmt_num(fcy)
+        logger.info(
+            "recompute_it_act_done invoice_id=%s rate=%s inr_amount=%s tax_liable=%s",
+            invoice_id,
+            effective_rate,
+            inr,
+            tax_liable_it,
         )
     elif mode == MODE_NON_TDS:
         form["RemittanceCharIndia"] = "N"

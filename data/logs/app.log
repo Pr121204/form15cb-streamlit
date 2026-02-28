@@ -5937,3 +5937,450 @@ ValueError: Missing or empty mandatory fields: RemitterPAN
 2026-02-27 16:16:02,567 INFO xml_fields_built invoice_id=inv_0_162431 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '116953'}
 2026-02-27 16:16:02,569 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.21'}
 2026-02-27 16:16:02,587 INFO xml_generate_ok invoice_id=inv_0_162431 bytes=5545
+2026-02-27 16:19:57,150 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:20:27,575 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:20:32,067 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:20:32,288 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:20:32,295 INFO process_clicked file_count=1
+2026-02-27 16:20:32,296 INFO invoice_process_start file=7057441295.pdf cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '7057441295.pdf'}
+2026-02-27 16:20:34,592 INFO pdf_image_fallback_pages file=7057441295.pdf total_pages=3 processed_pages=3
+2026-02-27 16:20:34,724 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:20:34,748 INFO image_extract_call model=gemini-3-flash-preview mime_type=image/jpeg backend=modern
+2026-02-27 16:20:49,932 INFO image_extract_response parsed_keys=[]
+2026-02-27 16:20:49,935 INFO image_extract_done summary={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-02-27 16:20:49,935 INFO pdf_image_page_extracted file=7057441295.pdf page=1 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:20:50,061 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:20:50,074 INFO image_extract_call model=gemini-3-flash-preview mime_type=image/jpeg backend=modern
+2026-02-27 16:21:06,518 INFO image_extract_response parsed_keys=[]
+2026-02-27 16:21:06,519 INFO image_extract_done summary={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-02-27 16:21:06,519 INFO pdf_image_page_extracted file=7057441295.pdf page=2 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:21:06,665 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:21:06,677 INFO image_extract_call model=gemini-3-flash-preview mime_type=image/jpeg backend=modern
+2026-02-27 16:21:21,378 INFO image_extract_response parsed_keys=[]
+2026-02-27 16:21:21,379 INFO image_extract_done summary={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-02-27 16:21:21,380 INFO pdf_image_page_extracted file=7057441295.pdf page=3 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:21:21,381 INFO pdf_image_multi_page_merged file=7057441295.pdf meta={'pages_considered': 3, 'amount_selected_page': 0, 'currency_selected_page': 0, 'amount_conflict': False, 'amount_candidates': []}
+2026-02-27 16:21:21,382 INFO invoice_extracted file=7057441295.pdf fields={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'invoice_date_iso': ''}
+2026-02-27 16:21:21,383 INFO state_build_start invoice_id=inv_0_481382 file=7057441295.pdf mode=TDS source_currency=50 extracted_summary={'remitter_name': '', 'beneficiary_name': '', 'amount': '', 'invoice_date_iso': ''}
+2026-02-27 16:21:21,384 INFO state_country_inference invoice_id=inv_0_481382 beneficiary= country_text= inferred_country_code=
+2026-02-27 16:21:21,391 WARNING state_country_blank_no_inference invoice_id=inv_0_481382 beneficiary= country_text=
+2026-02-27 16:21:21,392 WARNING state_remitter_not_matched invoice_id=inv_0_481382 remitter_name=
+2026-02-27 16:21:21,402 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:21:21,403 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:21:21,404 INFO state_build_done invoice_id=inv_0_481382 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:21:21,404 INFO invoice_state_built invoice_id=inv_0_481382 file=7057441295.pdf form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'NatureRemCategory': ''}
+2026-02-27 16:21:21,405 INFO invoice_processed file=7057441295.pdf elapsed=49.11s
+2026-02-27 16:21:21,409 INFO process_complete invoice_count=1 ids=['inv_0_481382']
+2026-02-27 16:21:21,417 INFO review_start invoice_id=inv_0_481382 file=7057441295.pdf
+2026-02-27 16:21:21,438 WARNING ui_remitter_not_matched invoice_id=inv_0_481382 remitter_name=
+2026-02-27 16:21:21,463 WARNING ui_country_not_selected invoice_id=inv_0_481382
+2026-02-27 16:21:21,530 WARNING ui_rate_missing invoice_id=inv_0_481382
+2026-02-27 16:21:21,533 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:21:21,534 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:21:21,535 INFO ui_recompute_done invoice_id=inv_0_481382 snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:21:21,558 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:21:21,559 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:21:21,560 INFO review_recomputed invoice_id=inv_0_481382 computed={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:21:21,561 INFO xml_fields_built invoice_id=inv_0_481382 mode=TDS snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'RateTdsSecB': '', 'TaxLiablIt': ''}
+2026-02-27 16:21:21,562 WARNING xml_validation_failed mode=TDS basis= errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.'] key_fields={'RemitterPAN': '', 'BasisDeterTax': '', 'CountryRemMadeSecb': '', 'NatureRemCategory': ''}
+2026-02-27 16:21:21,563 WARNING review_blocked invoice_id=inv_0_481382 errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.']
+2026-02-27 16:23:36,336 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:23:36,348 INFO review_start invoice_id=inv_0_481382 file=7057441295.pdf
+2026-02-27 16:23:36,472 WARNING match_remitter_none input=BOSCH PRIVATE LIMITED
+2026-02-27 16:23:36,473 WARNING ui_remitter_not_matched invoice_id=inv_0_481382 remitter_name=BOSCH PRIVATE LIMITED
+2026-02-27 16:23:36,496 WARNING ui_country_not_selected invoice_id=inv_0_481382
+2026-02-27 16:23:36,536 WARNING ui_rate_missing invoice_id=inv_0_481382
+2026-02-27 16:23:36,540 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:23:36,541 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:23:36,542 INFO ui_recompute_done invoice_id=inv_0_481382 snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:23:36,562 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:23:36,562 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:23:36,563 INFO review_recomputed invoice_id=inv_0_481382 computed={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:23:36,563 INFO xml_fields_built invoice_id=inv_0_481382 mode=TDS snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'RateTdsSecB': '', 'TaxLiablIt': ''}
+2026-02-27 16:23:36,564 WARNING xml_validation_failed mode=TDS basis= errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.'] key_fields={'RemitterPAN': '', 'BasisDeterTax': '', 'CountryRemMadeSecb': '', 'NatureRemCategory': ''}
+2026-02-27 16:23:36,565 WARNING review_blocked invoice_id=inv_0_481382 errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.']
+2026-02-27 16:24:29,791 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:24:29,799 INFO review_start invoice_id=inv_0_481382 file=7057441295.pdf
+2026-02-27 16:24:29,814 INFO match_remitter_exact input=BOSCH MOBILITY PLATFORM AND SOLNS INDIA PVT LIMITED matched=BOSCH MOBILITY PLATFORM AND SOLUTIONS INDIA PVT LIMITED
+2026-02-27 16:24:29,815 INFO ui_remitter_match invoice_id=inv_0_481382 remitter_name=BOSCH MOBILITY PLATFORM AND SOLNS INDIA PVT LIMITED pan=AAOCA2522L bank=Deutsche Bank
+2026-02-27 16:24:29,840 WARNING ui_country_not_selected invoice_id=inv_0_481382
+2026-02-27 16:24:29,874 WARNING ui_rate_missing invoice_id=inv_0_481382
+2026-02-27 16:24:29,876 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:24:29,877 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:24:29,877 INFO ui_recompute_done invoice_id=inv_0_481382 snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:24:29,896 INFO recompute_start invoice_id=inv_0_481382 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:24:29,896 WARNING recompute_tds_skipped invoice_id=inv_0_481382 reason=country_blank country= remitter_pan=
+2026-02-27 16:24:29,898 INFO review_recomputed invoice_id=inv_0_481382 computed={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:24:29,899 INFO xml_fields_built invoice_id=inv_0_481382 mode=TDS snapshot={'RemitterPAN': 'AAOCA2522L', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'RateTdsSecB': '', 'TaxLiablIt': ''}
+2026-02-27 16:24:29,901 WARNING xml_validation_failed mode=TDS basis= errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.'] key_fields={'RemitterPAN': 'AAOCA2522L', 'BasisDeterTax': '', 'CountryRemMadeSecb': '', 'NatureRemCategory': ''}
+2026-02-27 16:24:29,902 WARNING review_blocked invoice_id=inv_0_481382 errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.']
+2026-02-27 16:26:42,696 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:26:47,530 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:26:47,753 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:26:47,765 INFO process_clicked file_count=1
+2026-02-27 16:26:47,766 INFO invoice_process_start file=7057441295.pdf cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '7057441295.pdf'}
+2026-02-27 16:26:49,527 INFO pdf_image_fallback_pages file=7057441295.pdf total_pages=3 processed_pages=3
+2026-02-27 16:26:49,685 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:26:49,713 INFO image_extract_call model=gemma-3-27b-it mime_type=image/jpeg backend=modern
+2026-02-27 16:26:53,241 ERROR image_extract_error error=400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 1857, in extract_invoice_core_fields_from_image
+    response_text = _generate_with_gemini_image(IMAGE_EXTRACTION_PROMPT, image_path_or_bytes, mime_type)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 206, in _generate_with_gemini_image
+    response = client.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 5644, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 4306, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1401, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1237, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1214, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 134, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 159, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+2026-02-27 16:26:53,268 INFO pdf_image_page_extracted file=7057441295.pdf page=1 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:26:53,387 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:26:53,401 INFO image_extract_call model=gemma-3-27b-it mime_type=image/jpeg backend=modern
+2026-02-27 16:26:56,101 ERROR image_extract_error error=400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 1857, in extract_invoice_core_fields_from_image
+    response_text = _generate_with_gemini_image(IMAGE_EXTRACTION_PROMPT, image_path_or_bytes, mime_type)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 206, in _generate_with_gemini_image
+    response = client.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 5644, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 4306, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1401, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1237, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1214, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 134, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 159, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+2026-02-27 16:26:56,106 INFO pdf_image_page_extracted file=7057441295.pdf page=2 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:26:56,237 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:26:56,257 INFO image_extract_call model=gemma-3-27b-it mime_type=image/jpeg backend=modern
+2026-02-27 16:26:59,493 ERROR image_extract_error error=400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 1857, in extract_invoice_core_fields_from_image
+    response_text = _generate_with_gemini_image(IMAGE_EXTRACTION_PROMPT, image_path_or_bytes, mime_type)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_gemini_extractor.py", line 206, in _generate_with_gemini_image
+    response = client.models.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 5644, in generate_content
+    response = self._generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\models.py", line 4306, in _generate_content
+    response = self._api_client.request(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1401, in request
+    response = self._request(http_request, http_options, stream=False)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1237, in _request
+    return self._retry(self._request_once, http_request, stream)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 470, in __call__
+    do = self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 371, in iter
+    result = action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 413, in exc_check
+    raise retry_exc.reraise()
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 184, in reraise
+    raise self.last_attempt.result()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Python312\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\tenacity\__init__.py", line 473, in __call__
+    result = fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\_api_client.py", line 1214, in _request_once
+    errors.APIError.raise_for_response(response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 134, in raise_for_response
+    cls.raise_error(response.status_code, response_json, response)
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\venv\Lib\site-packages\google\genai\errors.py", line 159, in raise_error
+    raise ClientError(status_code, response_json, response)
+google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, 'message': 'JSON mode is not enabled for models/gemma-3-27b-it', 'status': 'INVALID_ARGUMENT'}}
+2026-02-27 16:26:59,496 INFO pdf_image_page_extracted file=7057441295.pdf page=3 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:26:59,497 INFO pdf_image_multi_page_merged file=7057441295.pdf meta={'pages_considered': 3, 'amount_selected_page': 0, 'currency_selected_page': 0, 'amount_conflict': False, 'amount_candidates': []}
+2026-02-27 16:26:59,498 INFO invoice_extracted file=7057441295.pdf fields={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'invoice_date_iso': ''}
+2026-02-27 16:26:59,500 INFO state_build_start invoice_id=inv_0_819499 file=7057441295.pdf mode=TDS source_currency=50 extracted_summary={'remitter_name': '', 'beneficiary_name': '', 'amount': '', 'invoice_date_iso': ''}
+2026-02-27 16:26:59,501 INFO state_country_inference invoice_id=inv_0_819499 beneficiary= country_text= inferred_country_code=
+2026-02-27 16:26:59,504 WARNING state_country_blank_no_inference invoice_id=inv_0_819499 beneficiary= country_text=
+2026-02-27 16:26:59,505 WARNING state_remitter_not_matched invoice_id=inv_0_819499 remitter_name=
+2026-02-27 16:26:59,505 INFO recompute_start invoice_id=inv_0_819499 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:26:59,505 WARNING recompute_tds_skipped invoice_id=inv_0_819499 reason=country_blank country= remitter_pan=
+2026-02-27 16:26:59,505 INFO state_build_done invoice_id=inv_0_819499 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:26:59,505 INFO invoice_state_built invoice_id=inv_0_819499 file=7057441295.pdf form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'NatureRemCategory': ''}
+2026-02-27 16:26:59,506 INFO invoice_processed file=7057441295.pdf elapsed=11.74s
+2026-02-27 16:26:59,508 INFO process_complete invoice_count=1 ids=['inv_0_819499']
+2026-02-27 16:26:59,512 INFO review_start invoice_id=inv_0_819499 file=7057441295.pdf
+2026-02-27 16:26:59,532 WARNING ui_remitter_not_matched invoice_id=inv_0_819499 remitter_name=
+2026-02-27 16:26:59,553 WARNING ui_country_not_selected invoice_id=inv_0_819499
+2026-02-27 16:26:59,613 WARNING ui_rate_missing invoice_id=inv_0_819499
+2026-02-27 16:26:59,614 INFO recompute_start invoice_id=inv_0_819499 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:26:59,615 WARNING recompute_tds_skipped invoice_id=inv_0_819499 reason=country_blank country= remitter_pan=
+2026-02-27 16:26:59,615 INFO ui_recompute_done invoice_id=inv_0_819499 snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:26:59,631 INFO recompute_start invoice_id=inv_0_819499 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-02-27 16:26:59,632 WARNING recompute_tds_skipped invoice_id=inv_0_819499 reason=country_blank country= remitter_pan=
+2026-02-27 16:26:59,632 INFO review_recomputed invoice_id=inv_0_819499 computed={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-02-27 16:26:59,632 INFO xml_fields_built invoice_id=inv_0_819499 mode=TDS snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'RateTdsSecB': '', 'TaxLiablIt': ''}
+2026-02-27 16:26:59,634 WARNING xml_validation_failed mode=TDS basis= errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.'] key_fields={'RemitterPAN': '', 'BasisDeterTax': '', 'CountryRemMadeSecb': '', 'NatureRemCategory': ''}
+2026-02-27 16:26:59,634 WARNING review_blocked invoice_id=inv_0_819499 errors=['Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.', 'Country to which remittance is made must be selected.', 'Nature of remittance must be selected.', 'Amount of remittance must be entered.', 'Actual amount remitted must be entered.']
+2026-02-27 16:27:54,478 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:27:58,353 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:27:58,571 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:27:58,583 INFO process_clicked file_count=1
+2026-02-27 16:27:58,584 INFO invoice_process_start file=7057441295.pdf cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '7057441295.pdf'}
+2026-02-27 16:28:00,446 INFO pdf_image_fallback_pages file=7057441295.pdf total_pages=3 processed_pages=3
+2026-02-27 16:28:00,590 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:28:00,615 INFO image_extract_call model=gemini-2.5-flash mime_type=image/jpeg backend=modern
+2026-02-27 16:28:13,269 INFO image_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-02-27 16:28:13,289 INFO image_nature_matched suggestion=TECHNICAL SERVICES matched=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES
+2026-02-27 16:28:13,298 INFO image_purpose_group_matched suggestion=Fees for Technical Services matched=Manufacturing services (goods for processing)
+2026-02-27 16:28:13,364 INFO image_purpose_code_fallback keyword=S1022 matched= group=Manufacturing services (goods for processing)
+2026-02-27 16:28:13,425 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-02-27 16:28:13,492 WARNING match_remitter_none input=BOSCH.IO GMBH
+2026-02-27 16:28:13,497 INFO image_extract_done summary={'remitter_name': 'BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED', 'remitter_country': 'India', 'beneficiary_name': 'BOSCH.IO GMBH', 'beneficiary_country': 'Germany', 'invoice_number': '7057441295', 'amount': '49300.00', 'currency_short': 'EUR', 'nature_of_remittance': 'FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES', 'purpose_group': 'Manufacturing services (goods for processing)', 'purpose_code': ''}
+2026-02-27 16:28:13,498 INFO pdf_image_page_extracted file=7057441295.pdf page=1 summary={'invoice_number': '7057441295', 'amount': '49300.00', 'currency_short': 'EUR', 'remitter_name': 'BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED', 'beneficiary_name': 'BOSCH.IO GMBH'}
+2026-02-27 16:28:13,632 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:28:13,648 INFO image_extract_call model=gemini-2.5-flash mime_type=image/jpeg backend=modern
+2026-02-27 16:28:28,576 INFO image_extract_response parsed_keys=[]
+2026-02-27 16:28:28,577 INFO image_extract_done summary={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-02-27 16:28:28,578 INFO pdf_image_page_extracted file=7057441295.pdf page=2 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:28:28,716 INFO image_extract_start image_source=bytes backend=modern
+2026-02-27 16:28:28,726 INFO image_extract_call model=gemini-2.5-flash mime_type=image/jpeg backend=modern
+2026-02-27 16:28:47,735 INFO image_extract_response parsed_keys=[]
+2026-02-27 16:28:47,736 INFO image_extract_done summary={'remitter_name': '', 'remitter_country': '', 'beneficiary_name': '', 'beneficiary_country': '', 'invoice_number': '', 'amount': '', 'currency_short': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-02-27 16:28:47,737 INFO pdf_image_page_extracted file=7057441295.pdf page=3 summary={'invoice_number': '', 'amount': '', 'currency_short': '', 'remitter_name': '', 'beneficiary_name': ''}
+2026-02-27 16:28:47,737 INFO pdf_image_multi_page_merged file=7057441295.pdf meta={'pages_considered': 3, 'amount_selected_page': 1, 'currency_selected_page': 1, 'amount_conflict': False, 'amount_candidates': [{'page': 1, 'amount': '49300.00', 'score': 7, 'currency_short': 'EUR'}]}
+2026-02-27 16:28:47,738 INFO invoice_extracted file=7057441295.pdf fields={'remitter_name': 'BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED', 'remitter_country': 'India', 'beneficiary_name': 'BOSCH.IO GMBH', 'beneficiary_country': 'Germany', 'invoice_number': '7057441295', 'amount': '49300.00', 'currency_short': 'EUR', 'invoice_date_iso': '2023-05-15'}
+2026-02-27 16:28:47,740 INFO state_build_start invoice_id=inv_0_927738 file=7057441295.pdf mode=TDS source_currency=50 extracted_summary={'remitter_name': 'BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED', 'beneficiary_name': 'BOSCH.IO GMBH', 'amount': '49300.00', 'invoice_date_iso': '2023-05-15'}
+2026-02-27 16:28:47,751 INFO state_country_inference invoice_id=inv_0_927738 beneficiary=BOSCH.IO GMBH country_text=Germany inferred_country_code=49
+2026-02-27 16:28:47,756 INFO state_nature_set invoice_id=inv_0_927738 label=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES code=16.21
+2026-02-27 16:28:47,770 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-02-27 16:28:47,782 INFO state_remitter_match invoice_id=inv_0_927738 remitter_name=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED pan=AAACR7108R bank=Deutsche Bank
+2026-02-27 16:28:47,785 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:28:47,786 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:28:47,787 INFO state_build_done invoice_id=inv_0_927738 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-02-27 16:28:47,788 INFO invoice_state_built invoice_id=inv_0_927738 file=7057441295.pdf form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.21'}
+2026-02-27 16:28:47,788 INFO invoice_processed file=7057441295.pdf elapsed=49.20s
+2026-02-27 16:28:47,790 INFO process_complete invoice_count=1 ids=['inv_0_927738']
+2026-02-27 16:28:47,794 INFO review_start invoice_id=inv_0_927738 file=7057441295.pdf
+2026-02-27 16:28:47,824 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-02-27 16:28:47,825 INFO ui_remitter_match invoice_id=inv_0_927738 remitter_name=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED pan=AAACR7108R bank=Deutsche Bank
+2026-02-27 16:28:47,848 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:28:47,849 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:28:47,850 INFO ui_country_selected invoice_id=inv_0_927738 country_code=49 dtaa_article=DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-02-27 16:28:47,892 INFO ui_rate_entered invoice_id=inv_0_927738 rate=10
+2026-02-27 16:28:47,894 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:28:47,895 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:28:47,895 INFO ui_recompute_done invoice_id=inv_0_927738 snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-02-27 16:28:47,914 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:28:47,915 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:28:47,916 INFO review_recomputed invoice_id=inv_0_927738 computed={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-02-27 16:28:47,918 INFO xml_fields_built invoice_id=inv_0_927738 mode=TDS snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '1076712'}
+2026-02-27 16:28:47,920 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACR7108R', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.21'}
+2026-02-27 16:28:47,935 INFO xml_generate_ok invoice_id=inv_0_927738 bytes=5600
+2026-02-27 16:29:00,923 INFO upload_received file_count=1 files=['7057441295.pdf']
+2026-02-27 16:29:00,936 INFO review_start invoice_id=inv_0_927738 file=7057441295.pdf
+2026-02-27 16:29:00,960 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-02-27 16:29:00,962 INFO ui_remitter_match invoice_id=inv_0_927738 remitter_name=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED pan=AAACR7108R bank=Deutsche Bank
+2026-02-27 16:29:00,985 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:29:00,986 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:29:00,991 INFO ui_country_selected invoice_id=inv_0_927738 country_code=49 dtaa_article=DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-02-27 16:29:01,023 INFO ui_rate_entered invoice_id=inv_0_927738 rate=10
+2026-02-27 16:29:01,026 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:29:01,027 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:29:01,027 INFO ui_recompute_done invoice_id=inv_0_927738 snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-02-27 16:29:01,050 INFO recompute_start invoice_id=inv_0_927738 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-02-27 16:29:01,050 INFO recompute_tds_done invoice_id=inv_0_927738 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-02-27 16:29:01,051 INFO review_recomputed invoice_id=inv_0_927738 computed={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-02-27 16:29:01,051 INFO xml_fields_built invoice_id=inv_0_927738 mode=TDS snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '1076712'}
+2026-02-27 16:29:01,052 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACR7108R', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.21'}
+2026-02-27 16:29:01,060 INFO xml_generate_ok invoice_id=inv_0_927738 bytes=5600
+2026-02-28 13:44:57,444 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:45:04,889 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:45:22,962 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:45:24,457 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:45:24,468 INFO process_clicked file_count=1
+2026-02-28 13:45:24,469 INFO invoice_process_start file=000000098064-99.pdf cfg={'currency_short': '167', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '000000098064-99.pdf'}
+2026-02-28 13:45:24,719 INFO gemini_extract_start text_len=1029 model=imagen-4 backend=modern
+2026-02-28 13:46:37,722 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:46:45,827 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:46:50,287 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:46:50,510 INFO upload_received file_count=1 files=['000000098064-99.pdf']
+2026-02-28 13:46:50,522 INFO process_clicked file_count=1
+2026-02-28 13:46:50,523 INFO invoice_process_start file=000000098064-99.pdf cfg={'currency_short': '167', 'exchange_rate': '100', 'mode': 'TDS', 'file_name': '000000098064-99.pdf'}
+2026-02-28 13:46:50,695 INFO gemini_extract_start text_len=1029 model=gemini-3-flash-preview backend=modern
+2026-02-28 13:47:02,476 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=STOP response_text_len=593 parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name'] invalid=False
+2026-02-28 13:47:02,476 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-02-28 13:47:02,488 INFO nature_of_remittance_matched suggestion=TECHNICAL SERVICE FEES matched=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES
+2026-02-28 13:47:02,489 INFO purpose_group_matched suggestion=Other Business Services matched=Other Business Services
+2026-02-28 13:47:02,499 INFO purpose_code_matched suggestion=S1007 matched=S1007 group=Other Business Services
+2026-02-28 13:47:02,527 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-02-28 13:47:02,554 INFO match_remitter_fuzzy input=ROBERT BOSCH LTDA. matched=BOSCH LTD.
+2026-02-28 13:47:02,561 INFO gemini_extract_done summary={'remitter_name': 'BOSCH LIMITED', 'remitter_country_text': 'India', 'beneficiary_name': 'ROBERT BOSCH LTDA.', 'beneficiary_address': 'Via Anhanguera, Km 99 km 98 - Number: 000000098064-99, Campinas SP BRAZIL 13065900', 'invoice_number': '000000098064-99', 'amount': '2798.97', 'currency_short': 'USD', 'beneficiary_country_text': 'Brazil', 'nature_of_remittance': 'FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES', 'purpose_group': 'Other Business Services', 'purpose_code': 'S1007'}
+2026-02-28 13:47:02,562 INFO invoice_extracted file=000000098064-99.pdf fields={'remitter_name': 'BOSCH LIMITED', 'remitter_country': 'India', 'beneficiary_name': 'ROBERT BOSCH LTDA.', 'beneficiary_country': 'Brazil', 'invoice_number': '000000098064-99', 'amount': '2798.97', 'currency_short': 'USD', 'invoice_date_iso': '2025-03-21'}
+2026-02-28 13:47:02,562 INFO state_build_start invoice_id=inv_0_622562 file=000000098064-99.pdf mode=TDS source_currency=167 extracted_summary={'remitter_name': 'BOSCH LIMITED', 'beneficiary_name': 'ROBERT BOSCH LTDA.', 'amount': '2798.97', 'invoice_date_iso': '2025-03-21'}
+2026-02-28 13:47:02,570 INFO state_country_inference invoice_id=inv_0_622562 beneficiary=ROBERT BOSCH LTDA. country_text=Brazil inferred_country_code=55
+2026-02-28 13:47:02,576 INFO state_nature_set invoice_id=inv_0_622562 label=FEES FOR TECHNICAL SERVICES/ FEES FOR INCLUDED SERVICES code=16.21
+2026-02-28 13:47:02,577 INFO state_purpose_set invoice_id=inv_0_622562 group=Other Business Services code=S1007 gr_no=10
+2026-02-28 13:47:02,580 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-02-28 13:47:02,583 INFO state_remitter_match invoice_id=inv_0_622562 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-02-28 13:47:02,585 INFO recompute_start invoice_id=inv_0_622562 mode=TDS fcy=2798.97 inr=279897 exchange_rate=100 dtaa_rate=15
+2026-02-28 13:47:02,586 INFO recompute_tds_done invoice_id=inv_0_622562 values={'TaxLiablIt': '59383', 'TaxIncDtaa': '279897', 'TaxLiablDtaa': '41985', 'AmtPayForgnTds': '419.85', 'AmtPayIndianTds': '41985', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '2379.12'}
+2026-02-28 13:47:02,587 INFO state_build_done invoice_id=inv_0_622562 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '55', 'RateTdsADtaa': '15', 'TaxLiablIt': '59383', 'AmtPayForgnTds': '419.85'}
+2026-02-28 13:47:02,587 INFO invoice_state_built invoice_id=inv_0_622562 file=000000098064-99.pdf form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '55', 'RateTdsADtaa': '15', 'NatureRemCategory': '16.21'}
+2026-02-28 13:47:02,588 INFO invoice_processed file=000000098064-99.pdf elapsed=12.06s
+2026-02-28 13:47:02,589 INFO process_complete invoice_count=1 ids=['inv_0_622562']
+2026-02-28 13:47:02,592 INFO review_start invoice_id=inv_0_622562 file=000000098064-99.pdf
+2026-02-28 13:47:02,604 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-02-28 13:47:02,605 INFO ui_remitter_match invoice_id=inv_0_622562 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-02-28 13:47:02,612 INFO recompute_start invoice_id=inv_0_622562 mode=TDS fcy=2798.97 inr=279897 exchange_rate=100 dtaa_rate=15
+2026-02-28 13:47:02,613 INFO recompute_tds_done invoice_id=inv_0_622562 values={'TaxLiablIt': '59383', 'TaxIncDtaa': '279897', 'TaxLiablDtaa': '41985', 'AmtPayForgnTds': '419.85', 'AmtPayIndianTds': '41985', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '2379.12'}
+2026-02-28 13:47:02,613 INFO ui_country_selected invoice_id=inv_0_622562 country_code=55 dtaa_article=DTAA BTWN INDIA & BRAZIL dtaa_rate=15
+2026-02-28 13:47:02,626 INFO ui_rate_entered invoice_id=inv_0_622562 rate=15
+2026-02-28 13:47:02,628 INFO recompute_start invoice_id=inv_0_622562 mode=TDS fcy=2798.97 inr=279897 exchange_rate=100 dtaa_rate=15
+2026-02-28 13:47:02,629 INFO recompute_tds_done invoice_id=inv_0_622562 values={'TaxLiablIt': '59383', 'TaxIncDtaa': '279897', 'TaxLiablDtaa': '41985', 'AmtPayForgnTds': '419.85', 'AmtPayIndianTds': '41985', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '2379.12'}
+2026-02-28 13:47:02,629 INFO ui_recompute_done invoice_id=inv_0_622562 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '55', 'RateTdsADtaa': '15', 'TaxLiablIt': '59383', 'AmtPayForgnTds': '419.85'}
+2026-02-28 13:47:02,639 INFO recompute_start invoice_id=inv_0_622562 mode=TDS fcy=2798.97 inr=279897 exchange_rate=100 dtaa_rate=15
+2026-02-28 13:47:02,640 INFO recompute_tds_done invoice_id=inv_0_622562 values={'TaxLiablIt': '59383', 'TaxIncDtaa': '279897', 'TaxLiablDtaa': '41985', 'AmtPayForgnTds': '419.85', 'AmtPayIndianTds': '41985', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '2379.12'}
+2026-02-28 13:47:02,640 INFO review_recomputed invoice_id=inv_0_622562 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '55', 'RateTdsADtaa': '15', 'TaxLiablIt': '59383', 'AmtPayForgnTds': '419.85'}
+2026-02-28 13:47:02,642 INFO xml_fields_built invoice_id=inv_0_622562 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '55', 'RateTdsADtaa': '15', 'RateTdsSecB': '15', 'TaxLiablIt': '59383'}
+2026-02-28 13:47:02,643 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '55', 'NatureRemCategory': '16.21'}
+2026-02-28 13:47:02,649 INFO xml_generate_ok invoice_id=inv_0_622562 bytes=5648
+2026-02-28 13:58:49,189 INFO recompute_start invoice_id=test_1 mode=TDS fcy=500 inr=50000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 13:58:49,189 INFO recompute_it_act_done invoice_id=test_1 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 13:58:49,190 INFO recompute_start invoice_id=test_2 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:58:49,190 INFO recompute_it_act_done invoice_id=test_2 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 13:58:49,190 INFO recompute_start invoice_id=test_3 mode=TDS fcy=500000 inr=500000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:58:49,190 INFO recompute_it_act_done invoice_id=test_3 rate=21.84 inr_amount=500000000.0 tax_liable=109200000
+2026-02-28 13:59:12,147 INFO recompute_start invoice_id=test_1 mode=TDS fcy=100 inr=10000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 13:59:12,148 INFO recompute_it_act_done invoice_id=test_1 rate=20.8 inr_amount=10000000.0 tax_liable=2080000
+2026-02-28 13:59:12,149 INFO recompute_start invoice_id=test_2 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:12,149 INFO recompute_it_act_done invoice_id=test_2 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 13:59:12,150 INFO recompute_start invoice_id=test_3 mode=TDS fcy=150000 inr=150000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:12,150 INFO recompute_it_act_done invoice_id=test_3 rate=21.84 inr_amount=150000000.0 tax_liable=32760000
+2026-02-28 13:59:30,580 INFO recompute_start invoice_id=test_1 mode=TDS fcy=100 inr=10000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 13:59:30,580 INFO recompute_it_act_done invoice_id=test_1 rate=20.8 inr_amount=10000000.0 tax_liable=2080000
+2026-02-28 13:59:30,582 INFO recompute_start invoice_id=test_2 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:30,582 INFO recompute_it_act_done invoice_id=test_2 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 13:59:30,584 INFO recompute_start invoice_id=test_3 mode=TDS fcy=150000 inr=150000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:30,584 INFO recompute_it_act_done invoice_id=test_3 rate=21.84 inr_amount=150000000.0 tax_liable=32760000
+2026-02-28 13:59:59,573 INFO recompute_start invoice_id=test_1 mode=TDS fcy=100 inr=10000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 13:59:59,575 INFO recompute_it_act_done invoice_id=test_1 rate=20.8 inr_amount=10000000.0 tax_liable=2080000
+2026-02-28 13:59:59,576 INFO recompute_start invoice_id=test_2 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:59,576 INFO recompute_it_act_done invoice_id=test_2 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 13:59:59,576 INFO recompute_start invoice_id=test_3 mode=TDS fcy=150000 inr=150000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 13:59:59,576 INFO recompute_it_act_done invoice_id=test_3 rate=21.84 inr_amount=150000000.0 tax_liable=32760000
+2026-02-28 14:00:35,866 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-02-28 14:00:35,867 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1976', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-02-28 14:00:35,867 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-02-28 14:00:35,867 INFO recompute_non_tds_done invoice_id=
+2026-02-28 14:00:35,868 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-02-28 14:00:35,868 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1747', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-02-28 14:00:55,283 INFO recompute_start invoice_id=test_5000000 mode=TDS fcy=50 inr=5000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 14:00:55,285 INFO recompute_it_act_done invoice_id=test_5000000 rate=20.8 inr_amount=5000000.0 tax_liable=1040000
+2026-02-28 14:00:55,286 INFO recompute_start invoice_id=test_50000000 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 14:00:55,286 INFO recompute_it_act_done invoice_id=test_50000000 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 14:00:55,287 INFO recompute_start invoice_id=test_500000000 mode=TDS fcy=500000 inr=500000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 14:00:55,287 INFO recompute_it_act_done invoice_id=test_500000000 rate=21.84 inr_amount=500000000.0 tax_liable=109200000
+2026-02-28 14:05:16,938 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-02-28 14:05:16,938 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-02-28 14:05:16,938 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-02-28 14:05:16,939 INFO recompute_non_tds_done invoice_id=
+2026-02-28 14:05:16,939 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-02-28 14:05:16,939 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-02-28 14:05:40,995 INFO recompute_start invoice_id=dtaa_test_1 mode=TDS fcy=50 inr=50000000 exchange_rate=1000000 dtaa_rate=10
+2026-02-28 14:05:40,995 INFO recompute_tds_done invoice_id=dtaa_test_1 values={'TaxLiablIt': '10610000', 'TaxIncDtaa': '50000000', 'TaxLiablDtaa': '5000000', 'AmtPayForgnTds': '5', 'AmtPayIndianTds': '5000000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '45'}
+2026-02-28 14:05:40,996 INFO recompute_start invoice_id=dtaa_test_2 mode=TDS fcy=5000 inr=5000000000 exchange_rate=1000000 dtaa_rate=10
+2026-02-28 14:05:40,996 INFO recompute_tds_done invoice_id=dtaa_test_2 values={'TaxLiablIt': '1092000000', 'TaxIncDtaa': '5000000000', 'TaxLiablDtaa': '500000000', 'AmtPayForgnTds': '500', 'AmtPayIndianTds': '500000000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4500'}
+2026-02-28 14:05:40,997 INFO recompute_start invoice_id=dtaa_test_3 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=15
+2026-02-28 14:05:40,997 INFO recompute_tds_done invoice_id=dtaa_test_3 values={'TaxLiablIt': '10610000', 'TaxIncDtaa': '50000000', 'TaxLiablDtaa': '7500000', 'AmtPayForgnTds': '7500', 'AmtPayIndianTds': '7500000', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '42500'}
+2026-02-28 14:05:58,691 INFO recompute_start invoice_id=dtaa_test_1 mode=TDS fcy=5 inr=500000 exchange_rate=100000 dtaa_rate=10
+2026-02-28 14:05:58,692 INFO recompute_tds_done invoice_id=dtaa_test_1 values={'TaxLiablIt': '104000', 'TaxIncDtaa': '500000', 'TaxLiablDtaa': '50000', 'AmtPayForgnTds': '0.5', 'AmtPayIndianTds': '50000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4.5'}
+2026-02-28 14:05:58,694 INFO recompute_start invoice_id=dtaa_test_2 mode=TDS fcy=5000 inr=500000000 exchange_rate=100000 dtaa_rate=10
+2026-02-28 14:05:58,694 INFO recompute_tds_done invoice_id=dtaa_test_2 values={'TaxLiablIt': '109200000', 'TaxIncDtaa': '500000000', 'TaxLiablDtaa': '50000000', 'AmtPayForgnTds': '500', 'AmtPayIndianTds': '50000000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '4500'}
+2026-02-28 14:05:58,697 INFO recompute_start invoice_id=dtaa_test_3 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=15
+2026-02-28 14:05:58,697 INFO recompute_tds_done invoice_id=dtaa_test_3 values={'TaxLiablIt': '10610000', 'TaxIncDtaa': '50000000', 'TaxLiablDtaa': '7500000', 'AmtPayForgnTds': '7500', 'AmtPayIndianTds': '7500000', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '42500'}
+2026-02-28 14:06:05,868 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-02-28 14:06:05,869 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-02-28 14:06:05,869 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-02-28 14:06:05,869 INFO recompute_non_tds_done invoice_id=
+2026-02-28 14:06:05,869 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-02-28 14:06:05,869 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-02-28 14:06:10,674 INFO recompute_start invoice_id=test_5000000 mode=TDS fcy=50 inr=5000000 exchange_rate=100000 dtaa_rate=
+2026-02-28 14:06:10,675 INFO recompute_it_act_done invoice_id=test_5000000 rate=20.8 inr_amount=5000000.0 tax_liable=1040000
+2026-02-28 14:06:10,675 INFO recompute_start invoice_id=test_50000000 mode=TDS fcy=50000 inr=50000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 14:06:10,675 INFO recompute_it_act_done invoice_id=test_50000000 rate=21.22 inr_amount=50000000.0 tax_liable=10610000
+2026-02-28 14:06:10,675 INFO recompute_start invoice_id=test_500000000 mode=TDS fcy=500000 inr=500000000 exchange_rate=1000 dtaa_rate=
+2026-02-28 14:06:10,675 INFO recompute_it_act_done invoice_id=test_500000000 rate=21.84 inr_amount=500000000.0 tax_liable=109200000

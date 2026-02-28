@@ -40,6 +40,28 @@ BASIS_HIGH = (
     "IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE."
 )
 
+# Income Tax Act Section 195 rates - dynamic based on remittance amount (surcharge slabs)
+# Formula: Income Tax 20% + Surcharge + Cess 4%
+IT_ACT_RATE_SLAB_LOW = 20.80      # Up to ₹1 crore: 20% + 0% surcharge + 4% cess = 20.80%
+IT_ACT_RATE_SLAB_MID = 21.22      # ₹1 crore to ₹10 crore: 20% + 2% surcharge + 4% cess = 21.22%
+IT_ACT_RATE_SLAB_HIGH = 21.84     # Above ₹10 crore: 20% + 5% surcharge + 4% cess = 21.84%
+
+IT_ACT_AMOUNT_SLAB_LOW = 10_000_000     # ₹1 crore = 10 million
+IT_ACT_AMOUNT_SLAB_HIGH = 100_000_000   # ₹10 crore = 100 million
+
+BASIS_ACT_LOW = (
+    "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+    "AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE."
+)
+BASIS_ACT_MID = (
+    "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+    "AND TAX LIABILITY IS CALCULATED AT 21.22 PERCENTAGE OF ABOVE."
+)
+BASIS_ACT_HIGH = (
+    "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+    "AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE."
+)
+
 CA_DEFAULTS: Dict[str, str] = {
     "NameAcctnt": "SONDUR ANAND",
     "NameFirmAcctnt": "ANAND S & ASSOCIATES",
