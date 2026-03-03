@@ -380,7 +380,7 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
         "RemittanceCharIndia": str(form.get("RemittanceCharIndia") or ("Y" if mode == MODE_TDS else "N")),
         "ReasonNot": str(form.get("ReasonNot") or ""),
         "SecRemCovered": str(form.get("SecRemCovered") or SEC_REM_COVERED_DEFAULT),
-        "AmtIncChrgIt": str(form.get("AmtPayIndRem") or ""),
+        "AmtIncChrgIt": str(form.get("AmtIncChrgIt") or form.get("AmtPayIndRem") or ""),
         "TaxLiablIt": str(form.get("TaxLiablIt") or ""),
         "BasisDeterTax": str(form.get("BasisDeterTax") or ""),
         "TaxResidCert": TAX_RESID_CERT_Y,

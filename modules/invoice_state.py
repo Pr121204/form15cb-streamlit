@@ -618,50 +618,71 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
                 inferred_by_text,
             )
 
-    # Wire Gemini-extracted nature_of_remittance, purpose_group, purpose_code into form state
-    if extracted.get("nature_of_remittance"):
-        nature_label = str(extracted.get("nature_of_remittance", "")).strip()
-        # Find the matching nature code from master data
-        nature_opts = load_nature_options()
-        for opt in nature_opts:
-            if str(opt.get("label", "")).strip() == nature_label:
-                form["NatureRemCategory"] = str(opt.get("code", ""))
-                logger.info(
-                    "state_nature_set invoice_id=%s label=%s code=%s",
-                    invoice_id,
-                    nature_label,
-                    form.get("NatureRemCategory", ""),
-                )
-                break
+    # --- Improved Nature/Purpose selection (CA-style keyword classifier) ---
+    try:
+        from modules.remittance_classifier import classify_remittance
 
-    if extracted.get("purpose_code"):
-        purpose_code = str(extracted.get("purpose_code", "")).strip().upper()
+        raw_text = str(extracted.get("_raw_invoice_text") or "")
+        if not raw_text.strip():
+            # If OCR failed entirely, build a synthetic probe from high-signal fields
+            raw_text = " ".join(
+                [
+                    str(extracted.get("invoice_number") or ""),
+                    str(extracted.get("beneficiary_name") or ""),
+                    str(extracted.get("purpose_code") or ""),
+                    str(extracted.get("nature_of_remittance") or ""),
+                ]
+            )
+        cls = classify_remittance(raw_text, extracted)
+        if cls:
+            # Set purpose (authoritative for group/gr_no)
+            form["_purpose_group"] = cls.purpose.group_name
+            form["_purpose_code"] = cls.purpose.purpose_code
+            form["RevPurCategory"] = f"RB-{cls.purpose.gr_no}.1"
+            form["RevPurCode"] = f"RB-{cls.purpose.gr_no}.1-{cls.purpose.purpose_code}"
 
-        # Look up the code in Purpose_code_List and derive group_name + gr_no from same record
-        purpose_grouped = load_purpose_grouped()
-        matched_code = False
-        for group_name, codes in purpose_grouped.items():
-            for code_record in codes:
-                if str(code_record.get("purpose_code", "")).strip().upper() == purpose_code:
-                    gr_no = str(code_record.get("gr_no", "00") or "00").strip()
-                    form["_purpose_group"] = group_name
-                    form["_purpose_code"] = purpose_code
-                    form["RevPurCategory"] = f"RB-{gr_no}.1"
-                    form["RevPurCode"] = f"RB-{gr_no}.1-{purpose_code}"
-                    matched_code = True
-                    logger.info(
-                        "state_purpose_set invoice_id=%s group=%s code=%s gr_no=%s",
-                        invoice_id,
-                        group_name,
-                        purpose_code,
-                        gr_no,
-                    )
+            # Set nature
+            form["NatureRemCategory"] = cls.nature.code
+
+            # Keep extracted consistent for UI mapping/logs
+            extracted["purpose_code"] = cls.purpose.purpose_code
+            extracted["purpose_group"] = cls.purpose.group_name
+            extracted["nature_of_remittance"] = cls.nature.label
+
+            resolved["remittance_confidence"] = str(cls.confidence)
+            resolved["remittance_needs_review"] = "1" if cls.needs_review else "0"
+            resolved["remittance_evidence"] = " | ".join(cls.evidence[:2])
+
+            logger.info(
+                "remittance_classified invoice_id=%s purpose=%s nature=%s conf=%.2f review=%s evidence=%s",
+                invoice_id, cls.purpose.purpose_code, cls.nature.code, cls.confidence, cls.needs_review, cls.evidence[:2],
+            )
+    except Exception:
+        logger.exception("remittance_classify_failed invoice_id=%s", invoice_id)
+        # Fallback to old Gemini-direct approach
+        if extracted.get("nature_of_remittance"):
+            nature_label = str(extracted.get("nature_of_remittance", "")).strip()
+            nature_opts = load_nature_options()
+            for opt in nature_opts:
+                if str(opt.get("label", "")).strip() == nature_label:
+                    form["NatureRemCategory"] = str(opt.get("code", ""))
                     break
-            else:
-                continue
-            break
-        if not matched_code:
-            logger.warning("state_purpose_code_not_found invoice_id=%s code=%s", invoice_id, purpose_code)
+
+        if extracted.get("purpose_code"):
+            purpose_code = str(extracted.get("purpose_code", "")).strip().upper()
+            purpose_grouped = load_purpose_grouped()
+            for group_name, codes in purpose_grouped.items():
+                for code_record in codes:
+                    if str(code_record.get("purpose_code", "")).strip().upper() == purpose_code:
+                        gr_no = str(code_record.get("gr_no", "00") or "00").strip()
+                        form["_purpose_group"] = group_name
+                        form["_purpose_code"] = purpose_code
+                        form["RevPurCategory"] = f"RB-{gr_no}.1"
+                        form["RevPurCode"] = f"RB-{gr_no}.1-{purpose_code}"
+                        break
+                else:
+                    continue
+                break
 
     rem = match_remitter(extracted.get("remitter_name", ""))
     if rem:

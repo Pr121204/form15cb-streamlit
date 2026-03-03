@@ -69,24 +69,6 @@ if "uploaded_configs" not in st.session_state:
     st.session_state["uploaded_configs"] = {}
 
 
-def _extract_text_for_file(uploaded) -> str:
-    # Keep OCR/text extraction path unchanged.
-    path = save_uploaded_file(uploaded, uploaded.name)
-    logger.info("extract_start file=%s saved_path=%s", uploaded.name, path)
-    uploaded.seek(0)
-    text = ""
-    try:
-        text = extract_text_from_pdf(io.BytesIO(uploaded.read()))
-        logger.info("extract_pdf_done file=%s text_len=%s", uploaded.name, len(str(text or "")))
-    except Exception:
-        logger.exception("extract_pdf_failed file=%s", uploaded.name)
-        text = ""
-    if not text or len(text.strip()) < 20:
-        logger.info("extract_pdf_insufficient file=%s text_len=%s falling_back=ocr", uploaded.name, len(str(text or "")))
-        text = extract_text_from_image_file(path)
-        logger.info("extract_ocr_done file=%s text_len=%s", uploaded.name, len(str(text or "")))
-    logger.info("extract_complete file=%s final_text_len=%s", uploaded.name, len(str(text or "")))
-    return text
 
 
 def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[str]:
@@ -162,6 +144,15 @@ def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[s
             },
         )
     return errors
+
+
+def _has_non_empty(value: object) -> bool:
+    return bool(str(value or "").strip())
+
+
+def _vision_core_fields_empty(extracted: Dict[str, str]) -> bool:
+    core_fields = ["invoice_number", "amount", "currency_short", "beneficiary_name"]
+    return not any(_has_non_empty(extracted.get(field)) for field in core_fields)
 
 
 st.subheader("Step 1 - Upload Invoices")
@@ -242,13 +233,13 @@ if uploaded_files:
 
             with st.spinner(f"Processing {file.name}..."):
                 start = time.time()
+                text = ""  # ALWAYS reset per invoice to avoid cross-invoice leakage
                 # Handle PDFs differently: try text extraction first, else convert
                 # the first PDF page to an image and send to Gemini vision.
                 file_bytes = file.read()
                 if file.name.lower().endswith('.pdf'):
-                    text = ""
                     try:
-                        text = extract_text_from_pdf(io.BytesIO(file_bytes))
+                        text = extract_text_from_pdf(io.BytesIO(file_bytes)) or ""
                     except Exception:
                         logger.exception("pdf_text_extraction_failed file=%s", file.name)
                         text = ""
@@ -269,22 +260,49 @@ if uploaded_files:
                                     len(selected_pages),
                                 )
                                 page_results: List[Dict[str, str]] = []
+                                page_ocr_texts: List[str] = []
                                 for page_idx, page_img in enumerate(selected_pages, start=1):
                                     buf = io.BytesIO()
                                     page_img.save(buf, format='JPEG', quality=90)
                                     image_bytes = buf.getvalue()
                                     page_extracted = extract_invoice_core_fields_from_image(image_bytes)
-                                    page_results.append(page_extracted)
+                                    # Free OCR on each page for classifier evidence
+                                    try:
+                                        page_ocr = extract_text_from_image_file(image_bytes) or ""
+                                    except Exception:
+                                        page_ocr = ""
+                                    text_extracted: Dict[str, str] = {}
+                                    if _vision_core_fields_empty(page_extracted) and len(page_ocr.strip()) >= 50:
+                                        try:
+                                            text_extracted = extract_invoice_core_fields(page_ocr)
+                                            logger.info(
+                                                "pdf_image_page_text_fallback_used file=%s page=%s text_keys=%s",
+                                                file.name,
+                                                page_idx,
+                                                sorted(text_extracted.keys()),
+                                            )
+                                        except Exception:
+                                            logger.exception(
+                                                "pdf_image_page_text_fallback_failed file=%s page=%s",
+                                                file.name,
+                                                page_idx,
+                                            )
+                                    merged_page = dict(text_extracted)
+                                    merged_page.update({k: v for k, v in page_extracted.items() if _has_non_empty(v)})
+                                    merged_page["_raw_invoice_text"] = page_ocr
+                                    page_results.append(merged_page)
+                                    page_ocr_texts.append(page_ocr)
                                     logger.info(
-                                        "pdf_image_page_extracted file=%s page=%s summary=%s",
+                                        "pdf_image_page_extracted file=%s page=%s ocr_len=%s summary=%s",
                                         file.name,
                                         page_idx,
+                                        len(page_ocr),
                                         {
-                                            "invoice_number": page_extracted.get("invoice_number", ""),
-                                            "amount": page_extracted.get("amount", ""),
-                                            "currency_short": page_extracted.get("currency_short", ""),
-                                            "remitter_name": page_extracted.get("remitter_name", ""),
-                                            "beneficiary_name": page_extracted.get("beneficiary_name", ""),
+                                            "invoice_number": merged_page.get("invoice_number", ""),
+                                            "amount": merged_page.get("amount", ""),
+                                            "currency_short": merged_page.get("currency_short", ""),
+                                            "remitter_name": merged_page.get("remitter_name", ""),
+                                            "beneficiary_name": merged_page.get("beneficiary_name", ""),
                                         },
                                     )
                                 if len(page_results) == 1:
@@ -292,6 +310,18 @@ if uploaded_files:
                                 else:
                                     extracted, merge_meta = merge_multi_page_image_extractions(page_results)
                                     logger.info("pdf_image_multi_page_merged file=%s meta=%s", file.name, merge_meta)
+                                # Combine OCR text from all pages as raw evidence
+                                text = "\n".join(t for t in page_ocr_texts if t.strip())
+                                if not text.strip():
+                                    try:
+                                        text = extract_text_from_image_file(file_bytes) or ""
+                                        logger.info(
+                                            "pdf_image_ocr_fallback file=%s text_len=%s",
+                                            file.name,
+                                            len(text),
+                                        )
+                                    except Exception:
+                                        logger.exception("pdf_image_ocr_fallback_failed file=%s", file.name)
                             else:
                                 extracted = extract_invoice_core_fields(text)
                         except Exception as e:
@@ -300,6 +330,15 @@ if uploaded_files:
                 else:
                     # For image uploads (jpg/png/etc.), send bytes directly to image extractor
                     extracted = extract_invoice_core_fields_from_image(file_bytes)
+                    # Free OCR for classifier evidence
+                    try:
+                        text = extract_text_from_image_file(file_bytes) or ""
+                    except Exception:
+                        logger.exception("image_ocr_fallback_failed file=%s", file.name)
+                        text = ""
+                # Set raw invoice text deterministically (never leaks from previous iteration)
+                if not extracted.get("_raw_invoice_text"):
+                    extracted["_raw_invoice_text"] = text
                 logger.info(
                     "invoice_extracted file=%s fields=%s",
                     file.name,

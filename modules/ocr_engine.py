@@ -67,11 +67,24 @@ def ocr_image_pil(pil_image, lang='eng'):
     return text
 
 def extract_text_from_image_file(path_or_bytes):
-    # if bytes provided, use convert_from_bytes; otherwise convert_from_path
+    # Support both image bytes and PDF bytes.
+    # Prior behavior treated all bytes as PDF bytes, which fails for JPEG/PNG page bytes.
     if isinstance(path_or_bytes, (bytes, bytearray)):
-        images = convert_from_bytes(path_or_bytes, dpi=300)
+        images = []
+        try:
+            img = Image.open(io.BytesIO(path_or_bytes))
+            img.load()
+            images = [img]
+        except Exception:
+            images = convert_from_bytes(path_or_bytes, dpi=300)
     else:
-        images = convert_from_path(path_or_bytes, dpi=300)
+        path_str = str(path_or_bytes)
+        if path_str.lower().endswith(".pdf"):
+            images = convert_from_path(path_str, dpi=300)
+        else:
+            img = Image.open(path_str)
+            img.load()
+            images = [img]
     text = []
     for img in images:
         text.append(ocr_image_pil(img))

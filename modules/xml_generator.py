@@ -22,8 +22,10 @@ def escape_xml(value):
     )
 
 
-def normalize_numeric_value(value: str) -> str:
-    """Convert numeric strings like '5355.0' or '535.50' to '5355' or '535.5'"""
+def normalize_numeric_value(value: str, preserve_decimals: bool = False) -> str:
+    """Convert numeric strings like '5355.0' or '535.50' to '5355' or '535.5' (default).
+    If preserve_decimals=True, ensures 2 decimal places (e.g., '20.80').
+    """
     if not value or not isinstance(value, str):
         return value
     # Preserve code-like numeric strings that intentionally carry leading zeros (e.g., "02", "03").
@@ -32,7 +34,10 @@ def normalize_numeric_value(value: str) -> str:
     try:
         # Try to parse as float
         num = float(value)
-        # Return as integer if whole number, otherwise format with 2 decimals and strip trailing zeros
+        if preserve_decimals:
+            return f"{num:.2f}"
+            
+        # Default behavior: Return as integer if whole number, otherwise format with 2 decimals and strip trailing zeros
         if num == int(num):
             return str(int(num))
         else:
@@ -77,8 +82,10 @@ def _fill_template(fields: Dict[str, str], template_path: str) -> str:
     with open(template_path, "r", encoding="utf8") as f:
         xml_content = f.read()
     for field_name, field_value in fields.items():
-        # Normalize numeric values first, then escape for XML
-        normalized_value = normalize_numeric_value(field_value)
+        # Normalize numeric values first, then escape for XML.
+        # Preserve 2 decimals for Rate fields as specifically requested.
+        preserve = field_name in ("RateTdsSecB", "RateTdsADtaa")
+        normalized_value = normalize_numeric_value(field_value, preserve_decimals=preserve)
         escaped_value = escape_xml(normalized_value)
         xml_content = xml_content.replace("{{" + field_name + "}}", escaped_value)
     return re.sub(r"\{\{[^}]+\}\}", "", xml_content)
