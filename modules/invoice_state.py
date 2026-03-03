@@ -399,6 +399,7 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
             "mode": MODE_NON_TDS if mode == MODE_NON_TDS else MODE_TDS,
             "exchange_rate": str(config.get("exchange_rate", "")),
             "source_currency_short": source_short,
+            "is_gross_up": bool(config.get("is_gross_up", False)),
         },
         "extracted": extracted,
         "resolved": {},
@@ -420,13 +421,14 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
             "beneficiary_name": extracted.get("beneficiary_name", ""),
             "amount": extracted.get("amount", ""),
             "invoice_date_iso": extracted.get("invoice_date_iso", ""),
+            "is_gross_up": state["meta"]["is_gross_up"],
         },
     )
     form["AmtPayForgnRem"] = extracted.get("amount", "")
     form["CurrencySecbCode"] = resolved_currency.get("code", "")
     form["RemitteeZipCode"] = "999999"
     form["RemitteeState"] = "OUTSIDE INDIA"
-    form["TaxPayGrossSecb"] = "N"
+    form["TaxPayGrossSecb"] = "Y" if state["meta"]["is_gross_up"] else "N"
     form["DednDateTds"] = date.today().isoformat()
     form["PropDateRem"] = (date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)).isoformat()
 

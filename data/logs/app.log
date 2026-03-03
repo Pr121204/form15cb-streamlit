@@ -6481,3 +6481,448 @@ google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, '
 2026-02-28 14:29:01,831 INFO xml_fields_built invoice_id=inv_0_141663 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '15', 'RateTdsSecB': '15', 'TaxLiablIt': '509600'}
 2026-02-28 14:29:01,833 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '44', 'NatureRemCategory': '16.13'}
 2026-02-28 14:29:01,851 INFO xml_generate_ok invoice_id=inv_0_141663 bytes=5655
+2026-03-03 16:31:38,686 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:31:38,686 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:31:38,689 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:31:38,689 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:31:38,690 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:31:38,690 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:38,737 INFO match_remitter_exact input=MYNTRA JABONG INDIA PRIVATE LIMITED matched=MYNTRA JABONG INDIA PRIVATE LIMITED
+2026-03-03 16:31:38,756 WARNING match_remitter_none input=KAIMEN GLOBAL PARTNERS, S.L
+2026-03-03 16:31:38,764 INFO gemini_extract_start text_len=252 model=gemini-2.5-flash backend=modern
+2026-03-03 16:31:38,765 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=MAX_TOKENS response_text_len=31 parsed_keys=[] invalid=True
+2026-03-03 16:31:38,765 WARNING gemini_extract_retry reason=invalid_or_truncated_response next_profile=compact_retry
+2026-03-03 16:31:38,765 INFO gemini_extract_attempt attempt=2/2 profile=compact_retry finish_reason=MAX_TOKENS response_text_len=31 parsed_keys=[] invalid=True
+2026-03-03 16:31:38,765 INFO gemini_extract_response parsed_keys=[]
+2026-03-03 16:31:38,788 INFO gemini_extract_done summary={'remitter_name': '', 'remitter_country_text': '', 'beneficiary_name': '', 'beneficiary_address': '', 'invoice_number': 'RA22025000000271', 'amount': '', 'currency_short': '', 'beneficiary_country_text': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-03-03 16:31:38,793 INFO gemini_extract_start text_len=659 model=gemini-2.5-flash backend=modern
+2026-03-03 16:31:38,793 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=MAX_TOKENS response_text_len=65 parsed_keys=[] invalid=True
+2026-03-03 16:31:38,793 WARNING gemini_extract_retry reason=invalid_or_truncated_response next_profile=compact_retry
+2026-03-03 16:31:38,793 INFO gemini_extract_attempt attempt=2/2 profile=compact_retry finish_reason=STOP response_text_len=154 parsed_keys=['amount', 'beneficiary_name', 'currency', 'invoice_number', 'remitter_name'] invalid=False
+2026-03-03 16:31:38,793 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_name', 'currency', 'invoice_number', 'remitter_name']
+2026-03-03 16:31:38,799 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 16:31:38,820 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-03 16:31:38,833 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 16:31:38,839 INFO gemini_extract_done summary={'remitter_name': 'BOSCH LIMITED', 'remitter_country_text': 'India', 'beneficiary_name': 'BOSCH SANAYI VE TICARET ANONIM SIRKETI', 'beneficiary_address': '', 'invoice_number': 'INV-1', 'amount': '3574.77', 'currency_short': 'USD', 'beneficiary_country_text': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-03-03 16:31:38,858 WARNING image_multi_page_amount_conflict candidates=[{'page': 1, 'amount': '100.00', 'score': 2, 'currency_short': ''}, {'page': 2, 'amount': '200.00', 'score': 4, 'currency_short': 'EUR'}]
+2026-03-03 16:31:38,862 INFO beneficiary_domain_mapping_applied input=EXPLEOGROUP.COM output=EXPLEO TECHNOLOGY
+2026-03-03 16:31:39,061 WARNING match_remitter_none input=BOSCH SAO PAULO LTDA
+2026-03-03 16:31:39,077 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-03 16:31:39,097 WARNING match_remitter_none input=BOSCH.IO GMBH
+2026-03-03 16:31:39,099 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,104 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,121 WARNING match_remitter_none input=ROBERT BOSCH MEXICO
+2026-03-03 16:31:39,163 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-03 16:31:39,165 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 16:31:39,184 WARNING match_remitter_none input=BOSCH IO GMBH
+2026-03-03 16:31:39,187 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,190 INFO state_build_start invoice_id=inv4 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Unknown Counterparty', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,192 INFO state_country_inference invoice_id=inv4 beneficiary=Unknown Counterparty country_text= inferred_country_code=
+2026-03-03 16:31:39,194 WARNING state_country_blank_no_inference invoice_id=inv4 beneficiary=Unknown Counterparty country_text=
+2026-03-03 16:31:39,197 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,206 INFO state_remitter_match invoice_id=inv4 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,206 INFO recompute_start invoice_id=inv4 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=
+2026-03-03 16:31:39,206 WARNING recompute_tds_skipped invoice_id=inv4 reason=country_blank country= remitter_pan=AAACR7108R
+2026-03-03 16:31:39,206 INFO state_build_done invoice_id=inv4 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-03 16:31:39,208 INFO state_build_start invoice_id=inv2 file=x.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,210 INFO state_country_inference invoice_id=inv2 beneficiary=Robert Bosch GmbH country_text= inferred_country_code=49
+2026-03-03 16:31:39,211 INFO state_purpose_set invoice_id=inv2 group=Capital Account code=S0017 gr_no=00
+2026-03-03 16:31:39,213 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,213 INFO state_remitter_match invoice_id=inv2 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,213 INFO recompute_start invoice_id=inv2 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,213 INFO recompute_tds_done invoice_id=inv2 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:39,213 INFO state_build_done invoice_id=inv2 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '10'}
+2026-03-03 16:31:39,215 INFO state_build_start invoice_id=inv11 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,215 INFO state_country_inference invoice_id=inv11 beneficiary=Robert Bosch GmbH country_text=Germany inferred_country_code=49
+2026-03-03 16:31:39,218 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,218 INFO state_remitter_match invoice_id=inv11 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,218 INFO recompute_start invoice_id=inv11 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,218 INFO recompute_tds_done invoice_id=inv11 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:39,218 INFO state_build_done invoice_id=inv11 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '10'}
+2026-03-03 16:31:39,220 INFO state_build_start invoice_id=inv8 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': '', 'beneficiary_name': '', 'amount': '', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,220 INFO state_country_inference invoice_id=inv8 beneficiary= country_text=Portugal inferred_country_code=14
+2026-03-03 16:31:39,220 WARNING state_dtaa_seed_skipped invoice_id=inv8 reason=core_extraction_empty country_hint=PORTUGAL
+2026-03-03 16:31:39,221 WARNING state_remitter_not_matched invoice_id=inv8 remitter_name=
+2026-03-03 16:31:39,221 INFO recompute_start invoice_id=inv8 mode=TDS fcy=0 inr=0 exchange_rate=100 dtaa_rate=
+2026-03-03 16:31:39,221 WARNING recompute_tds_skipped invoice_id=inv8 reason=country_selected_rate_missing country=14 remitter_pan=
+2026-03-03 16:31:39,221 INFO state_build_done invoice_id=inv8 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '14', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-03 16:31:39,222 INFO state_build_start invoice_id=inv7 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Some Remitter', 'beneficiary_name': 'Planisware Deutschland GmbH', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,225 INFO state_country_inference invoice_id=inv7 beneficiary=Planisware Deutschland GmbH country_text= inferred_country_code=49
+2026-03-03 16:31:39,243 WARNING match_remitter_none input=Some Remitter
+2026-03-03 16:31:39,244 WARNING state_remitter_not_matched invoice_id=inv7 remitter_name=Some Remitter
+2026-03-03 16:31:39,244 INFO recompute_start invoice_id=inv7 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,244 INFO recompute_tds_done invoice_id=inv7 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:39,244 INFO state_build_done invoice_id=inv7 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '10'}
+2026-03-03 16:31:39,246 INFO state_build_start invoice_id=inv7 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Domestic Counterparty', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,247 INFO state_country_inference invoice_id=inv7 beneficiary=Domestic Counterparty country_text=India inferred_country_code=91
+2026-03-03 16:31:39,248 WARNING state_country_india_disallowed invoice_id=inv7 old_country=91 fallback=9999
+2026-03-03 16:31:39,248 WARNING state_country_fallback_others invoice_id=inv7 beneficiary=Domestic Counterparty country_text=India
+2026-03-03 16:31:39,251 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-03 16:31:39,251 INFO state_remitter_match invoice_id=inv7 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-03 16:31:39,251 INFO recompute_start invoice_id=inv7 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=
+2026-03-03 16:31:39,251 WARNING recompute_tds_skipped invoice_id=inv7 reason=country_selected_rate_missing country=9999 remitter_pan=AAACM9840P
+2026-03-03 16:31:39,251 INFO state_build_done invoice_id=inv7 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '9999', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-03 16:31:39,252 INFO state_build_start invoice_id=inv5 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Sanayi ve Ticaret Anonim Sirketi', 'beneficiary_name': 'Bosch Limited', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,254 INFO state_country_inference invoice_id=inv5 beneficiary=Bosch Limited country_text=India inferred_country_code=91
+2026-03-03 16:31:39,255 WARNING state_country_india_safeguard invoice_id=inv5 old_country=91 alternate_country=90
+2026-03-03 16:31:39,273 WARNING match_remitter_none input=Bosch Sanayi ve Ticaret Anonim Sirketi
+2026-03-03 16:31:39,273 WARNING state_remitter_not_matched invoice_id=inv5 remitter_name=Bosch Sanayi ve Ticaret Anonim Sirketi
+2026-03-03 16:31:39,274 INFO recompute_start invoice_id=inv5 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=15
+2026-03-03 16:31:39,274 INFO recompute_tds_done invoice_id=inv5 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-03 16:31:39,274 INFO state_build_done invoice_id=inv5 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '15'}
+2026-03-03 16:31:39,276 INFO state_build_start invoice_id=inv1 file=7057441295.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Bosch IO GmbH', 'amount': '49300.00', 'invoice_date_iso': '2023-05-15'}
+2026-03-03 16:31:39,278 INFO state_country_inference invoice_id=inv1 beneficiary=Bosch IO GmbH country_text= inferred_country_code=49
+2026-03-03 16:31:39,280 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,280 INFO state_remitter_match invoice_id=inv1 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,280 INFO recompute_start invoice_id=inv1 mode=TDS fcy=49300 inr=4930000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,281 INFO recompute_tds_done invoice_id=inv1 values={'TaxLiablIt': '1025440', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-03-03 16:31:39,281 INFO state_build_done invoice_id=inv1 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1025440', 'AmtPayForgnTds': '4930'}
+2026-03-03 16:31:39,283 INFO state_build_start invoice_id=inv12 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Back Office Associates Germany GmbH', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,285 INFO state_country_inference invoice_id=inv12 beneficiary=Back Office Associates Germany GmbH country_text= inferred_country_code=49
+2026-03-03 16:31:39,286 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-03 16:31:39,286 INFO state_remitter_match invoice_id=inv12 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-03 16:31:39,286 INFO recompute_start invoice_id=inv12 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,286 INFO recompute_tds_done invoice_id=inv12 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:39,286 INFO state_build_done invoice_id=inv12 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '10'}
+2026-03-03 16:31:39,288 INFO state_build_start invoice_id=inv10 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Bosch Foreign Entity', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,289 INFO state_country_inference invoice_id=inv10 beneficiary=Bosch Foreign Entity country_text=Turkiye inferred_country_code=90
+2026-03-03 16:31:39,291 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-03 16:31:39,291 INFO state_remitter_match invoice_id=inv10 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-03 16:31:39,291 INFO recompute_start invoice_id=inv10 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=15
+2026-03-03 16:31:39,291 INFO recompute_tds_done invoice_id=inv10 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-03 16:31:39,292 INFO state_build_done invoice_id=inv10 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '15'}
+2026-03-03 16:31:39,294 INFO state_build_start invoice_id=inv3 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,296 INFO state_country_inference invoice_id=inv3 beneficiary=Robert Bosch GmbH country_text= inferred_country_code=49
+2026-03-03 16:31:39,300 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,300 INFO state_remitter_match invoice_id=inv3 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,300 INFO recompute_start invoice_id=inv3 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=10
+2026-03-03 16:31:39,300 INFO recompute_tds_done invoice_id=inv3 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:31:39,300 INFO state_build_done invoice_id=inv3 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '10'}
+2026-03-03 16:31:39,302 INFO state_build_start invoice_id=inv9 file=7120002741.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'ROBERT BOSCH MEXICO', 'amount': '18900', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,302 INFO state_country_inference invoice_id=inv9 beneficiary=ROBERT BOSCH MEXICO country_text=Mexico inferred_country_code=54
+2026-03-03 16:31:39,302 WARNING state_dtaa_not_found invoice_id=inv9 country_hint=ARGENTINA
+2026-03-03 16:31:39,306 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,306 INFO state_remitter_match invoice_id=inv9 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-03 16:31:39,306 INFO recompute_start invoice_id=inv9 mode=TDS fcy=18900 inr=1701000 exchange_rate=90 dtaa_rate=
+2026-03-03 16:31:39,306 WARNING recompute_tds_skipped invoice_id=inv9 reason=country_selected_rate_missing country=54 remitter_pan=AAACR7108R
+2026-03-03 16:31:39,306 INFO state_build_done invoice_id=inv9 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '54', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-03 16:31:39,309 INFO state_build_start invoice_id=inv6 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Bosch Foreign Entity', 'amount': '100', 'invoice_date_iso': ''}
+2026-03-03 16:31:39,311 INFO state_country_inference invoice_id=inv6 beneficiary=Bosch Foreign Entity country_text=Turkey inferred_country_code=90
+2026-03-03 16:31:39,314 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-03 16:31:39,314 INFO state_remitter_match invoice_id=inv6 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-03 16:31:39,314 INFO recompute_start invoice_id=inv6 mode=TDS fcy=100 inr=10000 exchange_rate=100 dtaa_rate=15
+2026-03-03 16:31:39,314 INFO recompute_tds_done invoice_id=inv6 values={'TaxLiablIt': '2080', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-03 16:31:39,314 INFO state_build_done invoice_id=inv6 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2080', 'AmtPayForgnTds': '15'}
+2026-03-03 16:31:39,335 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,339 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 16:31:39,343 INFO match_remitter_exact input=Bosch Global Software Technologies Pvt Ltd matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,345 INFO match_remitter_exact input=BOSCH MOBILITY PLATFORM AND SOLN INDIA PVT LTD matched=BOSCH MOBILITY PLATFORM AND SOLUTIONS INDIA PVT LIMITED
+2026-03-03 16:31:39,349 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHN. PVT LTD matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-03 16:31:39,368 INFO state_build_start invoice_id=x1 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'BOSCH LIMITED', 'beneficiary_name': 'benef', 'amount': '100', 'invoice_date_iso': '2026-02-20'}
+2026-03-03 16:31:39,370 INFO state_country_inference invoice_id=x1 beneficiary=benef country_text= inferred_country_code=
+2026-03-03 16:31:39,371 WARNING state_country_blank_no_inference invoice_id=x1 beneficiary=benef country_text=
+2026-03-03 16:31:39,372 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 16:31:39,372 INFO state_remitter_match invoice_id=x1 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 16:31:39,372 INFO recompute_start invoice_id=x1 mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:31:39,372 WARNING recompute_tds_skipped invoice_id=x1 reason=country_blank country= remitter_pan=AAACM9840P
+2026-03-03 16:31:39,372 INFO state_build_done invoice_id=x1 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-03 16:37:31,002 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:37:31,002 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:37:31,002 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:37:31,004 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:37:31,004 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:37:31,005 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:37:31,006 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:37:31,006 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:37:31,007 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:37:31,007 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:37:46,724 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:37:46,724 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:37:46,725 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:37:46,725 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:37:46,725 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:37:46,725 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:37:46,727 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:37:46,727 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:37:46,728 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:37:46,728 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:38:00,469 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:38:00,469 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:38:00,470 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:38:00,471 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:38:00,472 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:00,472 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:38:00,518 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:00,518 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:38:00,524 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:38:00,524 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:38:44,281 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:38:44,281 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:38:44,282 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:38:44,282 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:38:44,282 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:44,282 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:38:44,283 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:44,283 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:38:44,284 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:38:44,284 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:38:59,901 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:38:59,901 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:38:59,901 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:38:59,901 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:38:59,902 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:59,902 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:38:59,903 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:38:59,903 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:38:59,903 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:38:59,903 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:39:46,551 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:39:46,551 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:39:46,551 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:39:46,551 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:39:46,552 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:39:46,552 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:39:46,552 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:39:46,552 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:39:46,553 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:39:46,553 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:41:30,799 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 exchange_rate=90 dtaa_rate=10
+2026-03-03 16:41:30,800 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:41:30,801 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=
+2026-03-03 16:41:30,801 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:41:30,802 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:41:30,803 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:41:30,809 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 exchange_rate=107.24 dtaa_rate=
+2026-03-03 16:41:30,809 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:41:30,811 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 exchange_rate=80 dtaa_rate=10
+2026-03-03 16:41:30,811 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:45:25,155 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:45:25,164 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:45:25,164 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:45:25,165 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:45:25,165 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:45:25,167 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:45:25,167 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:45:25,168 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:45:25,168 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:45:47,328 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:45:47,328 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:45:47,329 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:45:47,329 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:45:47,330 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:45:47,332 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:45:47,332 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:45:47,333 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:45:47,334 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:46:51,950 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:46:51,951 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:46:51,951 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:46:51,951 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:46:51,951 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:46:51,951 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:46:51,952 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:46:51,952 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:46:51,952 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:46:51,952 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:47:11,779 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:47:11,780 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:47:11,782 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:47:11,782 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:47:11,784 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:47:11,785 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:47:11,787 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:47:11,787 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:47:11,800 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:47:11,800 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:48:24,286 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:48:24,286 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:48:24,287 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:48:24,288 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:48:24,289 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:48:24,289 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:48:24,289 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:48:24,290 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:48:24,291 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:48:24,291 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:48:55,035 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:48:55,035 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:48:55,036 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:48:55,037 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:48:55,038 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:48:55,038 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:48:55,040 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:48:55,040 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:48:55,042 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:48:55,043 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:49:59,213 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:49:59,213 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:49:59,214 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:49:59,214 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:49:59,216 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:49:59,216 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:49:59,217 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:49:59,217 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:49:59,219 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:49:59,219 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:51:07,160 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:51:07,160 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:51:07,161 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:51:07,161 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:51:07,161 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:51:07,161 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:51:07,161 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:51:07,161 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:51:07,162 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:51:07,162 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:51:30,710 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:51:30,710 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:51:30,713 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:51:30,713 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:51:30,714 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:51:30,715 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:51:30,716 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:51:30,716 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:51:30,717 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:51:30,717 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:52:09,624 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:52:09,624 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:52:52,837 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:52:52,858 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:54:00,901 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:54:00,901 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:54:00,902 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:54:00,902 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:54:00,902 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:54:00,902 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:54:00,903 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:54:00,903 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:54:00,903 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:54:00,903 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 16:54:31,306 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 16:54:31,307 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 16:54:31,307 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 16:54:31,307 INFO recompute_non_tds_done invoice_id=
+2026-03-03 16:54:31,308 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:54:31,308 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 16:54:31,308 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 16:54:31,308 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 16:54:31,309 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 16:54:31,309 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 17:04:02,755 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-03 17:04:02,756 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1882', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-03 17:04:02,757 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-03 17:04:02,757 INFO recompute_non_tds_done invoice_id=
+2026-03-03 17:04:02,757 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 17:04:02,758 INFO recompute_gross_up_done invoice_id= rate=20.8 net_inr_exact=198394.0 gross_inr_rounded=250497 tds_inr_exact=52103.376 tds_fcy=485.86
+2026-03-03 17:04:02,758 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-03 17:04:02,759 INFO recompute_it_act_done invoice_id= rate=20.8 inr_amount=198394.0 tax_liable=41266
+2026-03-03 17:04:02,759 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-03 17:04:02,759 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1664', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-03 17:10:34,552 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:38,495 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:39,618 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:44,029 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:44,238 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:47,822 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:10:47,826 INFO process_clicked file_count=1
+2026-03-03 17:10:47,827 INFO invoice_process_start file=INV00055737.PDF cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'is_gross_up': True, 'file_name': 'INV00055737.PDF'}
+2026-03-03 17:10:48,061 INFO gemini_extract_start text_len=2768 model=gemini-2.5-flash backend=modern
+2026-03-03 17:10:59,388 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=STOP response_text_len=633 parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name'] invalid=False
+2026-03-03 17:10:59,389 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-03-03 17:10:59,391 INFO nature_of_remittance_matched suggestion=CONSULTING SERVICES matched=CONSULTING SERVICES
+2026-03-03 17:10:59,392 INFO purpose_group_matched suggestion=Other Business Services matched=Other Business Services
+2026-03-03 17:10:59,399 INFO purpose_code_matched suggestion=S1002 matched=S1002 group=Other Business Services
+2026-03-03 17:10:59,418 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:10:59,435 WARNING match_remitter_none input=EUROMONITOR INTERNATIONAL LTD
+2026-03-03 17:10:59,439 INFO gemini_extract_done summary={'remitter_name': 'BOSCH LIMITED', 'remitter_country_text': 'India', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'beneficiary_address': '60-61 Britton Street London EC1M 5UX United Kingdom', 'invoice_number': 'INV00055737', 'amount': '24500.00', 'currency_short': 'EUR', 'beneficiary_country_text': 'United Kingdom', 'nature_of_remittance': 'CONSULTING SERVICES', 'purpose_group': 'Other Business Services', 'purpose_code': 'S1002'}
+2026-03-03 17:10:59,440 INFO invoice_extracted file=INV00055737.PDF fields={'remitter_name': 'BOSCH LIMITED', 'remitter_country': 'India', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'beneficiary_country': 'United Kingdom', 'invoice_number': 'INV00055737', 'amount': '24500.00', 'currency_short': 'EUR', 'invoice_date_iso': '2025-02-25'}
+2026-03-03 17:10:59,440 INFO state_build_start invoice_id=inv_0_59440 file=INV00055737.PDF mode=TDS source_currency=50 extracted_summary={'remitter_name': 'BOSCH LIMITED', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'amount': '24500.00', 'invoice_date_iso': '2025-02-25', 'is_gross_up': True}
+2026-03-03 17:10:59,442 INFO state_country_inference invoice_id=inv_0_59440 beneficiary=EUROMONITOR INTERNATIONAL LTD country_text=United Kingdom inferred_country_code=44
+2026-03-03 17:10:59,445 INFO state_nature_set invoice_id=inv_0_59440 label=CONSULTING SERVICES code=16.13
+2026-03-03 17:10:59,446 INFO state_purpose_set invoice_id=inv_0_59440 group=Other Business Services code=S1002 gr_no=10
+2026-03-03 17:10:59,449 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:10:59,465 INFO state_remitter_match invoice_id=inv_0_59440 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 17:10:59,502 INFO recompute_start invoice_id=inv_0_59440 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:10:59,503 INFO recompute_gross_up_done invoice_id=inv_0_59440 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:10:59,503 INFO state_build_done invoice_id=inv_0_59440 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:10:59,503 INFO invoice_state_built invoice_id=inv_0_59440 file=INV00055737.PDF form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'NatureRemCategory': '16.13'}
+2026-03-03 17:10:59,503 INFO invoice_processed file=INV00055737.PDF elapsed=11.68s
+2026-03-03 17:10:59,505 INFO process_complete invoice_count=1 ids=['inv_0_59440']
+2026-03-03 17:10:59,507 INFO review_start invoice_id=inv_0_59440 file=INV00055737.PDF
+2026-03-03 17:10:59,514 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:10:59,515 INFO ui_remitter_match invoice_id=inv_0_59440 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 17:10:59,528 INFO recompute_start invoice_id=inv_0_59440 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:10:59,529 INFO recompute_gross_up_done invoice_id=inv_0_59440 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:10:59,530 INFO ui_country_selected invoice_id=inv_0_59440 country_code=44 dtaa_article=DTAA BTWN INDIA AND UK dtaa_rate=
+2026-03-03 17:10:59,538 INFO ui_rate_entered invoice_id=inv_0_59440 rate=15
+2026-03-03 17:10:59,540 INFO recompute_start invoice_id=inv_0_59440 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:10:59,540 INFO recompute_gross_up_done invoice_id=inv_0_59440 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:10:59,541 INFO ui_recompute_done invoice_id=inv_0_59440 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:10:59,547 INFO recompute_start invoice_id=inv_0_59440 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:10:59,547 INFO recompute_gross_up_done invoice_id=inv_0_59440 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:10:59,548 INFO review_recomputed invoice_id=inv_0_59440 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:10:59,549 INFO xml_fields_built invoice_id=inv_0_59440 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'RateTdsSecB': '20.80', 'TaxLiablIt': '643434'}
+2026-03-03 17:10:59,549 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '44', 'NatureRemCategory': '16.13'}
+2026-03-03 17:10:59,553 INFO xml_generate_ok invoice_id=inv_0_59440 bytes=5481
+2026-03-03 17:14:37,224 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:14:45,675 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:14:50,400 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:14:52,833 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:14:54,919 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:14:54,929 INFO process_clicked file_count=1
+2026-03-03 17:14:54,930 INFO invoice_process_start file=INV00055737.PDF cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'is_gross_up': True, 'file_name': 'INV00055737.PDF'}
+2026-03-03 17:14:55,120 INFO gemini_extract_start text_len=2768 model=gemini-2.5-flash backend=modern
+2026-03-03 17:15:03,903 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=STOP response_text_len=634 parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name'] invalid=False
+2026-03-03 17:15:03,903 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-03-03 17:15:03,912 INFO nature_of_remittance_matched suggestion=CONSULTING SERVICES matched=CONSULTING SERVICES
+2026-03-03 17:15:03,916 INFO purpose_group_matched suggestion=Other Business Services matched=Other Business Services
+2026-03-03 17:15:03,935 INFO purpose_code_matched suggestion=S1005 matched=S1005 group=Other Business Services
+2026-03-03 17:15:03,970 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:15:04,007 WARNING match_remitter_none input=EUROMONITOR INTERNATIONAL LTD
+2026-03-03 17:15:04,012 INFO gemini_extract_done summary={'remitter_name': 'BOSCH LIMITED', 'remitter_country_text': 'India', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'beneficiary_address': '60-61 Britton Street, London, EC1M 5UX, United Kingdom', 'invoice_number': 'INV00055737', 'amount': '24500.0', 'currency_short': 'EUR', 'beneficiary_country_text': 'United Kingdom', 'nature_of_remittance': 'CONSULTING SERVICES', 'purpose_group': 'Other Business Services', 'purpose_code': 'S1005'}
+2026-03-03 17:15:04,012 INFO invoice_extracted file=INV00055737.PDF fields={'remitter_name': 'BOSCH LIMITED', 'remitter_country': 'India', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'beneficiary_country': 'United Kingdom', 'invoice_number': 'INV00055737', 'amount': '24500.0', 'currency_short': 'EUR', 'invoice_date_iso': '2025-02-25'}
+2026-03-03 17:15:04,013 INFO state_build_start invoice_id=inv_0_304013 file=INV00055737.PDF mode=TDS source_currency=50 extracted_summary={'remitter_name': 'BOSCH LIMITED', 'beneficiary_name': 'EUROMONITOR INTERNATIONAL LTD', 'amount': '24500.0', 'invoice_date_iso': '2025-02-25', 'is_gross_up': True}
+2026-03-03 17:15:04,015 INFO state_country_inference invoice_id=inv_0_304013 beneficiary=EUROMONITOR INTERNATIONAL LTD country_text=United Kingdom inferred_country_code=44
+2026-03-03 17:15:04,020 INFO state_nature_set invoice_id=inv_0_304013 label=CONSULTING SERVICES code=16.13
+2026-03-03 17:15:04,022 INFO state_purpose_set invoice_id=inv_0_304013 group=Other Business Services code=S1005 gr_no=10
+2026-03-03 17:15:04,024 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:15:04,029 INFO state_remitter_match invoice_id=inv_0_304013 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 17:15:04,032 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:04,032 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:04,033 INFO state_build_done invoice_id=inv_0_304013 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:15:04,033 INFO invoice_state_built invoice_id=inv_0_304013 file=INV00055737.PDF form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'NatureRemCategory': '16.13'}
+2026-03-03 17:15:04,034 INFO invoice_processed file=INV00055737.PDF elapsed=9.10s
+2026-03-03 17:15:04,035 INFO process_complete invoice_count=1 ids=['inv_0_304013']
+2026-03-03 17:15:04,036 INFO review_start invoice_id=inv_0_304013 file=INV00055737.PDF
+2026-03-03 17:15:04,044 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:15:04,044 INFO ui_remitter_match invoice_id=inv_0_304013 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 17:15:04,050 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:04,051 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:04,051 INFO ui_country_selected invoice_id=inv_0_304013 country_code=44 dtaa_article=DTAA BTWN INDIA AND UK dtaa_rate=
+2026-03-03 17:15:04,063 INFO ui_rate_entered invoice_id=inv_0_304013 rate=15
+2026-03-03 17:15:04,064 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:04,064 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:04,065 INFO ui_recompute_done invoice_id=inv_0_304013 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:15:04,071 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:04,071 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:04,072 INFO review_recomputed invoice_id=inv_0_304013 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:15:04,073 INFO xml_fields_built invoice_id=inv_0_304013 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'RateTdsSecB': '20.80', 'TaxLiablIt': '643434'}
+2026-03-03 17:15:04,074 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '44', 'NatureRemCategory': '16.13'}
+2026-03-03 17:15:04,080 INFO xml_generate_ok invoice_id=inv_0_304013 bytes=5464
+2026-03-03 17:15:17,973 INFO upload_received file_count=1 files=['INV00055737.PDF']
+2026-03-03 17:15:17,982 INFO review_start invoice_id=inv_0_304013 file=INV00055737.PDF
+2026-03-03 17:15:17,991 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-03 17:15:17,991 INFO ui_remitter_match invoice_id=inv_0_304013 remitter_name=BOSCH LIMITED pan=AAACM9840P bank=CITI Bank
+2026-03-03 17:15:18,003 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:18,003 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:18,004 INFO ui_country_selected invoice_id=inv_0_304013 country_code=44 dtaa_article=DTAA BTWN INDIA AND UK dtaa_rate=
+2026-03-03 17:15:18,024 INFO ui_rate_entered invoice_id=inv_0_304013 rate=15
+2026-03-03 17:15:18,025 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:18,025 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:18,026 INFO ui_recompute_done invoice_id=inv_0_304013 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:15:18,034 INFO recompute_start invoice_id=inv_0_304013 mode=TDS fcy=24500 inr=2450000 fx=100 dtaa_rate=15
+2026-03-03 17:15:18,035 INFO recompute_gross_up_done invoice_id=inv_0_304013 rate=20.8 net_inr_exact=2450000.0 gross_inr_rounded=3093434 tds_inr_exact=643434.272 tds_fcy=6434.34
+2026-03-03 17:15:18,035 INFO review_recomputed invoice_id=inv_0_304013 computed={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'TaxLiablIt': '643434', 'AmtPayForgnTds': '6434.34'}
+2026-03-03 17:15:18,036 INFO xml_fields_built invoice_id=inv_0_304013 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '44', 'RateTdsADtaa': '', 'RateTdsSecB': '20.80', 'TaxLiablIt': '643434'}
+2026-03-03 17:15:18,036 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '44', 'NatureRemCategory': '16.13'}
+2026-03-03 17:15:18,040 INFO xml_generate_ok invoice_id=inv_0_304013 bytes=5464

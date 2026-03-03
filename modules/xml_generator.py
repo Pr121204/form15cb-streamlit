@@ -47,18 +47,27 @@ def validate_required_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> No
     required = ["SWVersionNo", "FormName", "AssessmentYear", "RemitterPAN", "NameRemitter", "CurrencySecbCode"]
     missing = [k for k in required if not str(fields.get(k, "")).strip()]
     if str(mode or MODE_TDS) == MODE_TDS:
+        # Core fields required for any TDS reporting
         tds_required = [
             "TaxLiablIt",
             "BasisDeterTax",
-            "TaxIncDtaa",
-            "TaxLiablDtaa",
-            "RateTdsADtaa",
             "RateTdsSecB",
             "AmtPayForgnTds",
             "AmtPayIndianTds",
             "ActlAmtTdsForgn",
         ]
         missing.extend([k for k in tds_required if not str(fields.get(k, "")).strip()])
+        
+        # DTAA fields only required if DTAA is the basis or explicitly flagged
+        dtaa_active = str(fields.get("BasisDeterTax", "")).strip() == "DTAA" or str(fields.get("TaxIndDtaaFlg", "")).strip() == "Y"
+        if dtaa_active:
+            dtaa_required = [
+                "TaxIncDtaa",
+                "TaxLiablDtaa",
+                "RateTdsADtaa",
+            ]
+            missing.extend([k for k in dtaa_required if not str(fields.get(k, "")).strip()])
+            
     if missing:
         uniq_missing = sorted(set(missing))
         raise ValueError(f"Missing or empty mandatory fields: {', '.join(uniq_missing)}")
@@ -118,7 +127,8 @@ def build_xml_fields_by_mode(state: Dict[str, object]) -> Dict[str, str]:
     from modules.invoice_calculator import invoice_state_to_xml_fields
 
     out = invoice_state_to_xml_fields(state)
-    mode = str(state.get("meta", {}).get("mode") or MODE_TDS)
+    meta = state.get("meta", {})
+    mode = str((meta if isinstance(meta, dict) else {}).get("mode") or MODE_TDS)
     if mode == MODE_NON_TDS:
         out["AmtPayForgnTds"] = "0"
         out["AmtPayIndianTds"] = "0"
@@ -131,7 +141,8 @@ def build_xml_fields_by_mode(state: Dict[str, object]) -> Dict[str, str]:
 def write_xml_content(xml_content: str, filename: str | None = None) -> str:
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
     if not filename:
-        filename = f"generated_{uuid.uuid4().hex[:12]}.xml"
+        hex_str = uuid.uuid4().hex
+        filename = f"generated_{hex_str[:12]}.xml"
     out_path = os.path.join(OUTPUT_FOLDER, filename)
     with open(out_path, "w", encoding="utf8") as f:
         f.write(xml_content)

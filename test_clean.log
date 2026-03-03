@@ -1,0 +1,341 @@
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... FAIL
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+FAIL: test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 106, in test_recompute_gross_up_tds
+    self.assertEqual(f["RateTdsSecB"], "20.80")
+AssertionError: '20.8' != '20.80'
+- 20.8
++ 20.80
+?     +
+
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.020s
+
+FAILED (failures=2)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ERROR
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ERROR
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ERROR
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... ERROR
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ERROR
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+ERROR: test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 47, in test_inr_amount_is_rounded_integer
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 167, in recompute_invoice
+    _fmt_num(exchange_rate_float),
+             ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 35, in test_non_tds_zero_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 167, in recompute_invoice
+    _fmt_num(exchange_rate_float),
+             ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 99, in test_recompute_gross_up_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 167, in recompute_invoice
+    _fmt_num(exchange_rate_float),
+             ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 121, in test_recompute_it_act_non_gross_up_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 167, in recompute_invoice
+    _fmt_num(exchange_rate_float),
+             ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 23, in test_recompute_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 167, in recompute_invoice
+    _fmt_num(exchange_rate_float),
+             ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.033s
+
+FAILED (errors=5)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ERROR
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ERROR
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ERROR
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... ERROR
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ERROR
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+ERROR: test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 47, in test_inr_amount_is_rounded_integer
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 166, in recompute_invoice
+    exchange_rate_dec = Decimal(str(exchange_rate_float))
+                                    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 35, in test_non_tds_zero_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 166, in recompute_invoice
+    exchange_rate_dec = Decimal(str(exchange_rate_float))
+                                    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 99, in test_recompute_gross_up_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 166, in recompute_invoice
+    exchange_rate_dec = Decimal(str(exchange_rate_float))
+                                    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 121, in test_recompute_it_act_non_gross_up_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 166, in recompute_invoice
+    exchange_rate_dec = Decimal(str(exchange_rate_float))
+                                    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+======================================================================
+ERROR: test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 23, in test_recompute_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 166, in recompute_invoice
+    exchange_rate_dec = Decimal(str(exchange_rate_float))
+                                    ^^^^^^^^^^^^^^^^^^^
+NameError: name 'exchange_rate_float' is not defined
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.034s
+
+FAILED (errors=5)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ERROR
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+ERROR: test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 99, in test_recompute_gross_up_tds
+    out = recompute_invoice(state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\invoice_calculator.py", line 198, in recompute_invoice
+    tds_fcy = (tds_inr_exact / exchange_rate).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+               ~~~~~~~~~~~~~~^~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for /: 'decimal.Decimal' and 'float'
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.015s
+
+FAILED (failures=1, errors=1)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... FAIL
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+FAIL: test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 107, in test_recompute_gross_up_tds
+    self.assertEqual(f["BasisDeterTax"], "Act")
+AssertionError: 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED [75 chars]OVE.' != 'Act'
+- GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE.
++ Act
+
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.032s
+
+FAILED (failures=2)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ok
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.017s
+
+FAILED (failures=1)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ok
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.019s
+
+FAILED (failures=1)
+test_format_dotted_date (tests.test_invoice_calculator.TestInvoiceCalculator.test_format_dotted_date) ... ok
+test_inr_amount_is_rounded_integer (tests.test_invoice_calculator.TestInvoiceCalculator.test_inr_amount_is_rounded_integer) ... ok
+test_non_tds_zero_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_non_tds_zero_tds) ... ok
+test_recompute_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_gross_up_tds) ... ok
+test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds) ... FAIL
+test_recompute_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_tds) ... ok
+test_xml_fields_hardcoded_zip (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_hardcoded_zip) ... ok
+test_xml_fields_split_dtaa_variants (tests.test_invoice_calculator.TestInvoiceCalculator.test_xml_fields_split_dtaa_variants) ... ok
+
+======================================================================
+FAIL: test_recompute_it_act_non_gross_up_tds (tests.test_invoice_calculator.TestInvoiceCalculator.test_recompute_it_act_non_gross_up_tds)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_invoice_calculator.py", line 125, in test_recompute_it_act_non_gross_up_tds
+    self.assertEqual(f["AmtPayIndianTds"], "41266")
+AssertionError: '' != '41266'
++ 41266
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.015s
+
+FAILED (failures=1)
+test_empty_optional_tags_are_omitted (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_empty_optional_tags_are_omitted) ... ok
+test_gross_up_xml_fields_mapping (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_gross_up_xml_fields_mapping)
+Verifies that gross-up specific fields are correctly populated in the generated XML. ... ERROR
+test_non_tds_omits_rate_tags (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_non_tds_omits_rate_tags) ... ok
+test_preserves_leading_zero_codes_and_escapes_firm_name (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_preserves_leading_zero_codes_and_escapes_firm_name) ... ok
+test_tds_blocks_when_mandatory_tax_fields_missing (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_tds_blocks_when_mandatory_tax_fields_missing) ... ok
+test_tds_keeps_rate_tags (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_tds_keeps_rate_tags) ... ok
+
+======================================================================
+ERROR: test_gross_up_xml_fields_mapping (tests.test_batch_xml_generation.TestBatchXmlGeneration.test_gross_up_xml_fields_mapping)
+Verifies that gross-up specific fields are correctly populated in the generated XML.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\tests\test_batch_xml_generation.py", line 147, in test_gross_up_xml_fields_mapping
+    self.assertEqual(tds_details.find("f:TaxPayGrossSecb", ns).text, "Y")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'text'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.018s
+
+FAILED (errors=1)

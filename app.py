@@ -101,7 +101,7 @@ def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[s
         errors.append("RemitterPAN format is invalid (expected AAAAA9999A).")
     if fields.get("BsrCode") and not validate_bsr_code(fields["BsrCode"]):
         errors.append("BsrCode must be exactly 7 digits.")
-    if fields.get("RateTdsADtaa") and fields.get("RateTdsADtaa").strip() and not validate_dtaa_rate(fields["RateTdsADtaa"]):
+    if fields.get("RateTdsADtaa") and (fields.get("RateTdsADtaa") or "").strip() and not validate_dtaa_rate(fields["RateTdsADtaa"]):
         errors.append("RateTdsADtaa must be between 0 and 100.")
     if not is_currency_code_valid_for_xml(fields.get("CurrencySecbCode", "")):
         errors.append("Currency must be selected with a valid code before generating XML.")
@@ -200,10 +200,21 @@ if uploaded_files:
             exchange_rate = st.text_input("1 unit of FCY = ₹ X", value=str(existing["exchange_rate"]), key=f"{cfg_key}_rate")
         with c3:
             mode = st.radio("Mode", [MODE_TDS, MODE_NON_TDS], index=0 if existing["mode"] == MODE_TDS else 1, key=f"{cfg_key}_mode")
+            is_gross_up = st.checkbox(
+                "Gross-up Tax?", 
+                value=bool(existing.get("is_gross_up")), 
+                disabled=(mode == MODE_NON_TDS), 
+                key=f"{cfg_key}_grossup"
+            )
+            # Guardrail: Never allow gross-up to be registered as True when in Non-TDS mode
+            if mode == MODE_NON_TDS:
+                is_gross_up = False
+                
         st.session_state["uploaded_configs"][cfg_key] = {
             "currency_short": currency_short,
             "exchange_rate": exchange_rate,
             "mode": mode,
+            "is_gross_up": is_gross_up,
             "file_name": file.name,
         }
 

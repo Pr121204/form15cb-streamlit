@@ -123,6 +123,48 @@ class TestBatchXmlGeneration(unittest.TestCase):
         with self.assertRaises(ValueError):
             generate_xml_content(data, mode=MODE_TDS)
 
+    def test_gross_up_xml_fields_mapping(self):
+        """Verifies that gross-up specific fields are correctly populated in the generated XML."""
+        data = self._base()
+        # Override with exact gross-up scenario properties
+        data["TaxPayGrossSecb"] = "Y"
+        data["AmtPayIndRem"] = "198394"
+        data["AmtIncChrgIt"] = "250497"
+        data["TaxLiablIt"] = "52103"
+        
+        # In gross-up, DTAA may be blank/skipped
+        data["BasisDeterTax"] = "Act"
+        data["TaxIndDtaaFlg"] = "N"
+        
+        xml = generate_xml_content(data, mode=MODE_TDS)
+        
+        root = ET.fromstring(xml)
+        ns = {"f": "http://incometaxindiaefiling.gov.in/FORM15CAB"}
+        
+        # Verify TaxPayGrossSecb is correctly mapped to Y
+        gross_node = root.find(".//f:TaxPayGrossSecb", ns)
+        self.assertIsNotNone(gross_node)
+        assert gross_node is not None  # type narrowing for Pyre
+        self.assertEqual(gross_node.text, "Y")
+        
+        # Verify AmtIncChrgIt (Income Chargeable) uses the grossed-up value, not AmtPayIndRem
+        inc_node = root.find(".//f:AmtIncChrgIt", ns)
+        self.assertIsNotNone(inc_node)
+        assert inc_node is not None
+        self.assertEqual(inc_node.text, "250497")
+        
+        # Verify TaxLiablIt (Tax Liability) matches the exact TDS
+        tax_node = root.find(".//f:TaxLiablIt", ns)
+        self.assertIsNotNone(tax_node)
+        assert tax_node is not None
+        self.assertEqual(tax_node.text, "52103")
+        
+        # Ensure the Invoice amount remains distinct
+        rem_node = root.find(".//f:AmtPayIndRem", ns)
+        self.assertIsNotNone(rem_node)
+        assert rem_node is not None
+        self.assertEqual(rem_node.text, "198394")
+
 
 if __name__ == "__main__":
     unittest.main()

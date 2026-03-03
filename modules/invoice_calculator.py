@@ -158,8 +158,15 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         )
     )
     computed["dtaa_rate_percent"] = _fmt_num(dtaa_rate_percent) if dtaa_rate_percent is not None else ""
+    
+    # Convert key values to Decimal for precise calculations early to avoid NameErrors in logs
+    invoice_fcy = Decimal(str(fcy))
+    invoice_inr_exact = Decimal(str(inr_exact))
+    invoice_inr = Decimal(str(inr)) # Rounded INR amount
+    exchange_rate_dec = Decimal(str(exchange_rate))
+
     logger.info(
-        "recompute_start invoice_id=%s mode=%s fcy=%s inr=%s exchange_rate=%s dtaa_rate=%s",
+        "recompute_start invoice_id=%s mode=%s fcy=%s inr=%s fx=%s dtaa_rate=%s",
         invoice_id,
         mode,
         _fmt_num(fcy),
@@ -168,22 +175,72 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         computed["dtaa_rate_percent"],
     )
 
-    if mode == MODE_TDS and dtaa_rate_percent is not None:
-        it_factor, it_basis = get_effective_it_rate(inr)
-        it_liab = inr * (it_factor / 100.0)
-        dtaa_liab = inr * (dtaa_rate_percent / 100.0)
-        tds_fcy = fcy * (dtaa_rate_percent / 100.0)
-        tds_inr = inr * (dtaa_rate_percent / 100.0)
-        actual_fcy = fcy - tds_fcy
+    is_gross_up = bool(meta.get("is_gross_up", False))
+
+    # --- PRIORITY 1: GROSS-UP FLOW ---
+    if mode == MODE_TDS and is_gross_up:
+        effective_rate, basis_text = get_effective_it_rate(float(invoice_inr))
+        # R is the percentage
+        r = Decimal(str(effective_rate))
+
+        if r < 100:
+            # 1. GrossINR_exact = NetINR * 100 / (100 - R)
+            gross_inr_exact = invoice_inr_exact * Decimal("100") / (Decimal("100") - r)
+            # 2. Round Gross INR to nearest rupee
+            gross_inr_rounded = gross_inr_exact.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+
+            # 3. TDSINR_exact = GrossINR_rounded * R / 100
+            tds_inr_exact = gross_inr_rounded * r / Decimal("100")
+            # 4. TDSINR_rounded = nearest rupee
+            tds_inr_rounded = tds_inr_exact.quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+
+            # 5. TDS_FCY = TDSINR_exact / FX (rounded 2dp)
+            tds_fcy = (tds_inr_exact / exchange_rate_dec).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            form["AmtIncChrgIt"] = str(int(gross_inr_rounded))
+            form["TaxLiablIt"] = str(int(tds_inr_rounded))
+            form["AmtPayIndianTds"] = str(int(tds_inr_rounded))
+            
+            # FCY amounts format with exactly 2 decimal places where needed
+            form["AmtPayForgnTds"] = f"{tds_fcy:.2f}"
+            form["ActlAmtTdsForgn"] = _fmt_num(fcy)  # Vendor receives full invoice
+            
+            form["BasisDeterTax"] = basis_text
+            form["RateTdsSecB"] = "{:.2f}".format(effective_rate) # Fix 1: Formatted to 2 decimals
+            form.setdefault("RateTdsSecbFlg", RATE_TDS_SECB_FLG_TDS)
+            form.setdefault("RemittanceCharIndia", "Y")
+
+            # Clear DTAA fallback paths entirely since Gross-up implies IT Act exclusively
+            form["TaxIncDtaa"] = ""
+            form["TaxLiablDtaa"] = ""
+            form["RateTdsADtaa"] = ""
+
+            logger.info(
+                "recompute_gross_up_done invoice_id=%s rate=%s net_inr_exact=%s gross_inr_rounded=%s tds_inr_exact=%s tds_fcy=%s",
+                invoice_id,
+                effective_rate,
+                invoice_inr_exact,
+                gross_inr_rounded,
+                tds_inr_exact,
+                tds_fcy,
+            )
+
+    elif mode == MODE_TDS and dtaa_rate_percent is not None:
+        it_factor, it_basis = get_effective_it_rate(float(invoice_inr))
+        it_liab = invoice_inr * (Decimal(str(it_factor)) / Decimal("100"))
+        dtaa_liab = invoice_inr * (Decimal(str(dtaa_rate_percent)) / Decimal("100"))
+        tds_fcy_dec = invoice_fcy * (Decimal(str(dtaa_rate_percent)) / Decimal("100"))
+        tds_inr_dec = invoice_inr * (Decimal(str(dtaa_rate_percent)) / Decimal("100"))
+        actual_fcy = invoice_fcy - tds_fcy_dec
 
         # INR tax amounts should be whole rupees (rounded)
-        form["TaxLiablIt"] = _fmt_num(_round_to_int(it_liab))
-        form["TaxIncDtaa"] = _fmt_num(_round_to_int(inr))
-        form["TaxLiablDtaa"] = _fmt_num(_round_to_int(dtaa_liab))
+        form["TaxLiablIt"] = _fmt_num(_round_to_int(float(it_liab)))
+        form["TaxIncDtaa"] = _fmt_num(_round_to_int(float(invoice_inr)))
+        form["TaxLiablDtaa"] = _fmt_num(_round_to_int(float(dtaa_liab)))
         # Foreign currency TDS and actual remittance keep up to 2 decimals
-        form["AmtPayForgnTds"] = _fmt_num(tds_fcy)
-        form["AmtPayIndianTds"] = _fmt_num(_round_to_int(tds_inr))
-        form["ActlAmtTdsForgn"] = _fmt_num(actual_fcy)
+        form["AmtPayForgnTds"] = _fmt_num(float(tds_fcy_dec))
+        form["AmtPayIndianTds"] = _fmt_num(_round_to_int(float(tds_inr_dec)))
+        form["ActlAmtTdsForgn"] = _fmt_num(float(actual_fcy))
         form["RateTdsSecB"] = _fmt_num(dtaa_rate_percent)
         form["RateTdsADtaa"] = _fmt_num(dtaa_rate_percent)
         form.setdefault("RateTdsSecbFlg", RATE_TDS_SECB_FLG_TDS)
@@ -206,18 +263,19 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         # Income Tax Act Section 195 path - use dynamic rates based on INR amount
         effective_rate, basis_text = get_effective_it_rate(inr)
         tax_liable_it = _round_to_int(inr * (effective_rate / 100.0))
+        tax_fcy = float(tax_liable_it) / exchange_rate if exchange_rate else 0.0
         
         form["TaxLiablIt"] = _fmt_num(tax_liable_it)
         form["BasisDeterTax"] = basis_text
-        form["RateTdsSecB"] = _fmt_num(effective_rate)
+        form["RateTdsSecB"] = "{:.2f}".format(effective_rate)
         form.setdefault("RateTdsSecbFlg", RATE_TDS_SECB_FLG_TDS)
         form.setdefault("RemittanceCharIndia", "Y")
         # Clear DTAA-specific fields since we're using IT Act
         form["TaxIncDtaa"] = ""
         form["TaxLiablDtaa"] = ""
         form["RateTdsADtaa"] = ""
-        form["AmtPayForgnTds"] = ""
-        form["AmtPayIndianTds"] = ""
+        form["AmtPayForgnTds"] = f"{tax_fcy:.2f}"
+        form["AmtPayIndianTds"] = str(tax_liable_it)
         form["ActlAmtTdsForgn"] = _fmt_num(fcy)
         logger.info(
             "recompute_it_act_done invoice_id=%s rate=%s inr_amount=%s tax_liable=%s",
