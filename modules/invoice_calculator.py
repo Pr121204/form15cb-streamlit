@@ -40,6 +40,8 @@ from modules.form15cb_constants import (
     TAX_IND_DTAA_ALWAYS,
     TAX_RESID_CERT_Y,
     XML_CREATED_BY,
+    IT_ACT_RATE_DEFAULT,
+    IT_ACT_BASIS,
 )
 from modules.logger import get_logger
 from modules.master_lookups import split_dtaa_article_text
@@ -100,25 +102,15 @@ def _build_name_remittee(beneficiary: str, invoice_no: str, dotted_date: str) ->
     return b
 
 
-def get_effective_it_rate(inr_amount: float) -> tuple[float, str]:
+def get_effective_it_rate(rate: float = None) -> tuple[float, str]:
     """
-    Returns (effective_rate_percent, basis_text) based on INR remittance amount.
-    Implements dynamic surcharge slabs for foreign companies under Section 195.
-    
-    Formula: Income Tax 20% + Surcharge + Cess 4%
-    - Up to ₹1 crore: 20% + 0% surcharge + 4% cess = 20.80%
-    - ₹1 crore to ₹10 crore: 20% + 2% surcharge + 4% cess = 21.22%
-    - Above ₹10 crore: 20% + 5% surcharge + 4% cess = 21.84%
+    Returns (effective_rate_percent, basis_text) for the given IT Act rate.
+    Defaults to IT_ACT_RATE_DEFAULT (21.84) if no rate provided.
     """
-    if inr_amount <= IT_ACT_AMOUNT_SLAB_LOW:
-        # Up to ₹1 crore: 0% surcharge
-        return IT_ACT_RATE_SLAB_LOW, BASIS_ACT_LOW
-    elif inr_amount <= IT_ACT_AMOUNT_SLAB_HIGH:
-        # ₹1 crore to ₹10 crore: 2% surcharge
-        return IT_ACT_RATE_SLAB_MID, BASIS_ACT_MID
-    else:
-        # Above ₹10 crore: 5% surcharge
-        return IT_ACT_RATE_SLAB_HIGH, BASIS_ACT_HIGH
+    if rate is None:
+        rate = IT_ACT_RATE_DEFAULT
+    basis = IT_ACT_BASIS.get(rate, IT_ACT_BASIS.get(IT_ACT_RATE_DEFAULT))
+    return rate, basis
 
 
 def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
@@ -179,7 +171,9 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
 
     # --- PRIORITY 1: GROSS-UP FLOW ---
     if mode == MODE_TDS and is_gross_up:
-        effective_rate, basis_text = get_effective_it_rate(float(invoice_inr))
+        selected_it_rate = _to_float(str(form.get("ItActRateSelected") or "")) or IT_ACT_RATE_DEFAULT
+        effective_rate, basis_text = get_effective_it_rate(selected_it_rate)
+        form["ItActRateSelected"] = str(selected_it_rate)
         # R is the percentage
         r = Decimal(str(effective_rate))
 
@@ -226,7 +220,9 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
             )
 
     elif mode == MODE_TDS and dtaa_rate_percent is not None:
-        it_factor, it_basis = get_effective_it_rate(float(invoice_inr))
+        selected_it_rate = _to_float(str(form.get("ItActRateSelected") or "")) or IT_ACT_RATE_DEFAULT
+        it_factor, it_basis = get_effective_it_rate(selected_it_rate)
+        form["ItActRateSelected"] = str(selected_it_rate)
         it_liab = invoice_inr * (Decimal(str(it_factor)) / Decimal("100"))
         dtaa_liab = invoice_inr * (Decimal(str(dtaa_rate_percent)) / Decimal("100"))
         tds_fcy_dec = invoice_fcy * (Decimal(str(dtaa_rate_percent)) / Decimal("100"))
@@ -261,7 +257,9 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         )
     elif mode == MODE_TDS and str(form.get("BasisDeterTax") or "").strip() == "Act":
         # Income Tax Act Section 195 path - use dynamic rates based on INR amount
-        effective_rate, basis_text = get_effective_it_rate(inr)
+        selected_it_rate = _to_float(str(form.get("ItActRateSelected") or "")) or IT_ACT_RATE_DEFAULT
+        effective_rate, basis_text = get_effective_it_rate(selected_it_rate)
+        form["ItActRateSelected"] = str(selected_it_rate)
         tax_liable_it = _round_to_int(inr * (effective_rate / 100.0))
         tax_fcy = float(tax_liable_it) / exchange_rate if exchange_rate else 0.0
         

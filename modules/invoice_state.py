@@ -10,6 +10,7 @@ from modules.form15cb_constants import (
     MODE_NON_TDS,
     MODE_TDS,
     PROPOSED_DATE_OFFSET_DAYS,
+    IT_ACT_RATE_DEFAULT,
 )
 from modules.invoice_calculator import recompute_invoice
 from modules.logger import get_logger
@@ -431,6 +432,7 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
     form["TaxPayGrossSecb"] = "Y" if state["meta"]["is_gross_up"] else "N"
     form["DednDateTds"] = date.today().isoformat()
     form["PropDateRem"] = (date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)).isoformat()
+    form.setdefault("ItActRateSelected", str(IT_ACT_RATE_DEFAULT))
 
     # Infer country from beneficiary name/country text/address combined.
     beneficiary_country_text = normalize_single_line_text(str(extracted.get("beneficiary_country_text") or ""))

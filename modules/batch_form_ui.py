@@ -12,6 +12,8 @@ from modules.form15cb_constants import (
     PROPOSED_DATE_OFFSET_DAYS,
     REMITTEE_STATE,
     REMITTEE_ZIP_CODE,
+    IT_ACT_RATES,
+    IT_ACT_RATE_DEFAULT,
 )
 from modules.currency_mapping import load_currency_exact_index, resolve_currency_selection
 from modules.invoice_calculator import recompute_invoice
@@ -485,4 +487,27 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
         with d3:
             st.text_input("Actual remittance after TDS (foreign)", disabled=False, key=f"{invoice_id}_actl_amt_tds_forgn")
             st.text_area("Basis of determining tax", disabled=False, key=f"{invoice_id}_basis_tax", height=80)
+
+        # IT Act Rate dropdown
+        it_rate_options = IT_ACT_RATES
+        it_rate_labels = ["21.84% (Default)", "21.216%", "20.80%"]
+        current_it_rate = float(form.get("ItActRateSelected") or IT_ACT_RATE_DEFAULT)
+        current_index = it_rate_options.index(current_it_rate) if current_it_rate in it_rate_options else 0
+
+        selected_label = st.selectbox(
+            "IT Act Rate (%)",
+            options=it_rate_labels,
+            index=current_index,
+            key=f"{invoice_id}_it_act_rate_dropdown",
+            help="Select surcharge slab: 21.84% (>₹10cr), 21.216% (₹1cr-₹10cr), 20.80% (<₹1cr)"
+        )
+        selected_it_rate = it_rate_options[it_rate_labels.index(selected_label)]
+
+        if selected_it_rate != current_it_rate:
+            form["ItActRateSelected"] = str(selected_it_rate)
+            state = recompute_invoice(state)
+            st.rerun()
+        else:
+            form["ItActRateSelected"] = str(selected_it_rate)
+
     return state

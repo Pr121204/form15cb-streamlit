@@ -40,6 +40,25 @@ BASIS_HIGH = (
     "IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE."
 )
 
+IT_ACT_RATES = [21.84, 21.216, 20.80]   # dropdown options, 21.84 is index 0 = default
+
+IT_ACT_RATE_DEFAULT = 21.84
+
+IT_ACT_BASIS = {
+    20.80: (
+        "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+        "AND TAX LIABILITY IS CALCULATED AT 20.80 PERCENTAGE OF ABOVE."
+    ),
+    21.216: (
+        "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+        "AND TAX LIABILITY IS CALCULATED AT 21.216 PERCENTAGE OF ABOVE."
+    ),
+    21.84: (
+        "GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME "
+        "AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE."
+    ),
+}
+
 # Income Tax Act Section 195 rates - dynamic based on remittance amount (surcharge slabs)
 # Formula: Income Tax 20% + Surcharge + Cess 4%
 IT_ACT_RATE_SLAB_LOW = 20.80      # Up to ₹1 crore: 20% + 0% surcharge + 4% cess = 20.80%
