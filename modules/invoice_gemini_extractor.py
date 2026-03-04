@@ -916,11 +916,36 @@ def _is_email_domain(text: str) -> bool:
     return False
 
 
+def _collapse_underscored_letter_tokens(text: str) -> str:
+    """
+    Fix OCR/LLM artifacts like:
+    - E_T_A__S -> ETAS
+    - _G_M_B_H_ -> GMBH
+    """
+    if "_" not in text:
+        return text
+
+    fixed_tokens: list[str] = []
+    for token in str(text or "").split():
+        if "_" not in token:
+            fixed_tokens.append(token)
+            continue
+        if re.fullmatch(r"[A-Za-z_]+", token):
+            parts = [p for p in token.split("_") if p]
+            if len(parts) >= 2 and all(len(p) == 1 for p in parts):
+                fixed_tokens.append("".join(parts))
+                continue
+        fixed_tokens.append(token)
+
+    return " ".join(fixed_tokens)
+
+
 def _normalize_company_name(name: str) -> str:
     n = normalize_single_line_text(str(name or ""))
     if not n:
         return ""
-    
+    n = _collapse_underscored_letter_tokens(n)
+
     # Priority 1: Check explicit beneficiary domain → company name mapping
     from modules.master_lookups import normalize_beneficiary_company_name
     mapped = normalize_beneficiary_company_name(n)

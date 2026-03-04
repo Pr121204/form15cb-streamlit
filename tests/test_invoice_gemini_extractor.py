@@ -215,6 +215,11 @@ Invoice No: INV-10"""
         self.assertEqual(_normalize_company_name("foo.bar.NET"), "FOO BAR")
         self.assertEqual(_normalize_company_name("ACMEINC"), "ACME INC")
 
+    def test_normalize_company_name_collapses_underscore_letter_artifacts(self) -> None:
+        from modules.invoice_gemini_extractor import _normalize_company_name
+
+        self.assertEqual(_normalize_company_name("E_T_A__S _G_M_B_H_"), "ETAS GMBH")
+
     def test_finalize_cleans_domain_name_and_infers_country(self) -> None:
         text = "Some header line\n+49 3581 76726\nDE-50968\n"
         out = _finalize_extracted_fields({"beneficiary_name": "EXPLEOGROUP.COM"}, text)

@@ -7920,3 +7920,131 @@ google.genai.errors.ClientError: 400 INVALID_ARGUMENT. {'error': {'code': 400, '
 2026-03-04 12:05:33,575 INFO xml_fields_built invoice_id=inv_0_99199 mode=TDS snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '', 'RateTdsSecB': '21.84', 'TaxLiablIt': '1943414'}
 2026-03-04 12:05:33,576 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AAACM9840P', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.21'}
 2026-03-04 12:05:33,587 INFO xml_generate_ok invoice_id=inv_0_99199 bytes=5370
+2026-03-04 17:16:10,972 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:16:15,770 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:16:15,972 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:16:15,983 INFO process_clicked file_count=1
+2026-03-04 17:16:15,985 INFO invoice_process_start file=90476768.pdf cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'is_gross_up': False, 'file_name': '90476768.pdf'}
+2026-03-04 17:16:16,499 INFO gemini_extract_start text_len=4052 model=gemini-2.5-flash backend=modern
+2026-03-04 17:16:27,732 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=STOP response_text_len=595 parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name'] invalid=False
+2026-03-04 17:16:27,733 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-03-04 17:16:27,877 INFO purpose_group_matched suggestion=Telecommunication, Computer & Information Services matched=Telecommunication, Computer & Information Services
+2026-03-04 17:16:27,919 INFO nature_of_remittance_fallback keyword=SUBSCRIPTION FEES matched=SUBSCRIPTION FEES
+2026-03-04 17:16:27,953 INFO purpose_code_fallback keyword=S1022 matched= group=Telecommunication, Computer & Information Services
+2026-03-04 17:16:28,091 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:16:28,167 INFO match_remitter_fuzzy input=E_T_A__S _G_M_B_H_ matched=ETAS
+2026-03-04 17:16:28,188 INFO gemini_extract_done summary={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'remitter_country_text': 'INDIA', 'beneficiary_name': 'E_T_A__S _G_M_B_H_', 'beneficiary_address': 'Borsigstrasse 24, D-70469 Stuttgart', 'invoice_number': '90476768', 'amount': '2698.22', 'currency_short': 'EUR', 'beneficiary_country_text': 'Germany', 'nature_of_remittance': 'SUBSCRIPTION FEES', 'purpose_group': 'Telecommunication, Computer & Information Services', 'purpose_code': ''}
+2026-03-04 17:16:28,189 INFO invoice_extracted file=90476768.pdf fields={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'remitter_country': 'INDIA', 'beneficiary_name': 'E_T_A__S _G_M_B_H_', 'beneficiary_country': 'Germany', 'invoice_number': '90476768', 'amount': '2698.22', 'currency_short': 'EUR', 'invoice_date_iso': '2026-02-16'}
+2026-03-04 17:16:28,191 INFO state_build_start invoice_id=inv_0_788191 file=90476768.pdf mode=TDS source_currency=50 extracted_summary={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'beneficiary_name': 'E_T_A__S _G_M_B_H_', 'amount': '2698.22', 'invoice_date_iso': '2026-02-16', 'is_gross_up': False}
+2026-03-04 17:16:28,204 INFO state_country_inference invoice_id=inv_0_788191 beneficiary=E_T_A__S _G_M_B_H_ country_text=Germany inferred_country_code=49
+2026-03-04 17:16:28,347 INFO remittance_classified invoice_id=inv_0_788191 purpose=S1005 nature=16.40 conf=0.37 review=True evidence=['accounting', 'subscription']
+2026-03-04 17:16:28,355 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:16:28,377 INFO state_remitter_match invoice_id=inv_0_788191 remitter_name=ETAS AUTOMOTIVE INDIA PRIVATE LTD. pan=AABCE7260L bank=Deutsche Bank
+2026-03-04 17:16:28,379 INFO recompute_start invoice_id=inv_0_788191 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:16:28,380 INFO recompute_tds_done invoice_id=inv_0_788191 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:16:28,381 INFO state_build_done invoice_id=inv_0_788191 form_snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:16:28,382 INFO invoice_state_built invoice_id=inv_0_788191 file=90476768.pdf form_snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.40'}
+2026-03-04 17:16:28,382 INFO invoice_processed file=90476768.pdf elapsed=12.39s
+2026-03-04 17:16:28,385 INFO process_complete invoice_count=1 ids=['inv_0_788191']
+2026-03-04 17:16:28,390 INFO review_start invoice_id=inv_0_788191 file=90476768.pdf
+2026-03-04 17:16:28,413 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:16:28,414 INFO ui_remitter_match invoice_id=inv_0_788191 remitter_name=ETAS AUTOMOTIVE INDIA PRIVATE LTD. pan=AABCE7260L bank=Deutsche Bank
+2026-03-04 17:16:28,439 INFO recompute_start invoice_id=inv_0_788191 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:16:28,439 INFO recompute_tds_done invoice_id=inv_0_788191 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:16:28,441 INFO ui_country_selected invoice_id=inv_0_788191 country_code=49 dtaa_article=DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-03-04 17:16:28,480 INFO ui_rate_entered invoice_id=inv_0_788191 rate=10
+2026-03-04 17:16:28,483 INFO recompute_start invoice_id=inv_0_788191 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:16:28,485 INFO recompute_tds_done invoice_id=inv_0_788191 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:16:28,486 INFO ui_recompute_done invoice_id=inv_0_788191 snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:16:28,507 INFO recompute_start invoice_id=inv_0_788191 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:16:28,508 INFO recompute_tds_done invoice_id=inv_0_788191 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:16:28,512 INFO review_recomputed invoice_id=inv_0_788191 computed={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:16:28,515 INFO xml_fields_built invoice_id=inv_0_788191 mode=TDS snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '58929'}
+2026-03-04 17:16:28,516 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AABCE7260L', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.40'}
+2026-03-04 17:16:28,533 INFO xml_generate_ok invoice_id=inv_0_788191 bytes=5611
+2026-03-04 17:16:28,538 ERROR pdf_generate_failed invoice_id=inv_0_788191
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\pdf_export.py", line 79, in generate_invoice_pdf
+    from reportlab.lib.pagesizes import A4
+ModuleNotFoundError: No module named 'reportlab'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\app.py", line 443, in <module>
+    pdf_bytes = generate_invoice_pdf(state)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\HP\Downloads\15CB_final\15CB_extracted\modules\pdf_export.py", line 83, in generate_invoice_pdf
+    raise RuntimeError("Missing dependency 'reportlab'. Install it to enable PDF export.") from exc
+RuntimeError: Missing dependency 'reportlab'. Install it to enable PDF export.
+2026-03-04 17:33:10,638 INFO match_remitter_exact input=MYNTRA JABONG INDIA PRIVATE LIMITED matched=MYNTRA JABONG INDIA PRIVATE LIMITED
+2026-03-04 17:33:10,708 WARNING match_remitter_none input=KAIMEN GLOBAL PARTNERS, S.L
+2026-03-04 17:33:10,722 INFO gemini_extract_start text_len=252 model=gemini-2.5-flash backend=modern
+2026-03-04 17:33:10,723 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=MAX_TOKENS response_text_len=31 parsed_keys=[] invalid=True
+2026-03-04 17:33:10,723 WARNING gemini_extract_retry reason=invalid_or_truncated_response next_profile=compact_retry
+2026-03-04 17:33:10,723 INFO gemini_extract_attempt attempt=2/2 profile=compact_retry finish_reason=MAX_TOKENS response_text_len=31 parsed_keys=[] invalid=True
+2026-03-04 17:33:10,724 INFO gemini_extract_response parsed_keys=[]
+2026-03-04 17:33:10,778 INFO gemini_extract_done summary={'remitter_name': '', 'remitter_country_text': '', 'beneficiary_name': '', 'beneficiary_address': '', 'invoice_number': 'RA22025000000271', 'amount': '', 'currency_short': '', 'beneficiary_country_text': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-03-04 17:33:10,781 INFO gemini_extract_start text_len=659 model=gemini-2.5-flash backend=modern
+2026-03-04 17:33:10,782 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=MAX_TOKENS response_text_len=65 parsed_keys=[] invalid=True
+2026-03-04 17:33:10,782 WARNING gemini_extract_retry reason=invalid_or_truncated_response next_profile=compact_retry
+2026-03-04 17:33:10,783 INFO gemini_extract_attempt attempt=2/2 profile=compact_retry finish_reason=STOP response_text_len=154 parsed_keys=['amount', 'beneficiary_name', 'currency', 'invoice_number', 'remitter_name'] invalid=False
+2026-03-04 17:33:10,783 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_name', 'currency', 'invoice_number', 'remitter_name']
+2026-03-04 17:33:10,797 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-04 17:33:10,869 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-04 17:33:10,908 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-04 17:33:10,924 INFO gemini_extract_done summary={'remitter_name': 'BOSCH LIMITED', 'remitter_country_text': 'India', 'beneficiary_name': 'BOSCH SANAYI VE TICARET ANONIM SIRKETI', 'beneficiary_address': '', 'invoice_number': 'INV-1', 'amount': '3574.77', 'currency_short': 'USD', 'beneficiary_country_text': '', 'nature_of_remittance': '', 'purpose_group': '', 'purpose_code': ''}
+2026-03-04 17:33:10,966 WARNING image_multi_page_amount_conflict candidates=[{'page': 1, 'amount': '100.00', 'score': 2, 'currency_short': ''}, {'page': 2, 'amount': '200.00', 'score': 4, 'currency_short': 'EUR'}]
+2026-03-04 17:33:10,968 INFO beneficiary_domain_mapping_applied input=EXPLEOGROUP.COM output=EXPLEO TECHNOLOGY
+2026-03-04 17:33:11,047 WARNING match_remitter_none input=BOSCH SAO PAULO LTDA
+2026-03-04 17:33:11,133 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-04 17:33:11,244 WARNING match_remitter_none input=BOSCH.IO GMBH
+2026-03-04 17:33:11,255 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-04 17:33:11,280 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-04 17:33:11,376 WARNING match_remitter_none input=ROBERT BOSCH MEXICO
+2026-03-04 17:33:11,498 WARNING match_remitter_none input=BOSCH SANAYI VE TICARET ANONIM SIRKETI
+2026-03-04 17:33:11,505 INFO match_remitter_exact input=BOSCH LIMITED matched=BOSCH LIMITED.
+2026-03-04 17:33:11,604 WARNING match_remitter_none input=BOSCH IO GMBH
+2026-03-04 17:33:11,614 INFO match_remitter_exact input=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-04 17:37:57,181 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:38:02,400 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:38:02,627 INFO upload_received file_count=1 files=['90476768.pdf']
+2026-03-04 17:38:02,637 INFO process_clicked file_count=1
+2026-03-04 17:38:02,638 INFO invoice_process_start file=90476768.pdf cfg={'currency_short': '50', 'exchange_rate': '100', 'mode': 'TDS', 'is_gross_up': False, 'file_name': '90476768.pdf'}
+2026-03-04 17:38:03,177 INFO gemini_extract_start text_len=4052 model=gemini-2.5-flash backend=modern
+2026-03-04 17:38:15,037 INFO gemini_extract_attempt attempt=1/2 profile=primary finish_reason=STOP response_text_len=595 parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name'] invalid=False
+2026-03-04 17:38:15,037 INFO gemini_extract_response parsed_keys=['amount', 'beneficiary_address', 'beneficiary_country', 'beneficiary_name', 'currency', 'invoice_date', 'invoice_number', 'nature_of_remittance', 'purpose_code', 'purpose_group', 'remitter_address', 'remitter_country', 'remitter_name']
+2026-03-04 17:38:15,075 INFO purpose_group_matched suggestion=Telecommunication, Computer & Information Services matched=Telecommunication, Computer & Information Services
+2026-03-04 17:38:15,121 INFO nature_of_remittance_fallback keyword=SUBSCRIPTION FEES matched=SUBSCRIPTION FEES
+2026-03-04 17:38:15,158 INFO purpose_code_fallback keyword=S1022 matched= group=Telecommunication, Computer & Information Services
+2026-03-04 17:38:15,212 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:38:15,279 INFO match_remitter_fuzzy input=ETAS GMBH matched=ETAS
+2026-03-04 17:38:15,295 INFO gemini_extract_done summary={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'remitter_country_text': 'INDIA', 'beneficiary_name': 'ETAS GMBH', 'beneficiary_address': 'Borsigstrasse 24, D-70469 Stuttgart', 'invoice_number': '90476768', 'amount': '2698.22', 'currency_short': 'EUR', 'beneficiary_country_text': 'Germany', 'nature_of_remittance': 'SUBSCRIPTION FEES', 'purpose_group': 'Telecommunication, Computer & Information Services', 'purpose_code': ''}
+2026-03-04 17:38:15,296 INFO invoice_extracted file=90476768.pdf fields={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'remitter_country': 'INDIA', 'beneficiary_name': 'ETAS GMBH', 'beneficiary_country': 'Germany', 'invoice_number': '90476768', 'amount': '2698.22', 'currency_short': 'EUR', 'invoice_date_iso': '2026-02-16'}
+2026-03-04 17:38:15,298 INFO state_build_start invoice_id=inv_0_95297 file=90476768.pdf mode=TDS source_currency=50 extracted_summary={'remitter_name': 'ETAS AUTOMOTIVE INDIA PRIVATE LTD.', 'beneficiary_name': 'ETAS GMBH', 'amount': '2698.22', 'invoice_date_iso': '2026-02-16', 'is_gross_up': False}
+2026-03-04 17:38:15,313 INFO state_country_inference invoice_id=inv_0_95297 beneficiary=ETAS GMBH country_text=Germany inferred_country_code=49
+2026-03-04 17:38:15,412 INFO remittance_classified invoice_id=inv_0_95297 purpose=S1005 nature=16.40 conf=0.37 review=True evidence=['accounting', 'subscription']
+2026-03-04 17:38:15,418 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:38:15,424 INFO state_remitter_match invoice_id=inv_0_95297 remitter_name=ETAS AUTOMOTIVE INDIA PRIVATE LTD. pan=AABCE7260L bank=Deutsche Bank
+2026-03-04 17:38:15,426 INFO recompute_start invoice_id=inv_0_95297 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:38:15,426 INFO recompute_tds_done invoice_id=inv_0_95297 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:38:15,426 INFO state_build_done invoice_id=inv_0_95297 form_snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:38:15,426 INFO invoice_state_built invoice_id=inv_0_95297 file=90476768.pdf form_snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'NatureRemCategory': '16.40'}
+2026-03-04 17:38:15,428 INFO invoice_processed file=90476768.pdf elapsed=12.79s
+2026-03-04 17:38:15,430 INFO process_complete invoice_count=1 ids=['inv_0_95297']
+2026-03-04 17:38:15,433 INFO review_start invoice_id=inv_0_95297 file=90476768.pdf
+2026-03-04 17:38:15,455 INFO match_remitter_exact input=ETAS AUTOMOTIVE INDIA PRIVATE LTD. matched=ETAS AUTOMOTIVE INDIA PRIVATE LTD.
+2026-03-04 17:38:15,456 INFO ui_remitter_match invoice_id=inv_0_95297 remitter_name=ETAS AUTOMOTIVE INDIA PRIVATE LTD. pan=AABCE7260L bank=Deutsche Bank
+2026-03-04 17:38:15,476 INFO recompute_start invoice_id=inv_0_95297 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:38:15,476 INFO recompute_tds_done invoice_id=inv_0_95297 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:38:15,477 INFO ui_country_selected invoice_id=inv_0_95297 country_code=49 dtaa_article=DTAA BTWN INDIA AND GERMANY dtaa_rate=10
+2026-03-04 17:38:15,516 INFO ui_rate_entered invoice_id=inv_0_95297 rate=10
+2026-03-04 17:38:15,520 INFO recompute_start invoice_id=inv_0_95297 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:38:15,520 INFO recompute_tds_done invoice_id=inv_0_95297 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:38:15,522 INFO ui_recompute_done invoice_id=inv_0_95297 snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:38:15,549 INFO recompute_start invoice_id=inv_0_95297 mode=TDS fcy=2698.22 inr=269822 fx=100 dtaa_rate=10
+2026-03-04 17:38:15,550 INFO recompute_tds_done invoice_id=inv_0_95297 values={'TaxLiablIt': '58929', 'TaxIncDtaa': '269822', 'TaxLiablDtaa': '26982', 'AmtPayForgnTds': '269.82', 'AmtPayIndianTds': '26982', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '2428.4'}
+2026-03-04 17:38:15,551 INFO review_recomputed invoice_id=inv_0_95297 computed={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '58929', 'AmtPayForgnTds': '269.82'}
+2026-03-04 17:38:15,554 INFO xml_fields_built invoice_id=inv_0_95297 mode=TDS snapshot={'RemitterPAN': 'AABCE7260L', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'RateTdsSecB': '10', 'TaxLiablIt': '58929'}
+2026-03-04 17:38:15,556 INFO xml_validation_ok mode=TDS basis=GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE. key_fields={'RemitterPAN': 'AABCE7260L', 'BasisDeterTax': 'GROSS AMOUNT OF REMITTANCE IS CONSIDERED AS TAXABLE INCOME AND TAX LIABILITY IS CALCULATED AT 21.84 PERCENTAGE OF ABOVE.', 'CountryRemMadeSecb': '49', 'NatureRemCategory': '16.40'}
+2026-03-04 17:38:15,577 INFO xml_generate_ok invoice_id=inv_0_95297 bytes=5602
