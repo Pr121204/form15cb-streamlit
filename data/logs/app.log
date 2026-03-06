@@ -8807,3 +8807,154 @@ ValueError: Excel is missing required columns: Amount in Foreign Currency, Amoun
 2026-03-06 16:33:46,680 INFO ui_recompute_done invoice_id=inv_single_26582 snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '34308', 'AmtPayForgnTds': '146.33'}
 2026-03-06 16:33:46,693 INFO recompute_start invoice_id=inv_single_26582 mode=TDS fcy=1463.33 inr=157089 fx=107.35 dtaa_rate=10
 2026-03-06 16:33:46,693 INFO recompute_tds_done invoice_id=inv_single_26582 values={'TaxLiablIt': '34308', 'TaxIncDtaa': '157089', 'TaxLiablDtaa': '15709', 'AmtPayForgnTds': '146.33', 'AmtPayIndianTds': '15709', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '1317'}
+2026-03-06 16:57:51,645 INFO state_build_start invoice_id=inv_seed file=INV100.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Bosch IO GmbH', 'amount': '100', 'invoice_date_iso': '2026-02-08', 'is_gross_up': True}
+2026-03-06 16:57:51,662 INFO state_country_inference invoice_id=inv_seed beneficiary=Bosch IO GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,681 INFO remittance_classified invoice_id=inv_seed purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['bosch']
+2026-03-06 16:57:51,692 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,694 INFO state_remitter_match invoice_id=inv_seed remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,694 INFO recompute_start invoice_id=inv_seed mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=10
+2026-03-06 16:57:51,694 INFO recompute_gross_up_done invoice_id=inv_seed rate=21.84 net_inr_exact=198394.0 gross_inr_rounded=253831 tds_inr_exact=55436.6904 tds_fcy=516.94
+2026-03-06 16:57:51,694 INFO state_build_done invoice_id=inv_seed form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '', 'TaxLiablIt': '55437', 'AmtPayForgnTds': '516.94'}
+2026-03-06 16:57:51,695 INFO state_build_start invoice_id=inv4 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Unknown Counterparty', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,697 INFO state_country_inference invoice_id=inv4 beneficiary=Unknown Counterparty country_text= inferred_country_code=
+2026-03-06 16:57:51,698 WARNING state_country_blank_no_inference invoice_id=inv4 beneficiary=Unknown Counterparty country_text=
+2026-03-06 16:57:51,710 INFO remittance_classified invoice_id=inv4 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['unknown counterparty']
+2026-03-06 16:57:51,713 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,714 INFO state_remitter_match invoice_id=inv4 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,714 INFO recompute_start invoice_id=inv4 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=
+2026-03-06 16:57:51,714 WARNING recompute_tds_skipped invoice_id=inv4 reason=country_blank country= remitter_pan=AAACR7108R
+2026-03-06 16:57:51,714 INFO state_build_done invoice_id=inv4 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-06 16:57:51,715 INFO state_build_start invoice_id=inv2 file=x.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,717 INFO state_country_inference invoice_id=inv2 beneficiary=Robert Bosch GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,718 INFO remittance_classified invoice_id=inv2 purpose=S0017 nature=16.6 conf=0.95 review=False evidence=['S0017']
+2026-03-06 16:57:51,720 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,721 INFO state_remitter_match invoice_id=inv2 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,721 INFO recompute_start invoice_id=inv2 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,721 INFO recompute_tds_done invoice_id=inv2 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:57:51,721 INFO state_build_done invoice_id=inv2 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '10'}
+2026-03-06 16:57:51,722 INFO state_build_start invoice_id=inv11 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,723 INFO state_country_inference invoice_id=inv11 beneficiary=Robert Bosch GmbH country_text=Germany inferred_country_code=49
+2026-03-06 16:57:51,725 INFO remittance_classified invoice_id=inv11 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['robert bosch']
+2026-03-06 16:57:51,728 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,728 INFO state_remitter_match invoice_id=inv11 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,728 INFO recompute_start invoice_id=inv11 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,729 INFO recompute_tds_done invoice_id=inv11 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:57:51,729 INFO state_build_done invoice_id=inv11 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '10'}
+2026-03-06 16:57:51,729 INFO state_build_start invoice_id=inv8 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': '', 'beneficiary_name': '', 'amount': '', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,730 INFO state_country_inference invoice_id=inv8 beneficiary= country_text=Portugal inferred_country_code=14
+2026-03-06 16:57:51,730 WARNING state_dtaa_seed_skipped invoice_id=inv8 reason=core_extraction_empty country_hint=PORTUGAL
+2026-03-06 16:57:51,732 INFO remittance_classified invoice_id=inv8 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=[]
+2026-03-06 16:57:51,732 WARNING state_remitter_not_matched invoice_id=inv8 remitter_name=
+2026-03-06 16:57:51,732 INFO recompute_start invoice_id=inv8 mode=TDS fcy=0 inr=0 fx=100 dtaa_rate=
+2026-03-06 16:57:51,732 WARNING recompute_tds_skipped invoice_id=inv8 reason=country_selected_rate_missing country=14 remitter_pan=
+2026-03-06 16:57:51,732 INFO state_build_done invoice_id=inv8 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '14', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-06 16:57:51,733 INFO state_build_start invoice_id=inv7 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Some Remitter', 'beneficiary_name': 'Planisware Deutschland GmbH', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,734 INFO state_country_inference invoice_id=inv7 beneficiary=Planisware Deutschland GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,738 INFO remittance_classified invoice_id=inv7 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['deutschland planisware']
+2026-03-06 16:57:51,759 WARNING match_remitter_none input=Some Remitter
+2026-03-06 16:57:51,759 WARNING state_remitter_not_matched invoice_id=inv7 remitter_name=Some Remitter
+2026-03-06 16:57:51,761 INFO recompute_start invoice_id=inv7 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,761 INFO recompute_tds_done invoice_id=inv7 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:57:51,761 INFO state_build_done invoice_id=inv7 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '10'}
+2026-03-06 16:57:51,762 INFO state_build_start invoice_id=inv7 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Domestic Counterparty', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,763 INFO state_country_inference invoice_id=inv7 beneficiary=Domestic Counterparty country_text=India inferred_country_code=91
+2026-03-06 16:57:51,765 WARNING state_country_india_disallowed invoice_id=inv7 old_country=91 fallback=9999
+2026-03-06 16:57:51,766 WARNING state_country_fallback_others invoice_id=inv7 beneficiary=Domestic Counterparty country_text=India
+2026-03-06 16:57:51,771 INFO remittance_classified invoice_id=inv7 purpose=S1505 nature=16.1 conf=1.00 review=False evidence=['counterparty domestic']
+2026-03-06 16:57:51,772 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-06 16:57:51,772 INFO state_remitter_match invoice_id=inv7 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-06 16:57:51,772 INFO recompute_start invoice_id=inv7 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=
+2026-03-06 16:57:51,772 WARNING recompute_tds_skipped invoice_id=inv7 reason=country_selected_rate_missing country=9999 remitter_pan=AAACM9840P
+2026-03-06 16:57:51,772 INFO state_build_done invoice_id=inv7 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '9999', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-06 16:57:51,774 INFO state_build_start invoice_id=inv5 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Sanayi ve Ticaret Anonim Sirketi', 'beneficiary_name': 'Bosch Limited', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,775 INFO state_country_inference invoice_id=inv5 beneficiary=Bosch Limited country_text=India inferred_country_code=91
+2026-03-06 16:57:51,776 WARNING state_country_india_safeguard invoice_id=inv5 old_country=91 alternate_country=90
+2026-03-06 16:57:51,779 INFO remittance_classified invoice_id=inv5 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['bosch']
+2026-03-06 16:57:51,797 WARNING match_remitter_none input=Bosch Sanayi ve Ticaret Anonim Sirketi
+2026-03-06 16:57:51,797 WARNING state_remitter_not_matched invoice_id=inv5 remitter_name=Bosch Sanayi ve Ticaret Anonim Sirketi
+2026-03-06 16:57:51,798 INFO recompute_start invoice_id=inv5 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=15
+2026-03-06 16:57:51,798 INFO recompute_tds_done invoice_id=inv5 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-06 16:57:51,798 INFO state_build_done invoice_id=inv5 form_snapshot={'RemitterPAN': '', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '15'}
+2026-03-06 16:57:51,798 INFO state_build_start invoice_id=inv1 file=7057441295.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Bosch IO GmbH', 'amount': '49300.00', 'invoice_date_iso': '2023-05-15', 'is_gross_up': False}
+2026-03-06 16:57:51,800 INFO state_country_inference invoice_id=inv1 beneficiary=Bosch IO GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,805 INFO remittance_classified invoice_id=inv1 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['bosch']
+2026-03-06 16:57:51,809 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,809 INFO state_remitter_match invoice_id=inv1 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,809 INFO recompute_start invoice_id=inv1 mode=TDS fcy=49300 inr=4930000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,809 INFO recompute_tds_done invoice_id=inv1 values={'TaxLiablIt': '1076712', 'TaxIncDtaa': '4930000', 'TaxLiablDtaa': '493000', 'AmtPayForgnTds': '4930', 'AmtPayIndianTds': '493000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '44370'}
+2026-03-06 16:57:51,809 INFO state_build_done invoice_id=inv1 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '1076712', 'AmtPayForgnTds': '4930'}
+2026-03-06 16:57:51,811 INFO state_build_start invoice_id=inv_seed_non_tds file=INV101.pdf mode=NON_TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Bosch IO GmbH', 'amount': '100', 'invoice_date_iso': '2026-02-08', 'is_gross_up': False}
+2026-03-06 16:57:51,812 INFO state_country_inference invoice_id=inv_seed_non_tds beneficiary=Bosch IO GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,816 INFO remittance_classified invoice_id=inv_seed_non_tds purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['bosch']
+2026-03-06 16:57:51,819 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,820 INFO state_remitter_match invoice_id=inv_seed_non_tds remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,820 INFO recompute_start invoice_id=inv_seed_non_tds mode=NON_TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=10
+2026-03-06 16:57:51,820 INFO recompute_non_tds_done invoice_id=inv_seed_non_tds
+2026-03-06 16:57:51,820 INFO state_build_done invoice_id=inv_seed_non_tds form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '', 'AmtPayForgnTds': '0'}
+2026-03-06 16:57:51,821 INFO state_build_start invoice_id=inv12 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Back Office Associates Germany GmbH', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,823 INFO state_country_inference invoice_id=inv12 beneficiary=Back Office Associates Germany GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,829 INFO remittance_classified invoice_id=inv12 purpose=S0004 nature=16.1 conf=1.00 review=False evidence=['office associates back germany']
+2026-03-06 16:57:51,832 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-06 16:57:51,832 INFO state_remitter_match invoice_id=inv12 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-06 16:57:51,832 INFO recompute_start invoice_id=inv12 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,833 INFO recompute_tds_done invoice_id=inv12 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:57:51,833 INFO state_build_done invoice_id=inv12 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '10'}
+2026-03-06 16:57:51,834 INFO state_build_start invoice_id=inv10 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Bosch Foreign Entity', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,835 INFO state_country_inference invoice_id=inv10 beneficiary=Bosch Foreign Entity country_text=Turkiye inferred_country_code=90
+2026-03-06 16:57:51,841 INFO remittance_classified invoice_id=inv10 purpose=S0006 nature=16.1 conf=0.27 review=True evidence=['entity bosch foreign']
+2026-03-06 16:57:51,844 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-06 16:57:51,844 INFO state_remitter_match invoice_id=inv10 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-06 16:57:51,844 INFO recompute_start invoice_id=inv10 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=15
+2026-03-06 16:57:51,844 INFO recompute_tds_done invoice_id=inv10 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-06 16:57:51,844 INFO state_build_done invoice_id=inv10 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '15'}
+2026-03-06 16:57:51,844 INFO state_build_start invoice_id=inv3 file=a.pdf mode=TDS source_currency=EUR extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Robert Bosch GmbH', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,846 INFO state_country_inference invoice_id=inv3 beneficiary=Robert Bosch GmbH country_text= inferred_country_code=49
+2026-03-06 16:57:51,850 INFO remittance_classified invoice_id=inv3 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['robert bosch']
+2026-03-06 16:57:51,853 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,853 INFO state_remitter_match invoice_id=inv3 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,853 INFO recompute_start invoice_id=inv3 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=10
+2026-03-06 16:57:51,853 INFO recompute_tds_done invoice_id=inv3 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1000', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '1000', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:57:51,854 INFO state_build_done invoice_id=inv3 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '10'}
+2026-03-06 16:57:51,854 INFO state_build_start invoice_id=inv9 file=7120002741.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'ROBERT BOSCH MEXICO', 'amount': '18900', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,854 INFO state_country_inference invoice_id=inv9 beneficiary=ROBERT BOSCH MEXICO country_text=Mexico inferred_country_code=54
+2026-03-06 16:57:51,854 WARNING state_dtaa_not_found invoice_id=inv9 country_hint=ARGENTINA
+2026-03-06 16:57:51,857 INFO remittance_classified invoice_id=inv9 purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['mexico robert bosch']
+2026-03-06 16:57:51,859 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:57:51,860 INFO state_remitter_match invoice_id=inv9 remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:57:51,860 INFO recompute_start invoice_id=inv9 mode=TDS fcy=18900 inr=1701000 fx=90 dtaa_rate=
+2026-03-06 16:57:51,860 WARNING recompute_tds_skipped invoice_id=inv9 reason=country_selected_rate_missing country=54 remitter_pan=AAACR7108R
+2026-03-06 16:57:51,860 INFO state_build_done invoice_id=inv9 form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '54', 'RateTdsADtaa': '', 'TaxLiablIt': '', 'AmtPayForgnTds': ''}
+2026-03-06 16:57:51,860 INFO state_build_start invoice_id=inv6 file=a.pdf mode=TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Limited', 'beneficiary_name': 'Bosch Foreign Entity', 'amount': '100', 'invoice_date_iso': '', 'is_gross_up': False}
+2026-03-06 16:57:51,862 INFO state_country_inference invoice_id=inv6 beneficiary=Bosch Foreign Entity country_text=Turkey inferred_country_code=90
+2026-03-06 16:57:51,864 INFO remittance_classified invoice_id=inv6 purpose=S0006 nature=16.1 conf=0.27 review=True evidence=['entity bosch foreign']
+2026-03-06 16:57:51,865 INFO match_remitter_exact input=Bosch Limited matched=BOSCH LIMITED.
+2026-03-06 16:57:51,865 INFO state_remitter_match invoice_id=inv6 remitter_name=Bosch Limited pan=AAACM9840P bank=CITI Bank
+2026-03-06 16:57:51,866 INFO recompute_start invoice_id=inv6 mode=TDS fcy=100 inr=10000 fx=100 dtaa_rate=15
+2026-03-06 16:57:51,866 INFO recompute_tds_done invoice_id=inv6 values={'TaxLiablIt': '2184', 'TaxIncDtaa': '10000', 'TaxLiablDtaa': '1500', 'AmtPayForgnTds': '15', 'AmtPayIndianTds': '1500', 'RateTdsSecB': '15', 'ActlAmtTdsForgn': '85'}
+2026-03-06 16:57:51,866 INFO state_build_done invoice_id=inv6 form_snapshot={'RemitterPAN': 'AAACM9840P', 'CountryRemMadeSecb': '90', 'RateTdsADtaa': '15', 'TaxLiablIt': '2184', 'AmtPayForgnTds': '15'}
+2026-03-06 16:57:51,866 INFO recompute_start invoice_id= mode=TDS fcy=100.51 inr=9046 fx=90 dtaa_rate=10
+2026-03-06 16:57:51,866 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1976', 'TaxIncDtaa': '9046', 'TaxLiablDtaa': '905', 'AmtPayForgnTds': '10.05', 'AmtPayIndianTds': '905', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90.46'}
+2026-03-06 16:57:51,866 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-06 16:57:51,866 INFO recompute_non_tds_done invoice_id=
+2026-03-06 16:57:51,866 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-06 16:57:51,867 INFO recompute_non_tds_done invoice_id=
+2026-03-06 16:57:51,867 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-06 16:57:51,867 INFO recompute_non_tds_done invoice_id=
+2026-03-06 16:57:51,867 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-06 16:57:51,867 INFO recompute_gross_up_done invoice_id= rate=21.84 net_inr_exact=198394.0 gross_inr_rounded=253831 tds_inr_exact=55436.6904 tds_fcy=516.94
+2026-03-06 16:57:51,868 INFO recompute_start invoice_id= mode=TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=
+2026-03-06 16:57:51,868 INFO recompute_it_act_done invoice_id= rate=21.84 inr_amount=198394.0 tax_liable=43329
+2026-03-06 16:57:51,868 INFO recompute_start invoice_id= mode=TDS fcy=100 inr=8000 fx=80 dtaa_rate=10
+2026-03-06 16:57:51,868 INFO recompute_tds_done invoice_id= values={'TaxLiablIt': '1747', 'TaxIncDtaa': '8000', 'TaxLiablDtaa': '800', 'AmtPayForgnTds': '10', 'AmtPayIndianTds': '800', 'RateTdsSecB': '10', 'ActlAmtTdsForgn': '90'}
+2026-03-06 16:58:07,092 INFO state_build_start invoice_id=inv_seed_non_tds file=INV101.pdf mode=NON_TDS source_currency=USD extracted_summary={'remitter_name': 'Bosch Global Software Technologies Private Limited', 'beneficiary_name': 'Bosch IO GmbH', 'amount': '100', 'invoice_date_iso': '2026-02-08', 'is_gross_up': False}
+2026-03-06 16:58:07,116 INFO state_country_inference invoice_id=inv_seed_non_tds beneficiary=Bosch IO GmbH country_text= inferred_country_code=49
+2026-03-06 16:58:07,132 INFO remittance_classified invoice_id=inv_seed_non_tds purpose=S1099 nature=16.1 conf=1.00 review=True evidence=['bosch']
+2026-03-06 16:58:07,153 INFO match_remitter_exact input=Bosch Global Software Technologies Private Limited matched=BOSCH GLOBAL SOFTWARE TECHNOLOGIES PRIVATE LIMITED.
+2026-03-06 16:58:07,157 INFO state_remitter_match invoice_id=inv_seed_non_tds remitter_name=Bosch Global Software Technologies Private Limited pan=AAACR7108R bank=Deutsche Bank
+2026-03-06 16:58:07,158 INFO recompute_start invoice_id=inv_seed_non_tds mode=NON_TDS fcy=1850 inr=198394 fx=107.24 dtaa_rate=10
+2026-03-06 16:58:07,158 INFO recompute_non_tds_done invoice_id=inv_seed_non_tds
+2026-03-06 16:58:07,158 INFO state_build_done invoice_id=inv_seed_non_tds form_snapshot={'RemitterPAN': 'AAACR7108R', 'CountryRemMadeSecb': '49', 'RateTdsADtaa': '10', 'TaxLiablIt': '', 'AmtPayForgnTds': '0'}
+2026-03-06 16:58:07,160 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-06 16:58:07,160 INFO recompute_non_tds_done invoice_id=
+2026-03-06 16:58:07,161 INFO recompute_start invoice_id= mode=NON_TDS fcy=100 inr=8000 fx=80 dtaa_rate=
+2026-03-06 16:58:07,161 INFO recompute_non_tds_done invoice_id=

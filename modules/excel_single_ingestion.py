@@ -225,6 +225,8 @@ def match_invoice_row(rows: List[Dict[str, str]], invoice_filename: str, invoice
 def derive_single_config(row: Dict[str, str]) -> Dict[str, str]:
     mode = _normalize_mode(row.get("Mode")) or MODE_TDS
     gross_up = _normalize_gross_up(row.get("Gross Up Tax")) or "N"
+    if mode == MODE_NON_TDS:
+        gross_up = "N"
     currency_short = str(row.get("Currency") or "").strip().upper()
     document_date = _parse_date_iso(row.get("Document Date"))
     posting_date = _parse_date_iso(row.get("Posting Date"))

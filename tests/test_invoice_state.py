@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, timedelta
 import unittest
 
-from modules.form15cb_constants import MODE_TDS
+from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
 from modules.invoice_state import build_invoice_state
 from modules.master_lookups import load_purpose_grouped
 
@@ -92,6 +92,34 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(meta.get("exchange_rate"), "107.24")
         self.assertEqual(meta.get("mode"), MODE_TDS)
         self.assertTrue(bool(meta.get("is_gross_up")))
+
+    def test_non_tds_forces_gross_up_false_even_when_seeded_yes(self) -> None:
+        state = build_invoice_state(
+            "inv_seed_non_tds",
+            "INV101.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "Bosch IO GmbH",
+                "invoice_date_iso": "2026-02-08",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_NON_TDS, "exchange_rate": "1", "currency_short": "EUR", "is_gross_up": True},
+            excel_seed={
+                "mode": MODE_NON_TDS,
+                "is_gross_up": "Y",
+                "exchange_rate": "107.24",
+                "currency_short": "USD",
+                "posting_date": "2026-02-10",
+                "amount_fcy": "1850",
+                "amount_inr": "198394",
+            },
+        )
+        form = state["form"]
+        meta = state["meta"]
+        self.assertEqual(meta.get("mode"), MODE_NON_TDS)
+        self.assertFalse(bool(meta.get("is_gross_up")))
+        self.assertEqual(form.get("TaxPayGrossSecb"), "N")
 
     def test_splits_beneficiary_address_into_remittee_fields(self) -> None:
         state = build_invoice_state(

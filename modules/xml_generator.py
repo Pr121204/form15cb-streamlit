@@ -137,6 +137,8 @@ def build_xml_fields_by_mode(state: Dict[str, object]) -> Dict[str, str]:
     meta = state.get("meta", {})
     mode = str((meta if isinstance(meta, dict) else {}).get("mode") or MODE_TDS)
     if mode == MODE_NON_TDS:
+        out["TaxPayGrossSecb"] = "N"
+        out["RemittanceCharIndia"] = "N"
         out["AmtPayForgnTds"] = "0"
         out["AmtPayIndianTds"] = "0"
         out["RateTdsSecbFlg"] = ""

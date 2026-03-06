@@ -120,7 +120,8 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     resolved = state.setdefault("resolved", {})
     computed = state.setdefault("computed", {})
 
-    mode = str(meta.get("mode") or MODE_TDS)
+    mode = MODE_NON_TDS if str(meta.get("mode") or MODE_TDS) == MODE_NON_TDS else MODE_TDS
+    meta["mode"] = mode
     invoice_id = str(meta.get("invoice_id") or "")
     exchange_rate = _to_float(str(meta.get("exchange_rate") or "")) or 0.0
     fcy = _to_float(str(form.get("AmtPayForgnRem") or extracted.get("amount") or "")) or 0.0
@@ -137,8 +138,13 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
     form["RemitteeZipCode"] = REMITTEE_ZIP_CODE
     form["RemitteeState"] = REMITTEE_STATE
     form.setdefault("SecRemCovered", SEC_REM_COVERED_DEFAULT)
-    form.setdefault("TaxPayGrossSecb", "N")
     form.setdefault("TaxResidCert", TAX_RESID_CERT_Y)
+
+    is_gross_up = bool(meta.get("is_gross_up", False))
+    if mode == MODE_NON_TDS:
+        is_gross_up = False
+    meta["is_gross_up"] = is_gross_up
+    form["TaxPayGrossSecb"] = "Y" if mode == MODE_TDS and is_gross_up else "N"
 
     # Read canonical DTAA rate from form first (written by UI handler), then resolved fallback, then legacy field
     dtaa_rate_percent = _to_float(
@@ -166,8 +172,6 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
         _fmt_num(exchange_rate),
         computed["dtaa_rate_percent"],
     )
-
-    is_gross_up = bool(meta.get("is_gross_up", False))
 
     # --- PRIORITY 1: GROSS-UP FLOW ---
     if mode == MODE_TDS and is_gross_up:
@@ -283,6 +287,8 @@ def recompute_invoice(state: Dict[str, object]) -> Dict[str, object]:
             tax_liable_it,
         )
     elif mode == MODE_NON_TDS:
+        meta["is_gross_up"] = False
+        form["TaxPayGrossSecb"] = "N"
         form["RemittanceCharIndia"] = "N"
         form["AmtPayForgnTds"] = "0"
         form["AmtPayIndianTds"] = "0"
@@ -374,8 +380,16 @@ def invoice_state_to_xml_fields(state: Dict[str, object]) -> Dict[str, str]:
         "NatureRemCode": str(form.get("NatureRemCode") or ""),
         "RevPurCategory": str(form.get("RevPurCategory") or ""),
         "RevPurCode": str(form.get("RevPurCode") or ""),
-        "TaxPayGrossSecb": str(form.get("TaxPayGrossSecb") or "N"),
-        "RemittanceCharIndia": str(form.get("RemittanceCharIndia") or ("Y" if mode == MODE_TDS else "N")),
+        "TaxPayGrossSecb": (
+            "Y"
+            if mode == MODE_TDS and str(form.get("TaxPayGrossSecb") or "").strip().upper() == "Y"
+            else "N"
+        ),
+        "RemittanceCharIndia": (
+            str(form.get("RemittanceCharIndia") or "Y")
+            if mode == MODE_TDS
+            else "N"
+        ),
         "ReasonNot": str(form.get("ReasonNot") or ""),
         "SecRemCovered": str(form.get("SecRemCovered") or SEC_REM_COVERED_DEFAULT),
         "AmtIncChrgIt": str(form.get("AmtIncChrgIt") or form.get("AmtPayIndRem") or ""),

@@ -38,6 +38,8 @@ LAST_UPDATED = "March 2026"
 SINGLE_STATE_KEY = "single_invoice_state"
 PENDING_MATCH_KEY = "single_match_context"
 UPLOAD_SIGNATURE_KEY = "single_upload_signature"
+MODE_SELECTOR_KEY = "single_mode_selector"
+GROSS_UP_CHECKBOX_KEY = "single_gross_up_tax"
 
 
 logger = get_logger()
@@ -52,6 +54,58 @@ if PENDING_MATCH_KEY not in st.session_state:
     st.session_state[PENDING_MATCH_KEY] = None
 if UPLOAD_SIGNATURE_KEY not in st.session_state:
     st.session_state[UPLOAD_SIGNATURE_KEY] = ""
+if MODE_SELECTOR_KEY not in st.session_state:
+    st.session_state[MODE_SELECTOR_KEY] = MODE_TDS
+if GROSS_UP_CHECKBOX_KEY not in st.session_state:
+    st.session_state[GROSS_UP_CHECKBOX_KEY] = False
+
+
+def _coerce_mode(raw: object) -> str:
+    mode_raw = str(raw or "").strip().upper().replace("-", "_").replace(" ", "_")
+    return MODE_NON_TDS if mode_raw == MODE_NON_TDS else MODE_TDS
+
+
+def _selected_single_mode_and_gross_up() -> tuple[str, bool]:
+    mode = _coerce_mode(st.session_state.get(MODE_SELECTOR_KEY))
+    is_gross_up = bool(st.session_state.get(GROSS_UP_CHECKBOX_KEY, False))
+    if mode == MODE_NON_TDS:
+        is_gross_up = False
+        st.session_state[GROSS_UP_CHECKBOX_KEY] = False
+    return mode, is_gross_up
+
+
+def _on_single_mode_change() -> None:
+    mode = _coerce_mode(st.session_state.get(MODE_SELECTOR_KEY))
+    if mode == MODE_NON_TDS:
+        st.session_state[GROSS_UP_CHECKBOX_KEY] = False
+
+
+def _apply_single_mode_controls_to_state(state: Dict[str, object]) -> Dict[str, object]:
+    mode, is_gross_up = _selected_single_mode_and_gross_up()
+    meta = state.setdefault("meta", {})
+    form = state.setdefault("form", {})
+    changed = False
+
+    if str(meta.get("mode") or MODE_TDS) != mode:
+        meta["mode"] = mode
+        changed = True
+    if bool(meta.get("is_gross_up", False)) != is_gross_up:
+        meta["is_gross_up"] = is_gross_up
+        changed = True
+
+    tax_pay_gross = "Y" if is_gross_up else "N"
+    if str(form.get("TaxPayGrossSecb") or "") != tax_pay_gross:
+        form["TaxPayGrossSecb"] = tax_pay_gross
+        changed = True
+
+    if changed:
+        logger.info(
+            "single_mode_controls_applied invoice_id=%s mode=%s is_gross_up=%s",
+            str(meta.get("invoice_id") or ""),
+            mode,
+            is_gross_up,
+        )
+    return state
 
 
 def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[str]:
@@ -173,17 +227,25 @@ def _extract_invoice_fields(file_name: str, file_bytes: bytes) -> Dict[str, str]
     return extracted
 
 
-def _build_single_state(file_name: str, extracted: Dict[str, str], excel_row: Dict[str, str]) -> Dict[str, object]:
+def _build_single_state(
+    file_name: str,
+    extracted: Dict[str, str],
+    excel_row: Dict[str, str],
+    selected_mode: str,
+    selected_is_gross_up: bool,
+) -> Dict[str, object]:
     derived = derive_single_config(excel_row)
+    mode = MODE_NON_TDS if str(selected_mode or MODE_TDS) == MODE_NON_TDS else MODE_TDS
+    is_gross_up = bool(selected_is_gross_up) if mode == MODE_TDS else False
     config: Dict[str, object] = {
-        "mode": derived.get("mode") or MODE_TDS,
+        "mode": mode,
         "exchange_rate": derived.get("exchange_rate") or "1",
         "currency_short": derived.get("currency_short") or str(extracted.get("currency_short") or ""),
-        "is_gross_up": str(derived.get("is_gross_up") or "N").upper() == "Y",
+        "is_gross_up": is_gross_up,
     }
     excel_seed = {
-        "mode": str(derived.get("mode") or MODE_TDS),
-        "is_gross_up": str(derived.get("is_gross_up") or "N"),
+        "mode": mode,
+        "is_gross_up": "Y" if is_gross_up else "N",
         "exchange_rate": str(derived.get("exchange_rate") or ""),
         "currency_short": str(derived.get("currency_short") or ""),
         "document_date": str(derived.get("document_date") or ""),
@@ -232,6 +294,24 @@ excel_file = st.file_uploader(
 )
 
 if invoice_file and excel_file:
+    st.subheader("Step 1.5 - Pre-processing Settings")
+    selected_mode = st.radio(
+        "Mode",
+        options=[MODE_TDS, MODE_NON_TDS],
+        index=0 if _coerce_mode(st.session_state.get(MODE_SELECTOR_KEY)) == MODE_TDS else 1,
+        format_func=lambda value: "TDS" if value == MODE_TDS else "Non-TDS",
+        horizontal=True,
+        key=MODE_SELECTOR_KEY,
+        on_change=_on_single_mode_change,
+    )
+    if str(selected_mode) == MODE_NON_TDS and st.session_state.get(GROSS_UP_CHECKBOX_KEY):
+        st.session_state[GROSS_UP_CHECKBOX_KEY] = False
+    st.checkbox(
+        "Gross-up Tax?",
+        key=GROSS_UP_CHECKBOX_KEY,
+        disabled=str(selected_mode) == MODE_NON_TDS,
+    )
+
     _reset_states_if_upload_changed(invoice_file, excel_file)
     if st.button("Process Files", type="primary"):
         if invoice_file.size > MAX_FILE_SIZE:
@@ -250,6 +330,7 @@ if invoice_file and excel_file:
                 logger.exception("single_processing_failed invoice=%s excel=%s", invoice_file.name, excel_file.name)
                 st.error(str(exc))
             else:
+                selected_mode, selected_is_gross_up = _selected_single_mode_and_gross_up()
                 match_result = match_invoice_row(
                     excel_rows,
                     invoice_filename=invoice_file.name,
@@ -258,7 +339,13 @@ if invoice_file and excel_file:
                 if match_result["status"] == "matched" and match_result["matched_index"] is not None:
                     selected_row = excel_rows[match_result["matched_index"]]
                     try:
-                        state = _build_single_state(invoice_file.name, extracted, selected_row)
+                        state = _build_single_state(
+                            invoice_file.name,
+                            extracted,
+                            selected_row,
+                            selected_mode,
+                            selected_is_gross_up,
+                        )
                     except ValueError as exc:
                         st.session_state[SINGLE_STATE_KEY] = None
                         st.session_state[PENDING_MATCH_KEY] = {
@@ -303,11 +390,14 @@ if isinstance(pending_context, dict) and not st.session_state.get(SINGLE_STATE_K
         )
         if st.button("Use Selected Row", type="primary", key="single_select_row"):
             selected_row = rows[int(selected_idx)]
+            selected_mode, selected_is_gross_up = _selected_single_mode_and_gross_up()
             try:
                 state = _build_single_state(
                     str(pending_context.get("file_name") or ""),
                     pending_context.get("extracted") or {},
                     selected_row,
+                    selected_mode,
+                    selected_is_gross_up,
                 )
             except ValueError as exc:
                 st.error(str(exc))
@@ -323,6 +413,7 @@ state = st.session_state.get(SINGLE_STATE_KEY)
 if isinstance(state, dict):
     st.subheader("Step 2 - Review Invoice")
     logger.info("single_review_start invoice_id=%s", state.get("meta", {}).get("invoice_id", ""))
+    state = _apply_single_mode_controls_to_state(state)
     state = render_invoice_tab(state)
     state = recompute_invoice(state)
     st.session_state[SINGLE_STATE_KEY] = state

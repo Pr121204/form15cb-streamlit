@@ -416,7 +416,8 @@ def build_invoice_state(
     excel_seed: Optional[Dict[str, str]] = None,
 ) -> Dict[str, object]:
     excel_seed = excel_seed or {}
-    mode = str(excel_seed.get("mode") or config.get("mode") or MODE_TDS).strip()
+    mode_raw = str(excel_seed.get("mode") or config.get("mode") or MODE_TDS).strip()
+    mode = MODE_NON_TDS if mode_raw == MODE_NON_TDS else MODE_TDS
     source_short = str(
         excel_seed.get("currency_short")
         or config.get("currency_short")
@@ -428,12 +429,14 @@ def build_invoice_state(
     if gross_up_raw is None:
         gross_up_raw = config.get("is_gross_up")
     is_gross_up = _coerce_bool(gross_up_raw)
+    if mode == MODE_NON_TDS:
+        is_gross_up = False
     resolved_currency = resolve_currency_selection(source_short, load_currency_exact_index())
     state: Dict[str, object] = {
         "meta": {
             "invoice_id": invoice_id,
             "file_name": file_name,
-            "mode": MODE_NON_TDS if mode == MODE_NON_TDS else MODE_TDS,
+            "mode": mode,
             "exchange_rate": exchange_rate,
             "source_currency_short": source_short,
             "is_gross_up": is_gross_up,

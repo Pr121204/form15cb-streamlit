@@ -4,6 +4,7 @@ import unittest
 
 from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS, REMITTEE_ZIP_CODE
 from modules.invoice_calculator import format_dotted_date, invoice_state_to_xml_fields, recompute_invoice
+from modules.xml_generator import build_xml_fields_by_mode
 
 
 class TestInvoiceCalculator(unittest.TestCase):
@@ -35,6 +36,18 @@ class TestInvoiceCalculator(unittest.TestCase):
         out = recompute_invoice(state)
         self.assertEqual(out["form"]["AmtPayForgnTds"], "0")
         self.assertEqual(out["form"]["AmtPayIndianTds"], "0")
+
+    def test_non_tds_forces_gross_up_off(self) -> None:
+        state = {
+            "meta": {"mode": MODE_NON_TDS, "exchange_rate": "80", "is_gross_up": True},
+            "extracted": {"amount": "100", "invoice_date_iso": "2026-02-10"},
+            "resolved": {},
+            "form": {"AmtPayForgnRem": "100", "TaxPayGrossSecb": "Y"},
+            "computed": {},
+        }
+        out = recompute_invoice(state)
+        self.assertFalse(bool(out["meta"]["is_gross_up"]))
+        self.assertEqual(out["form"]["TaxPayGrossSecb"], "N")
 
     def test_inr_amount_is_rounded_integer(self) -> None:
         state = {
@@ -124,6 +137,28 @@ class TestInvoiceCalculator(unittest.TestCase):
         self.assertEqual(f["TaxLiablIt"], "41266")
         self.assertEqual(f["AmtPayIndianTds"], "41266")
         self.assertEqual(f["AmtPayForgnTds"], "384.80")
+
+    def test_non_tds_xml_fields_force_tax_pay_gross_no(self) -> None:
+        state = {
+            "meta": {"mode": MODE_NON_TDS, "exchange_rate": "80", "is_gross_up": True},
+            "extracted": {
+                "remitter_name": "A",
+                "remitter_address": "B",
+                "beneficiary_name": "C",
+            },
+            "resolved": {},
+            "form": {
+                "RemitterPAN": "ABCDE1234F",
+                "CurrencySecbCode": "50",
+                "TaxPayGrossSecb": "Y",
+                "AmtPayForgnRem": "100",
+                "AmtPayIndRem": "8000",
+            },
+            "computed": {},
+        }
+        out = build_xml_fields_by_mode(recompute_invoice(state))
+        self.assertEqual(out["TaxPayGrossSecb"], "N")
+        self.assertEqual(out["RemittanceCharIndia"], "N")
 
 
 if __name__ == "__main__":

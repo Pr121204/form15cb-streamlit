@@ -138,6 +138,20 @@ class TestExcelSingleIngestion(unittest.TestCase):
         self.assertEqual(out["amount_fcy"], "1850.57")
         self.assertEqual(out["amount_inr"], "198395")
 
+    def test_derive_single_config_forces_gross_up_off_for_non_tds(self) -> None:
+        out = derive_single_config(
+            {
+                "Mode": "NON_TDS",
+                "Gross Up Tax": "Y",
+                "Amount in Foreign Currency": "100",
+                "Amount in INR": "8000",
+                "Currency": "USD",
+                "Posting Date": "2026-03-01",
+            }
+        )
+        self.assertEqual(out["mode"], MODE_NON_TDS)
+        self.assertEqual(out["is_gross_up"], "N")
+
     def test_derive_single_config_blocks_invalid_posting_date(self) -> None:
         with self.assertRaises(ValueError) as ctx:
             derive_single_config(
