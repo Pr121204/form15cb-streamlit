@@ -8,3 +8,5 @@ google-genai
 python-dotenv
 python-dateutil
 streamlit-google-auth
+pandas
+openpyxl

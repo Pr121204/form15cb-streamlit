@@ -1,710 +1,1254 @@
 [
-  {
-    "code": "-1",
-    "currency": "Select"
-  },
-  {
-    "code": "1",
-    "currency": "AFGAHANI"
-  },
-  {
-    "code": "2",
-    "currency": "ALBANIAN LEK"
-  },
-  {
-    "code": "3",
-    "currency": "ALGERIAN DINAR"
-  },
-  {
-    "code": "4",
-    "currency": "ANDORAN PESTA"
-  },
-  {
-    "code": "5",
-    "currency": "ANGOLAN NEW KWANZA"
-  },
-  {
-    "code": "6",
-    "currency": "ARGENTINE PESOS"
-  },
-  {
-    "code": "7",
-    "currency": "ARMENIAN DRAM"
-  },
-  {
-    "code": "8",
-    "currency": "ARUBAN GUILDER"
-  },
-  {
-    "code": "9",
-    "currency": "AUSTRALIAN DOLLAR"
-  },
-  {
-    "code": "10",
-    "currency": "AUSTRIAN SCHILLING"
-  },
-  {
-    "code": "11",
-    "currency": "AZERBAIJAN MANAT"
-  },
-  {
-    "code": "12",
-    "currency": "BAHAMIAN DOLLAR"
-  },
-  {
-    "code": "13",
-    "currency": "BAHRAINI DINAR"
-  },
-  {
-    "code": "14",
-    "currency": "BANGLADESH TAKA"
-  },
-  {
-    "code": "15",
-    "currency": "BARBADOS DOLLAR"
-  },
-  {
-    "code": "16",
-    "currency": "BELARUSSIAN RUBLE"
-  },
-  {
-    "code": "17",
-    "currency": "BELGIAN FRANC"
-  },
-  {
-    "code": "18",
-    "currency": "BELIZE DOLLAR"
-  },
-  {
-    "code": "19",
-    "currency": "BERMUDIAN DOLLAR"
-  },
-  {
-    "code": "20",
-    "currency": "BHUTAN NGULTRUM"
-  },
-  {
-    "code": "21",
-    "currency": "BOLIVIAN BOLIVIANO"
-  },
-  {
-    "code": "22",
-    "currency": "BOTSWANA PULA"
-  },
-  {
-    "code": "23",
-    "currency": "BRAZILIAN REAL"
-  },
-  {
-    "code": "24",
-    "currency": "BRUNEI DOLLAR"
-  },
-  {
-    "code": "25",
-    "currency": "BULGARIAN LEV"
-  },
-  {
-    "code": "26",
-    "currency": "BURUNDI FRANC"
-  },
-  {
-    "code": "27",
-    "currency": "CAMBODIAN REIL"
-  },
-  {
-    "code": "28",
-    "currency": "CANADIAN DOLLAR"
-  },
-  {
-    "code": "29",
-    "currency": "CAPE VERDE ESCUDO"
-  },
-  {
-    "code": "30",
-    "currency": "CAYMAN ISLANDS DOLLAR"
-  },
-  {
-    "code": "31",
-    "currency": "CFP FRANCS"
-  },
-  {
-    "code": "32",
-    "currency": "CHILEAN PESO"
-  },
-  {
-    "code": "33",
-    "currency": "COLOMBIAN PESO"
-  },
-  {
-    "code": "34",
-    "currency": "COMOROS FRANC"
-  },
-  {
-    "code": "35",
-    "currency": "COSTA RICAN COLON"
-  },
-  {
-    "code": "36",
-    "currency": "CROATIA KUNA"
-  },
-  {
-    "code": "37",
-    "currency": "CUBAN PESO"
-  },
-  {
-    "code": "38",
-    "currency": "CYPRUS POUND"
-  },
-  {
-    "code": "39",
-    "currency": "DANISH KRONE"
-  },
-  {
-    "code": "40",
-    "currency": "DEUTSCH MARK"
-  },
-  {
-    "code": "41",
-    "currency": "DJIBOUTI FRANC"
-  },
-  {
-    "code": "42",
-    "currency": "DOBRA"
-  },
-  {
-    "code": "43",
-    "currency": "DOMINICBN PESO"
-  },
-  {
-    "code": "44",
-    "currency": "EAST CARRIBEAN DOLLAR"
-  },
-  {
-    "code": "45",
-    "currency": "ECUADOR SUCRE"
-  },
-  {
-    "code": "46",
-    "currency": "EGYPTIAN POUND"
-  },
-  {
-    "code": "47",
-    "currency": "EL SALVADOR COLON"
-  },
-  {
-    "code": "48",
-    "currency": "ESTONIAN KROON"
-  },
-  {
-    "code": "49",
-    "currency": "ETHOPIAN BIRR"
-  },
-  {
-    "code": "50",
-    "currency": "EURO"
-  },
-  {
-    "code": "51",
-    "currency": "FALKLAND ISLANDSPOUND"
-  },
-  {
-    "code": "52",
-    "currency": "FIJI DOLLAR"
-  },
-  {
-    "code": "53",
-    "currency": "FINISH MARKKA"
-  },
-  {
-    "code": "54",
-    "currency": "FRENCH FRANC"
-  },
-  {
-    "code": "55",
-    "currency": "GAMBIAN DALASI"
-  },
-  {
-    "code": "56",
-    "currency": "GEORGIAN LARI"
-  },
-  {
-    "code": "57",
-    "currency": "GHANA CEDI"
-  },
-  {
-    "code": "58",
-    "currency": "GIBRALTAR POUND"
-  },
-  {
-    "code": "59",
-    "currency": "GREEK DRACHMA"
-  },
-  {
-    "code": "60",
-    "currency": "GUATEMALA QUETZAL"
-  },
-  {
-    "code": "61",
-    "currency": "GUINEA FRANC"
-  },
-  {
-    "code": "62",
-    "currency": "GUINEA-BISSAU PESO"
-  },
-  {
-    "code": "63",
-    "currency": "GUYANA DOLLAR"
-  },
-  {
-    "code": "64",
-    "currency": "HAITI GOURDE"
-  },
-  {
-    "code": "65",
-    "currency": "HONDURAS LEMPIRA"
-  },
-  {
-    "code": "66",
-    "currency": "HONGKONG DOLLAR"
-  },
-  {
-    "code": "67",
-    "currency": "HRYVNIA"
-  },
-  {
-    "code": "68",
-    "currency": "HUNGARIAN FORINT"
-  },
-  {
-    "code": "69",
-    "currency": "ICELAND KRONA"
-  },
-  {
-    "code": "70",
-    "currency": "INDIAN RUPEE"
-  },
-  {
-    "code": "71",
-    "currency": "INDONESIAN RUPIAH"
-  },
-  {
-    "code": "72",
-    "currency": "IRANIAN RIAL"
-  },
-  {
-    "code": "73",
-    "currency": "IRAQI DINAR"
-  },
-  {
-    "code": "74",
-    "currency": "IRISH POUNDS"
-  },
-  {
-    "code": "75",
-    "currency": "ISRAELI SHEKEL"
-  },
-  {
-    "code": "76",
-    "currency": "ITALIAN LIRA"
-  },
-  {
-    "code": "77",
-    "currency": "JAMAICAN DOLLAR"
-  },
-  {
-    "code": "78",
-    "currency": "JAPANESE YEN"
-  },
-  {
-    "code": "79",
-    "currency": "JORDANIAN DINAR"
-  },
-  {
-    "code": "80",
-    "currency": "KAZAKSTAN TENGE"
-  },
-  {
-    "code": "81",
-    "currency": "KENYAN SHILLING"
-  },
-  {
-    "code": "82",
-    "currency": "KINA"
-  },
-  {
-    "code": "83",
-    "currency": "KORUNA"
-  },
-  {
-    "code": "84",
-    "currency": "KUWAITI DINAR"
-  },
-  {
-    "code": "85",
-    "currency": "KWACHA"
-  },
-  {
-    "code": "86",
-    "currency": "KYAT"
-  },
-  {
-    "code": "87",
-    "currency": "KYRGYZSTAN SOM"
-  },
-  {
-    "code": "88",
-    "currency": "LAOS KIP"
-  },
-  {
-    "code": "89",
-    "currency": "LATVIAN LAT"
-  },
-  {
-    "code": "90",
-    "currency": "LEBANESE POUND"
-  },
-  {
-    "code": "91",
-    "currency": "LEONE"
-  },
-  {
-    "code": "92",
-    "currency": "LESOTHO LOTI"
-  },
-  {
-    "code": "93",
-    "currency": "LIBERIAN DOLLAR"
-  },
-  {
-    "code": "94",
-    "currency": "LIBYAN DINAR"
-  },
-  {
-    "code": "95",
-    "currency": "LILANGENI"
-  },
-  {
-    "code": "96",
-    "currency": "LITHUANIAN LITAS"
-  },
-  {
-    "code": "97",
-    "currency": "LUXEMBOURG FRANCS"
-  },
-  {
-    "code": "98",
-    "currency": "MACAU PATACA"
-  },
-  {
-    "code": "99",
-    "currency": "OTHERS"
-  },
-  {
-    "code": "100",
-    "currency": "MACEDONIAN DENAR"
-  },
-  {
-    "code": "101",
-    "currency": "MALAGASSY FRANC"
-  },
-  {
-    "code": "102",
-    "currency": "MALAWIAN KWACHA"
-  },
-  {
-    "code": "103",
-    "currency": "MALAYSIAN RINGGIT"
-  },
-  {
-    "code": "104",
-    "currency": "MALDIVE RUFIYAA"
-  },
-  {
-    "code": "105",
-    "currency": "MALTESE LIRA"
-  },
-  {
-    "code": "106",
-    "currency": "MAURITANIAN OUGUIYA"
-  },
-  {
-    "code": "107",
-    "currency": "MAURITIUS RUPEE"
-  },
-  {
-    "code": "108",
-    "currency": "MEXICAN PESO"
-  },
-  {
-    "code": "109",
-    "currency": "MOLDOVAN LEU"
-  },
-  {
-    "code": "110",
-    "currency": "MONGOLIAN TUGRIK"
-  },
-  {
-    "code": "111",
-    "currency": "MORACCAN DIRHAM"
-  },
-  {
-    "code": "112",
-    "currency": "MOZAMBIQUE METICBL"
-  },
-  {
-    "code": "113",
-    "currency": "NAMIBIA DOLLAR"
-  },
-  {
-    "code": "114",
-    "currency": "NEPALESE RUPEE"
-  },
-  {
-    "code": "115",
-    "currency": "NETHERLAND ANTILLIAN GUILDER"
-  },
-  {
-    "code": "116",
-    "currency": "NETHERLANDS GUILDER"
-  },
-  {
-    "code": "117",
-    "currency": "NEW DINAR"
-  },
-  {
-    "code": "118",
-    "currency": "NEW TAIWAN DOLLAR"
-  },
-  {
-    "code": "119",
-    "currency": "NEW ZEALAND DOLLAR"
-  },
-  {
-    "code": "120",
-    "currency": "NICARAGUAN CORDOBA ORO"
-  },
-  {
-    "code": "121",
-    "currency": "NIGERIAN NAIRA"
-  },
-  {
-    "code": "122",
-    "currency": "NORTH KOREAN WON"
-  },
-  {
-    "code": "123",
-    "currency": "NORWEGIAN KRONES"
-  },
-  {
-    "code": "124",
-    "currency": "PAKISTANI RUPEE"
-  },
-  {
-    "code": "125",
-    "currency": "PANAMAN BALBOA"
-  },
-  {
-    "code": "126",
-    "currency": "PARAGUAY GUARANI"
-  },
-  {
-    "code": "127",
-    "currency": "PARANGA"
-  },
-  {
-    "code": "128",
-    "currency": "PERUVIAN NUEVO SOL"
-  },
-  {
-    "code": "129",
-    "currency": "PESO"
-  },
-  {
-    "code": "130",
-    "currency": "PHILLIPINES PESOS"
-  },
-  {
-    "code": "131",
-    "currency": "POLISH ZLOTY"
-  },
-  {
-    "code": "132",
-    "currency": "PORTUGUESE ESCUDO"
-  },
-  {
-    "code": "133",
-    "currency": "POUND STERLING"
-  },
-  {
-    "code": "134",
-    "currency": "QATARI RIAL"
-  },
-  {
-    "code": "135",
-    "currency": "RAND"
-  },
-  {
-    "code": "136",
-    "currency": "RIAL OMANIS"
-  },
-  {
-    "code": "137",
-    "currency": "ROMANIAN LEU"
-  },
-  {
-    "code": "138",
-    "currency": "ROUBLE"
-  },
-  {
-    "code": "139",
-    "currency": "RWANDA FRANC"
-  },
-  {
-    "code": "140",
-    "currency": "SAUDI RIYAL"
-  },
-  {
-    "code": "141",
-    "currency": "SEYCHELLES RUPEE"
-  },
-  {
-    "code": "142",
-    "currency": "SINGAPORE DOLLAR"
-  },
-  {
-    "code": "143",
-    "currency": "SLOVAKI KORUNA"
-  },
-  {
-    "code": "144",
-    "currency": "SLOVENIAN TOLAR"
-  },
-  {
-    "code": "145",
-    "currency": "SOLOMAN ISLANDS DOLLAR"
-  },
-  {
-    "code": "146",
-    "currency": "SOMALI SHILLING"
-  },
-  {
-    "code": "147",
-    "currency": "SOUTH KOREAN WON"
-  },
-  {
-    "code": "148",
-    "currency": "SPANISH PESETA"
-  },
-  {
-    "code": "149",
-    "currency": "SRI LANKA RUPEE"
-  },
-  {
-    "code": "150",
-    "currency": "ST. HELENA POUND"
-  },
-  {
-    "code": "151",
-    "currency": "SUDANESE DINAR"
-  },
-  {
-    "code": "152",
-    "currency": "SURINAME GUILDER"
-  },
-  {
-    "code": "153",
-    "currency": "SWEDISH KRONA"
-  },
-  {
-    "code": "154",
-    "currency": "SWISS FRANC"
-  },
-  {
-    "code": "155",
-    "currency": "SYRIAN POUND"
-  },
-  {
-    "code": "156",
-    "currency": "TAJIK ROUBLE"
-  },
-  {
-    "code": "157",
-    "currency": "TALA"
-  },
-  {
-    "code": "158",
-    "currency": "TANZANIAN SCHILLING"
-  },
-  {
-    "code": "159",
-    "currency": "THAI BAHTS"
-  },
-  {
-    "code": "160",
-    "currency": "TIMOR ESCUDO"
-  },
-  {
-    "code": "161",
-    "currency": "TRINIDAD & TOBAGO DOLLAR"
-  },
-  {
-    "code": "162",
-    "currency": "TURKEMENI MANAT"
-  },
-  {
-    "code": "163",
-    "currency": "TURKISH LIRA"
-  },
-  {
-    "code": "164",
-    "currency": "TURNISIAN DINAR"
-  },
-  {
-    "code": "165",
-    "currency": "UAE DIRHAM"
-  },
-  {
-    "code": "166",
-    "currency": "UGANDA SHILLING"
-  },
-  {
-    "code": "167",
-    "currency": "US DOLLAR"
-  },
-  {
-    "code": "168",
-    "currency": "UZBEKISTAN SUM"
-  },
-  {
-    "code": "169",
-    "currency": "VATU"
-  },
-  {
-    "code": "170",
-    "currency": "VENEZUELAN BOLIVAR"
-  },
-  {
-    "code": "171",
-    "currency": "VIETNAM DONG"
-  },
-  {
-    "code": "172",
-    "currency": "YEMENI RIAL"
-  },
-  {
-    "code": "173",
-    "currency": "YUAN RENMINBI"
-  },
-  {
-    "code": "174",
-    "currency": "ZAIRE"
-  },
-  {
-    "code": "175",
-    "currency": "ZIMBABWE DOLLAR"
-  },
-  {
-    "code": "176",
-    "currency": "CFA FRANC"
-  }
+    {
+        "code": "-1",
+        "country": "Select"
+    },
+    {
+        "code": "1",
+        "country": "CANADA"
+    },
+    {
+        "code": "2",
+        "country": "UNITED STATES OF AMERICA"
+    },
+    {
+        "code": "2",
+        "country": "USA"
+    },
+    {
+        "code": "2",
+        "country": "UNITED STATES"
+    },
+    {
+        "code": "2",
+        "country": "US"
+    },
+    {
+        "code": "5",
+        "country": "ITALY"
+    },
+    {
+        "code": "6",
+        "country": "HOLY SEE"
+    },
+    {
+        "code": "6",
+        "country": "VATICAN"
+    },
+    {
+        "code": "6",
+        "country": "VATICAN CITY"
+    },
+    {
+        "code": "7",
+        "country": "KAZAKHSTAN"
+    },
+    {
+        "code": "8",
+        "country": "RUSSIAN FEDERATION"
+    },
+    {
+        "code": "8",
+        "country": "RUSSIA"
+    },
+    {
+        "code": "9",
+        "country": "CHRISTMAS ISLAND"
+    },
+    {
+        "code": "14",
+        "country": "PORTUGAL"
+    },
+    {
+        "code": "15",
+        "country": "NORFOLK ISLAND"
+    },
+    {
+        "code": "20",
+        "country": "EGYPT"
+    },
+    {
+        "code": "28",
+        "country": "SOUTH AFRICA"
+    },
+    {
+        "code": "30",
+        "country": "GREECE"
+    },
+    {
+        "code": "31",
+        "country": "NETHERLANDS"
+    },
+    {
+        "code": "31",
+        "country": "HOLLAND"
+    },
+    {
+        "code": "32",
+        "country": "BELGIUM"
+    },
+    {
+        "code": "33",
+        "country": "FRANCE"
+    },
+    {
+        "code": "35",
+        "country": "SPAIN"
+    },
+    {
+        "code": "36",
+        "country": "HUNGARY"
+    },
+    {
+        "code": "40",
+        "country": "ROMANIA"
+    },
+    {
+        "code": "41",
+        "country": "SWITZERLAND"
+    },
+    {
+        "code": "43",
+        "country": "AUSTRIA"
+    },
+    {
+        "code": "44",
+        "country": "UNITED KINGDOM OF GREAT BRITAIN AND NORTHERN IRELAND"
+    },
+    {
+        "code": "44",
+        "country": "UNITED KINGDOM"
+    },
+    {
+        "code": "44",
+        "country": "UK"
+    },
+    {
+        "code": "44",
+        "country": "GREAT BRITAIN"
+    },
+    {
+        "code": "44",
+        "country": "BRITAIN"
+    },
+    {
+        "code": "45",
+        "country": "DENMARK"
+    },
+    {
+        "code": "46",
+        "country": "SWEDEN"
+    },
+    {
+        "code": "47",
+        "country": "NORWAY"
+    },
+    {
+        "code": "48",
+        "country": "POLAND"
+    },
+    {
+        "code": "49",
+        "country": "GERMANY"
+    },
+    {
+        "code": "51",
+        "country": "PERU"
+    },
+    {
+        "code": "52",
+        "country": "MEXICO"
+    },
+    {
+        "code": "53",
+        "country": "CUBA"
+    },
+    {
+        "code": "54",
+        "country": "ARGENTINA"
+    },
+    {
+        "code": "55",
+        "country": "BRAZIL"
+    },
+    {
+        "code": "55",
+        "country": "BRASIL"
+    },
+    {
+        "code": "56",
+        "country": "CHILE"
+    },
+    {
+        "code": "57",
+        "country": "COLOMBIA"
+    },
+    {
+        "code": "58",
+        "country": "VENEZUELA (BOLIVARIAN REPUBLIC OF)"
+    },
+    {
+        "code": "58",
+        "country": "VENEZUELA"
+    },
+    {
+        "code": "60",
+        "country": "MALAYSIA"
+    },
+    {
+        "code": "61",
+        "country": "AUSTRALIA"
+    },
+    {
+        "code": "62",
+        "country": "INDONESIA"
+    },
+    {
+        "code": "63",
+        "country": "PHILIPPINES"
+    },
+    {
+        "code": "64",
+        "country": "NEW ZEALAND"
+    },
+    {
+        "code": "65",
+        "country": "SINGAPORE"
+    },
+    {
+        "code": "66",
+        "country": "THAILAND"
+    },
+    {
+        "code": "81",
+        "country": "JAPAN"
+    },
+    {
+        "code": "82",
+        "country": "KOREA (REPUBLIC OF)"
+    },
+    {
+        "code": "82",
+        "country": "KOREA"
+    },
+    {
+        "code": "82",
+        "country": "SOUTH KOREA"
+    },
+    {
+        "code": "82",
+        "country": "REPUBLIC OF KOREA"
+    },
+    {
+        "code": "84",
+        "country": "VIET NAM"
+    },
+    {
+        "code": "84",
+        "country": "VIETNAM"
+    },
+    {
+        "code": "86",
+        "country": "CHINA"
+    },
+    {
+        "code": "86",
+        "country": "PEOPLE'S REPUBLIC OF CHINA"
+    },
+    {
+        "code": "86",
+        "country": "PRC"
+    },
+    {
+        "code": "90",
+        "country": "TURKEY"
+    },
+    {
+        "code": "90",
+        "country": "TÜRKIYE"
+    },
+    {
+        "code": "91",
+        "country": "INDIA"
+    },
+    {
+        "code": "92",
+        "country": "PAKISTAN"
+    },
+    {
+        "code": "93",
+        "country": "AFGHANISTAN"
+    },
+    {
+        "code": "94",
+        "country": "SRI LANKA"
+    },
+    {
+        "code": "95",
+        "country": "MYANMAR"
+    },
+    {
+        "code": "95",
+        "country": "BURMA"
+    },
+    {
+        "code": "98",
+        "country": "IRAN (ISLAMIC REPUBLIC OF)"
+    },
+    {
+        "code": "98",
+        "country": "IRAN"
+    },
+    {
+        "code": "211",
+        "country": "SOUTH SUDAN"
+    },
+    {
+        "code": "212",
+        "country": "MOROCCO"
+    },
+    {
+        "code": "213",
+        "country": "ALGERIA"
+    },
+    {
+        "code": "216",
+        "country": "TUNISIA"
+    },
+    {
+        "code": "218",
+        "country": "LIBYA"
+    },
+    {
+        "code": "220",
+        "country": "GAMBIA"
+    },
+    {
+        "code": "220",
+        "country": "THE GAMBIA"
+    },
+    {
+        "code": "221",
+        "country": "SENEGAL"
+    },
+    {
+        "code": "222",
+        "country": "MAURITANIA"
+    },
+    {
+        "code": "223",
+        "country": "MALI"
+    },
+    {
+        "code": "224",
+        "country": "GUINEA"
+    },
+    {
+        "code": "225",
+        "country": "CÔTE D'IVOIRE"
+    },
+    {
+        "code": "225",
+        "country": "IVORY COAST"
+    },
+    {
+        "code": "226",
+        "country": "BURKINA FASO"
+    },
+    {
+        "code": "227",
+        "country": "NIGER"
+    },
+    {
+        "code": "228",
+        "country": "TOGO"
+    },
+    {
+        "code": "229",
+        "country": "BENIN"
+    },
+    {
+        "code": "230",
+        "country": "MAURITIUS"
+    },
+    {
+        "code": "231",
+        "country": "LIBERIA"
+    },
+    {
+        "code": "232",
+        "country": "SIERRA LEONE"
+    },
+    {
+        "code": "233",
+        "country": "GHANA"
+    },
+    {
+        "code": "234",
+        "country": "NIGERIA"
+    },
+    {
+        "code": "235",
+        "country": "CHAD"
+    },
+    {
+        "code": "236",
+        "country": "CENTRAL AFRICAN REPUBLIC"
+    },
+    {
+        "code": "236",
+        "country": "CAR"
+    },
+    {
+        "code": "237",
+        "country": "CAMEROON"
+    },
+    {
+        "code": "238",
+        "country": "CABO VERDE"
+    },
+    {
+        "code": "238",
+        "country": "CAPE VERDE"
+    },
+    {
+        "code": "239",
+        "country": "SAO TOME AND PRINCIPE"
+    },
+    {
+        "code": "239",
+        "country": "SÃO TOMÉ AND PRÍNCIPE"
+    },
+    {
+        "code": "240",
+        "country": "EQUATORIAL GUINEA"
+    },
+    {
+        "code": "241",
+        "country": "GABON"
+    },
+    {
+        "code": "242",
+        "country": "CONGO"
+    },
+    {
+        "code": "242",
+        "country": "REPUBLIC OF THE CONGO"
+    },
+    {
+        "code": "243",
+        "country": "CONGO (DEMOCRATIC REPUBLIC OF THE)"
+    },
+    {
+        "code": "243",
+        "country": "DEMOCRATIC REPUBLIC OF THE CONGO"
+    },
+    {
+        "code": "243",
+        "country": "DRC"
+    },
+    {
+        "code": "244",
+        "country": "ANGOLA"
+    },
+    {
+        "code": "245",
+        "country": "GUINEA-BISSAU"
+    },
+    {
+        "code": "248",
+        "country": "SEYCHELLES"
+    },
+    {
+        "code": "249",
+        "country": "SUDAN"
+    },
+    {
+        "code": "250",
+        "country": "RWANDA"
+    },
+    {
+        "code": "251",
+        "country": "ETHIOPIA"
+    },
+    {
+        "code": "252",
+        "country": "SOMALIA"
+    },
+    {
+        "code": "253",
+        "country": "DJIBOUTI"
+    },
+    {
+        "code": "254",
+        "country": "KENYA"
+    },
+    {
+        "code": "255",
+        "country": "TANZANIA, UNITED REPUBLIC OF"
+    },
+    {
+        "code": "255",
+        "country": "TANZANIA"
+    },
+    {
+        "code": "256",
+        "country": "UGANDA"
+    },
+    {
+        "code": "257",
+        "country": "BURUNDI"
+    },
+    {
+        "code": "258",
+        "country": "MOZAMBIQUE"
+    },
+    {
+        "code": "260",
+        "country": "ZAMBIA"
+    },
+    {
+        "code": "261",
+        "country": "MADAGASCAR"
+    },
+    {
+        "code": "262",
+        "country": "RÉUNION"
+    },
+    {
+        "code": "263",
+        "country": "ZIMBABWE"
+    },
+    {
+        "code": "264",
+        "country": "NAMIBIA"
+    },
+    {
+        "code": "265",
+        "country": "MALAWI"
+    },
+    {
+        "code": "266",
+        "country": "LESOTHO"
+    },
+    {
+        "code": "267",
+        "country": "BOTSWANA"
+    },
+    {
+        "code": "268",
+        "country": "SWAZILAND"
+    },
+    {
+        "code": "268",
+        "country": "ESWATINI"
+    },
+    {
+        "code": "269",
+        "country": "MAYOTTE"
+    },
+    {
+        "code": "270",
+        "country": "COMOROS"
+    },
+    {
+        "code": "290",
+        "country": "SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA"
+    },
+    {
+        "code": "290",
+        "country": "SAINT HELENA"
+    },
+    {
+        "code": "291",
+        "country": "ERITREA"
+    },
+    {
+        "code": "297",
+        "country": "ARUBA"
+    },
+    {
+        "code": "298",
+        "country": "FAROE ISLANDS"
+    },
+    {
+        "code": "299",
+        "country": "GREENLAND"
+    },
+    {
+        "code": "350",
+        "country": "GIBRALTAR"
+    },
+    {
+        "code": "352",
+        "country": "LUXEMBOURG"
+    },
+    {
+        "code": "353",
+        "country": "IRELAND"
+    },
+    {
+        "code": "354",
+        "country": "ICELAND"
+    },
+    {
+        "code": "355",
+        "country": "ALBANIA"
+    },
+    {
+        "code": "356",
+        "country": "MALTA"
+    },
+    {
+        "code": "357",
+        "country": "CYPRUS"
+    },
+    {
+        "code": "358",
+        "country": "FINLAND"
+    },
+    {
+        "code": "359",
+        "country": "BULGARIA"
+    },
+    {
+        "code": "370",
+        "country": "LITHUANIA"
+    },
+    {
+        "code": "371",
+        "country": "LATVIA"
+    },
+    {
+        "code": "372",
+        "country": "ESTONIA"
+    },
+    {
+        "code": "373",
+        "country": "MOLDOVA (REPUBLIC OF)"
+    },
+    {
+        "code": "373",
+        "country": "MOLDOVA"
+    },
+    {
+        "code": "374",
+        "country": "ARMENIA"
+    },
+    {
+        "code": "375",
+        "country": "BELARUS"
+    },
+    {
+        "code": "376",
+        "country": "ANDORRA"
+    },
+    {
+        "code": "377",
+        "country": "MONACO"
+    },
+    {
+        "code": "378",
+        "country": "SAN MARINO"
+    },
+    {
+        "code": "380",
+        "country": "UKRAINE"
+    },
+    {
+        "code": "381",
+        "country": "SERBIA"
+    },
+    {
+        "code": "382",
+        "country": "MONTENEGRO"
+    },
+    {
+        "code": "385",
+        "country": "CROATIA"
+    },
+    {
+        "code": "386",
+        "country": "SLOVENIA"
+    },
+    {
+        "code": "387",
+        "country": "BOSNIA AND HERZEGOVINA"
+    },
+    {
+        "code": "387",
+        "country": "BOSNIA"
+    },
+    {
+        "code": "389",
+        "country": "MACEDONIA (THE FORMER YUGOSLAV REPUBLIC OF)"
+    },
+    {
+        "code": "389",
+        "country": "NORTH MACEDONIA"
+    },
+    {
+        "code": "389",
+        "country": "MACEDONIA"
+    },
+    {
+        "code": "420",
+        "country": "CZECHIA"
+    },
+    {
+        "code": "420",
+        "country": "CZECH REPUBLIC"
+    },
+    {
+        "code": "421",
+        "country": "SLOVAKIA"
+    },
+    {
+        "code": "423",
+        "country": "LIECHTENSTEIN"
+    },
+    {
+        "code": "500",
+        "country": "FALKLAND ISLANDS (MALVINAS)"
+    },
+    {
+        "code": "500",
+        "country": "FALKLAND ISLANDS"
+    },
+    {
+        "code": "501",
+        "country": "BELIZE"
+    },
+    {
+        "code": "502",
+        "country": "GUATEMALA"
+    },
+    {
+        "code": "503",
+        "country": "EL SALVADOR"
+    },
+    {
+        "code": "504",
+        "country": "HONDURAS"
+    },
+    {
+        "code": "505",
+        "country": "NICARAGUA"
+    },
+    {
+        "code": "506",
+        "country": "COSTA RICA"
+    },
+    {
+        "code": "507",
+        "country": "PANAMA"
+    },
+    {
+        "code": "508",
+        "country": "SAINT PIERRE AND MIQUELON"
+    },
+    {
+        "code": "509",
+        "country": "HAITI"
+    },
+    {
+        "code": "590",
+        "country": "GUADELOUPE"
+    },
+    {
+        "code": "591",
+        "country": "BOLIVIA (PLURINATIONAL STATE OF)"
+    },
+    {
+        "code": "591",
+        "country": "BOLIVIA"
+    },
+    {
+        "code": "592",
+        "country": "GUYANA"
+    },
+    {
+        "code": "593",
+        "country": "ECUADOR"
+    },
+    {
+        "code": "594",
+        "country": "FRENCH GUIANA"
+    },
+    {
+        "code": "595",
+        "country": "PARAGUAY"
+    },
+    {
+        "code": "596",
+        "country": "MARTINIQUE"
+    },
+    {
+        "code": "597",
+        "country": "SURINAME"
+    },
+    {
+        "code": "598",
+        "country": "URUGUAY"
+    },
+    {
+        "code": "670",
+        "country": "TIMOR LESTE (EAST TIMOR)"
+    },
+    {
+        "code": "670",
+        "country": "EAST TIMOR"
+    },
+    {
+        "code": "670",
+        "country": "TIMOR-LESTE"
+    },
+    {
+        "code": "672",
+        "country": "COCOS (KEELING) ISLANDS"
+    },
+    {
+        "code": "673",
+        "country": "BRUNEI DARUSSALAM"
+    },
+    {
+        "code": "673",
+        "country": "BRUNEI"
+    },
+    {
+        "code": "674",
+        "country": "NAURU"
+    },
+    {
+        "code": "675",
+        "country": "PAPUA NEW GUINEA"
+    },
+    {
+        "code": "675",
+        "country": "PNG"
+    },
+    {
+        "code": "676",
+        "country": "TONGA"
+    },
+    {
+        "code": "677",
+        "country": "SOLOMON ISLANDS"
+    },
+    {
+        "code": "678",
+        "country": "VANUATU"
+    },
+    {
+        "code": "679",
+        "country": "FIJI"
+    },
+    {
+        "code": "680",
+        "country": "PALAU"
+    },
+    {
+        "code": "681",
+        "country": "WALLIS AND FUTUNA"
+    },
+    {
+        "code": "682",
+        "country": "COOK ISLANDS"
+    },
+    {
+        "code": "683",
+        "country": "NIUE"
+    },
+    {
+        "code": "684",
+        "country": "AMERICAN SAMOA"
+    },
+    {
+        "code": "685",
+        "country": "SAMOA"
+    },
+    {
+        "code": "686",
+        "country": "KIRIBATI"
+    },
+    {
+        "code": "687",
+        "country": "NEW CALEDONIA"
+    },
+    {
+        "code": "688",
+        "country": "TUVALU"
+    },
+    {
+        "code": "689",
+        "country": "FRENCH POLYNESIA"
+    },
+    {
+        "code": "690",
+        "country": "TOKELAU"
+    },
+    {
+        "code": "691",
+        "country": "MICRONESIA (FEDERATED STATES OF)"
+    },
+    {
+        "code": "691",
+        "country": "MICRONESIA"
+    },
+    {
+        "code": "692",
+        "country": "MARSHALL ISLANDS"
+    },
+    {
+        "code": "850",
+        "country": "KOREA (DEMOCRATIC PEOPLE'S REPUBLIC OF)"
+    },
+    {
+        "code": "850",
+        "country": "NORTH KOREA"
+    },
+    {
+        "code": "850",
+        "country": "DPRK"
+    },
+    {
+        "code": "852",
+        "country": "HONG KONG"
+    },
+    {
+        "code": "853",
+        "country": "MACAO"
+    },
+    {
+        "code": "853",
+        "country": "MACAU"
+    },
+    {
+        "code": "855",
+        "country": "CAMBODIA"
+    },
+    {
+        "code": "856",
+        "country": "LAO PEOPLE'S DEMOCRATIC REPUBLIC"
+    },
+    {
+        "code": "856",
+        "country": "LAOS"
+    },
+    {
+        "code": "880",
+        "country": "BANGLADESH"
+    },
+    {
+        "code": "886",
+        "country": "TAIWAN, PROVINCE OF CHINA[A]"
+    },
+    {
+        "code": "886",
+        "country": "TAIWAN"
+    },
+    {
+        "code": "960",
+        "country": "MALDIVES"
+    },
+    {
+        "code": "961",
+        "country": "LEBANON"
+    },
+    {
+        "code": "962",
+        "country": "JORDAN"
+    },
+    {
+        "code": "963",
+        "country": "SYRIAN ARAB REPUBLIC"
+    },
+    {
+        "code": "963",
+        "country": "SYRIA"
+    },
+    {
+        "code": "964",
+        "country": "IRAQ"
+    },
+    {
+        "code": "965",
+        "country": "KUWAIT"
+    },
+    {
+        "code": "966",
+        "country": "SAUDI ARABIA"
+    },
+    {
+        "code": "967",
+        "country": "YEMEN"
+    },
+    {
+        "code": "968",
+        "country": "OMAN"
+    },
+    {
+        "code": "970",
+        "country": "PALESTINE, STATE OF"
+    },
+    {
+        "code": "970",
+        "country": "PALESTINE"
+    },
+    {
+        "code": "970",
+        "country": "PALESTINIAN TERRITORIES"
+    },
+    {
+        "code": "971",
+        "country": "UNITED ARAB EMIRATES"
+    },
+    {
+        "code": "971",
+        "country": "UAE"
+    },
+    {
+        "code": "972",
+        "country": "ISRAEL"
+    },
+    {
+        "code": "973",
+        "country": "BAHRAIN"
+    },
+    {
+        "code": "974",
+        "country": "QATAR"
+    },
+    {
+        "code": "975",
+        "country": "BHUTAN"
+    },
+    {
+        "code": "976",
+        "country": "MONGOLIA"
+    },
+    {
+        "code": "977",
+        "country": "NEPAL"
+    },
+    {
+        "code": "992",
+        "country": "TAJIKISTAN"
+    },
+    {
+        "code": "993",
+        "country": "TURKMENISTAN"
+    },
+    {
+        "code": "994",
+        "country": "AZERBAIJAN"
+    },
+    {
+        "code": "995",
+        "country": "GEORGIA"
+    },
+    {
+        "code": "996",
+        "country": "KYRGYZSTAN"
+    },
+    {
+        "code": "998",
+        "country": "UZBEKISTAN"
+    },
+    {
+        "code": "1001",
+        "country": "ÅLAND ISLANDS"
+    },
+    {
+        "code": "1002",
+        "country": "BONAIRE, SINT EUSTATIUS AND SABA"
+    },
+    {
+        "code": "1003",
+        "country": "BOUVET ISLAND"
+    },
+    {
+        "code": "1004",
+        "country": "FRENCH SOUTHERN TERRITORIES"
+    },
+    {
+        "code": "1005",
+        "country": "HEARD ISLAND AND MCDONALD ISLANDS"
+    },
+    {
+        "code": "1006",
+        "country": "SAINT BARTHÉLEMY"
+    },
+    {
+        "code": "1006",
+        "country": "SAINT BARTHS"
+    },
+    {
+        "code": "1007",
+        "country": "SAINT MARTIN (FRENCH PART)"
+    },
+    {
+        "code": "1007",
+        "country": "SAINT MARTIN"
+    },
+    {
+        "code": "1008",
+        "country": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS"
+    },
+    {
+        "code": "1009",
+        "country": "UNITED STATES MINOR OUTLYING ISLANDS"
+    },
+    {
+        "code": "1010",
+        "country": "ANTARCTICA"
+    },
+    {
+        "code": "1011",
+        "country": "PITCAIRN"
+    },
+    {
+        "code": "1011",
+        "country": "PITCAIRN ISLANDS"
+    },
+    {
+        "code": "1012",
+        "country": "SVALBARD AND JAN MAYEN"
+    },
+    {
+        "code": "1013",
+        "country": "WESTERN SAHARA"
+    },
+    {
+        "code": "1014",
+        "country": "BRITISH INDIAN OCEAN TERRITORY"
+    },
+    {
+        "code": "1015",
+        "country": "CURAÇAO"
+    },
+    {
+        "code": "1242",
+        "country": "BAHAMAS"
+    },
+    {
+        "code": "1242",
+        "country": "THE BAHAMAS"
+    },
+    {
+        "code": "1246",
+        "country": "BARBADOS"
+    },
+    {
+        "code": "1264",
+        "country": "ANGUILLA"
+    },
+    {
+        "code": "1268",
+        "country": "ANTIGUA AND BARBUDA"
+    },
+    {
+        "code": "1284",
+        "country": "VIRGIN ISLANDS (BRITISH)"
+    },
+    {
+        "code": "1284",
+        "country": "BRITISH VIRGIN ISLANDS"
+    },
+    {
+        "code": "1340",
+        "country": "VIRGIN ISLANDS (U.S.)"
+    },
+    {
+        "code": "1340",
+        "country": "US VIRGIN ISLANDS"
+    },
+    {
+        "code": "1345",
+        "country": "CAYMAN ISLANDS"
+    },
+    {
+        "code": "1441",
+        "country": "BERMUDA"
+    },
+    {
+        "code": "1473",
+        "country": "GRENADA"
+    },
+    {
+        "code": "1481",
+        "country": "GUERNSEY"
+    },
+    {
+        "code": "1534",
+        "country": "JERSEY"
+    },
+    {
+        "code": "1624",
+        "country": "ISLE OF MAN"
+    },
+    {
+        "code": "1649",
+        "country": "TURKS AND CAICOS ISLANDS"
+    },
+    {
+        "code": "1664",
+        "country": "MONTSERRAT"
+    },
+    {
+        "code": "1670",
+        "country": "NORTHERN MARIANA ISLANDS"
+    },
+    {
+        "code": "1671",
+        "country": "GUAM"
+    },
+    {
+        "code": "1721",
+        "country": "SINT MAARTEN (DUTCH PART)"
+    },
+    {
+        "code": "1721",
+        "country": "SINT MAARTEN"
+    },
+    {
+        "code": "1758",
+        "country": "SAINT LUCIA"
+    },
+    {
+        "code": "1767",
+        "country": "DOMINICA"
+    },
+    {
+        "code": "1784",
+        "country": "SAINT VINCENT AND THE GRENADINES"
+    },
+    {
+        "code": "1784",
+        "country": "SAINT VINCENT"
+    },
+    {
+        "code": "1787",
+        "country": "PUERTO RICO"
+    },
+    {
+        "code": "1809",
+        "country": "DOMINICAN REPUBLIC"
+    },
+    {
+        "code": "1868",
+        "country": "TRINIDAD AND TOBAGO"
+    },
+    {
+        "code": "1869",
+        "country": "SAINT KITTS AND NEVIS"
+    },
+    {
+        "code": "1876",
+        "country": "JAMAICA"
+    },
+    {
+        "code": "9999",
+        "country": "OTHERS"
+    }
 ]

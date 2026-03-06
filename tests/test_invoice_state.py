@@ -59,6 +59,40 @@ class TestInvoiceState(unittest.TestCase):
         self.assertEqual(form.get("RevPurCategory"), f"RB-{sample_gr}.1")
         self.assertEqual(form.get("RevPurCode"), f"RB-{sample_gr}.1-{sample_code}")
 
+    def test_applies_excel_seed_values_for_single_flow(self) -> None:
+        state = build_invoice_state(
+            "inv_seed",
+            "INV100.pdf",
+            {
+                "remitter_name": "Bosch Global Software Technologies Private Limited",
+                "beneficiary_name": "Bosch IO GmbH",
+                "invoice_date_iso": "2026-02-08",
+                "amount": "100",
+                "currency_short": "EUR",
+            },
+            {"mode": MODE_TDS, "exchange_rate": "1", "currency_short": "EUR"},
+            excel_seed={
+                "mode": MODE_TDS,
+                "is_gross_up": "Y",
+                "exchange_rate": "107.24",
+                "currency_short": "USD",
+                "document_date": "2026-02-10",
+                "proposed_date": "2026-02-25",
+                "amount_fcy": "1850",
+                "amount_inr": "198394",
+            },
+        )
+        form = state["form"]
+        meta = state["meta"]
+        self.assertEqual(form.get("AmtPayForgnRem"), "1850")
+        self.assertEqual(form.get("AmtPayIndRem"), "198394")
+        self.assertEqual(form.get("DednDateTds"), "2026-02-10")
+        self.assertEqual(form.get("PropDateRem"), "2026-02-25")
+        self.assertEqual(form.get("TaxPayGrossSecb"), "Y")
+        self.assertEqual(meta.get("exchange_rate"), "107.24")
+        self.assertEqual(meta.get("mode"), MODE_TDS)
+        self.assertTrue(bool(meta.get("is_gross_up")))
+
     def test_splits_beneficiary_address_into_remittee_fields(self) -> None:
         state = build_invoice_state(
             "inv3",

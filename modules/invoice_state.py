@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import date, timedelta
-from typing import Dict
+from datetime import date, datetime, timedelta
+from typing import Dict, Optional
 import re
 
 from modules.currency_mapping import load_currency_exact_index, resolve_currency_selection
@@ -389,18 +389,54 @@ def _split_beneficiary_address(address: str) -> tuple[str, str, str]:
     return street, locality, city
 
 
-def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, str], config: Dict[str, str]) -> Dict[str, object]:
-    mode = config.get("mode", MODE_TDS)
-    source_short = config.get("currency_short", "")
+def _parse_date_value(raw: object) -> Optional[date]:
+    text = str(raw or "").strip()
+    if not text:
+        return None
+    for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%d/%m/%Y", "%d.%m.%Y", "%m/%d/%Y"):
+        try:
+            return datetime.strptime(text, fmt).date()
+        except ValueError:
+            continue
+    return None
+
+
+def _coerce_bool(raw: object) -> bool:
+    if isinstance(raw, bool):
+        return raw
+    value = str(raw or "").strip().upper()
+    return value in {"Y", "YES", "TRUE", "1"}
+
+
+def build_invoice_state(
+    invoice_id: str,
+    file_name: str,
+    extracted: Dict[str, str],
+    config: Dict[str, object],
+    excel_seed: Optional[Dict[str, str]] = None,
+) -> Dict[str, object]:
+    excel_seed = excel_seed or {}
+    mode = str(excel_seed.get("mode") or config.get("mode") or MODE_TDS).strip()
+    source_short = str(
+        excel_seed.get("currency_short")
+        or config.get("currency_short")
+        or extracted.get("currency_short")
+        or ""
+    ).strip()
+    exchange_rate = str(excel_seed.get("exchange_rate") or config.get("exchange_rate") or "").strip()
+    gross_up_raw = excel_seed.get("is_gross_up")
+    if gross_up_raw is None:
+        gross_up_raw = config.get("is_gross_up")
+    is_gross_up = _coerce_bool(gross_up_raw)
     resolved_currency = resolve_currency_selection(source_short, load_currency_exact_index())
     state: Dict[str, object] = {
         "meta": {
             "invoice_id": invoice_id,
             "file_name": file_name,
             "mode": MODE_NON_TDS if mode == MODE_NON_TDS else MODE_TDS,
-            "exchange_rate": str(config.get("exchange_rate", "")),
+            "exchange_rate": exchange_rate,
             "source_currency_short": source_short,
-            "is_gross_up": bool(config.get("is_gross_up", False)),
+            "is_gross_up": is_gross_up,
         },
         "extracted": extracted,
         "resolved": {},
@@ -425,13 +461,28 @@ def build_invoice_state(invoice_id: str, file_name: str, extracted: Dict[str, st
             "is_gross_up": state["meta"]["is_gross_up"],
         },
     )
-    form["AmtPayForgnRem"] = extracted.get("amount", "")
+
+    seeded_fcy = str(excel_seed.get("amount_fcy") or "").strip()
+    seeded_inr = str(excel_seed.get("amount_inr") or "").strip()
+    form["AmtPayForgnRem"] = seeded_fcy or extracted.get("amount", "")
+    if seeded_inr:
+        form["AmtPayIndRem"] = seeded_inr
     form["CurrencySecbCode"] = resolved_currency.get("code", "")
     form["RemitteeZipCode"] = "999999"
     form["RemitteeState"] = "OUTSIDE INDIA"
     form["TaxPayGrossSecb"] = "Y" if state["meta"]["is_gross_up"] else "N"
-    form["DednDateTds"] = date.today().isoformat()
-    form["PropDateRem"] = (date.today() + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)).isoformat()
+    dedn_seed = str(excel_seed.get("deduction_date") or "").strip() or str(excel_seed.get("document_date") or "").strip()
+    if excel_seed and not dedn_seed:
+        dedn_seed = str(extracted.get("invoice_date_iso") or "").strip()
+    dedn_date = _parse_date_value(dedn_seed) or date.today()
+    proposed_seed = str(excel_seed.get("proposed_date") or "").strip()
+    proposed_date = _parse_date_value(proposed_seed)
+    if not proposed_date:
+        proposed_date = dedn_date + timedelta(days=PROPOSED_DATE_OFFSET_DAYS)
+    form["DednDateTds"] = dedn_date.isoformat()
+    form["PropDateRem"] = proposed_date.isoformat()
+    if extracted.get("invoice_date_iso"):
+        form.setdefault("InvoiceDate", str(extracted.get("invoice_date_iso") or ""))
     form.setdefault("ItActRateSelected", str(IT_ACT_RATE_DEFAULT))
 
     # Infer country from beneficiary name/country text/address combined.

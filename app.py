@@ -3,33 +3,22 @@ from __future__ import annotations
 import io
 import os
 import time
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import streamlit as st
-
-# from modules.auth import require_login, render_logout_button
-#
-# if not require_login():
-#     st.stop()
-#
-# render_logout_button()   # shows user photo + Sign Out in sidebar
+from pdf2image import convert_from_bytes
 
 from modules.batch_form_ui import render_invoice_tab
-from modules.currency_mapping import (
-    get_upload_currency_select_options,
-    is_currency_code_valid_for_xml,
-    load_currency_exact_index,
-    resolve_currency_selection,
-)
-from modules.file_manager import ensure_folders, save_uploaded_file
+from modules.currency_mapping import is_currency_code_valid_for_xml
+from modules.excel_single_ingestion import derive_single_config, match_invoice_row, parse_excel_rows
+from modules.file_manager import ensure_folders
 from modules.form15cb_constants import MODE_NON_TDS, MODE_TDS
-from modules.invoice_calculator import invoice_state_to_xml_fields, recompute_invoice
+from modules.invoice_calculator import recompute_invoice
 from modules.invoice_gemini_extractor import (
     extract_invoice_core_fields,
     extract_invoice_core_fields_from_image,
     merge_multi_page_image_extractions,
 )
-from pdf2image import convert_from_bytes
 from modules.invoice_state import build_invoice_state
 from modules.logger import get_logger
 from modules.master_data import validate_bsr_code, validate_dtaa_rate, validate_pan
@@ -38,47 +27,36 @@ from modules.pdf_reader import extract_text_from_pdf
 from modules.xml_generator import (
     build_xml_fields_by_mode,
     generate_xml_content,
-    generate_zip_from_xmls,
-    validate_required_fields,
     write_xml_content,
 )
 
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 MAX_SCANNED_PDF_PAGES = max(1, int(os.getenv("MAX_SCANNED_PDF_PAGES", "6")))
-VERSION = "3.0"
-LAST_UPDATED = "February 2026"
+VERSION = "3.1"
+LAST_UPDATED = "March 2026"
+SINGLE_STATE_KEY = "single_invoice_state"
+PENDING_MATCH_KEY = "single_match_context"
+UPLOAD_SIGNATURE_KEY = "single_upload_signature"
+
 
 logger = get_logger()
 ensure_folders()
-UPLOAD_CURRENCY_OPTIONS = get_upload_currency_select_options()
-UPLOAD_CURRENCY_VALUES = [opt["value"] for opt in UPLOAD_CURRENCY_OPTIONS]
-UPLOAD_CURRENCY_LABELS = {opt["value"]: opt["label"] for opt in UPLOAD_CURRENCY_OPTIONS}
-CURRENCY_INDEX = load_currency_exact_index()
-DEFAULT_UPLOAD_CURRENCY = next(
-    (opt["value"] for opt in UPLOAD_CURRENCY_OPTIONS if str(opt.get("label", "")).upper().startswith("EUR")),
-    (UPLOAD_CURRENCY_VALUES[0] if UPLOAD_CURRENCY_VALUES else ""),
-)
 
-st.set_page_config(page_title="Form 15CB Batch Generator", layout="wide", initial_sidebar_state="collapsed")
-st.title("Form 15CB Batch Generator")
+st.set_page_config(page_title="Form 15CB Single Generator", layout="wide", initial_sidebar_state="collapsed")
+st.title("Form 15CB Single Invoice Generator")
 
-if "invoice_states" not in st.session_state:
-    st.session_state["invoice_states"] = {}
-if "uploaded_configs" not in st.session_state:
-    st.session_state["uploaded_configs"] = {}
-
-
+if SINGLE_STATE_KEY not in st.session_state:
+    st.session_state[SINGLE_STATE_KEY] = None
+if PENDING_MATCH_KEY not in st.session_state:
+    st.session_state[PENDING_MATCH_KEY] = None
+if UPLOAD_SIGNATURE_KEY not in st.session_state:
+    st.session_state[UPLOAD_SIGNATURE_KEY] = ""
 
 
 def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[str]:
-    """CHANGE 3: Validate XML fields conditionally based on BasisDeterTax.
-    If BasisDeterTax is empty, return early with a clear message.
-    Otherwise, validate only the fields relevant to the selected basis.
-    """
     errors: List[str] = []
-    
-    # Preliminary field validations (always needed)
+
     if fields.get("RemitterPAN") and not validate_pan(fields["RemitterPAN"]):
         errors.append("RemitterPAN format is invalid (expected AAAAA9999A).")
     if fields.get("BsrCode") and not validate_bsr_code(fields["BsrCode"]):
@@ -91,58 +69,25 @@ def _validate_xml_fields(fields: Dict[str, str], mode: str = MODE_TDS) -> List[s
         errors.append("Country to which remittance is made must be selected.")
     if not str(fields.get("NatureRemCategory") or "").strip():
         errors.append("Nature of remittance must be selected.")
-    
-    # CHANGE 3: Check BasisDeterTax and validate conditionally
+
     basis = str(fields.get("BasisDeterTax") or "").strip()
-    
-    if not basis:
-        # User hasn't selected DTAA or Act yet - this is the root cause
+    if mode == MODE_TDS and not basis:
         errors.insert(0, "Please select the Basis of TDS determination (DTAA or Income Tax Act) before generating XML.")
     elif basis == "DTAA":
-        # DTAA basis: check only DTAA-specific fields
-        dtaa_fields = ["RateTdsADtaa", "TaxIncDtaa", "TaxLiablDtaa"]
-        for field in dtaa_fields:
+        for field in ("RateTdsADtaa", "TaxIncDtaa", "TaxLiablDtaa"):
             if not str(fields.get(field) or "").strip():
                 errors.append(f"{field} is required for DTAA basis.")
     elif basis == "Act":
-        # Act basis: check Act-specific fields
-        act_fields = ["RateTdsSecB", "TaxLiablIt"]
-        for field in act_fields:
+        for field in ("RateTdsSecB", "TaxLiablIt"):
             if not str(fields.get(field) or "").strip():
                 errors.append(f"{field} is required for Income Tax Act basis.")
-    
-    # Always required in TDS mode (regardless of basis)
+
     if mode == MODE_TDS:
         if not str(fields.get("AmtPayForgnTds") or "").strip():
             errors.append("Amount of remittance must be entered.")
         if not str(fields.get("ActlAmtTdsForgn") or "").strip():
             errors.append("Actual amount remitted must be entered.")
-    
-    if errors:
-        logger.warning(
-            "xml_validation_failed mode=%s basis=%s errors=%s key_fields=%s",
-            mode,
-            basis,
-            errors,
-            {
-                "RemitterPAN": str(fields.get("RemitterPAN") or ""),
-                "BasisDeterTax": basis,
-                "CountryRemMadeSecb": str(fields.get("CountryRemMadeSecb") or ""),
-                "NatureRemCategory": str(fields.get("NatureRemCategory") or ""),
-            },
-        )
-    else:
-        logger.info(
-            "xml_validation_ok mode=%s basis=%s key_fields=%s",
-            mode,
-            basis,
-            {
-                "RemitterPAN": str(fields.get("RemitterPAN") or ""),
-                "BasisDeterTax": basis,
-                "CountryRemMadeSecb": str(fields.get("CountryRemMadeSecb") or ""),
-                "NatureRemCategory": str(fields.get("NatureRemCategory") or ""),
-            },
-        )
+
     return errors
 
 
@@ -155,302 +100,258 @@ def _vision_core_fields_empty(extracted: Dict[str, str]) -> bool:
     return not any(_has_non_empty(extracted.get(field)) for field in core_fields)
 
 
-st.subheader("Step 1 - Upload Invoices")
-uploaded_files = st.file_uploader(
-    "Upload one or more invoice files (PDF/JPG/PNG)",
+def _extract_invoice_fields(file_name: str, file_bytes: bytes) -> Dict[str, str]:
+    text = ""
+    extracted: Dict[str, str]
+
+    if file_name.lower().endswith(".pdf"):
+        try:
+            text = extract_text_from_pdf(io.BytesIO(file_bytes)) or ""
+        except Exception:
+            logger.exception("pdf_text_extraction_failed file=%s", file_name)
+            text = ""
+
+        if text and len(text.strip()) >= 20:
+            extracted = extract_invoice_core_fields(text)
+        else:
+            try:
+                images = convert_from_bytes(file_bytes, dpi=300)
+                if images:
+                    selected_pages = images[:MAX_SCANNED_PDF_PAGES]
+                    page_results: List[Dict[str, str]] = []
+                    page_ocr_texts: List[str] = []
+                    for page_idx, page_img in enumerate(selected_pages, start=1):
+                        buf = io.BytesIO()
+                        page_img.save(buf, format="JPEG", quality=90)
+                        image_bytes = buf.getvalue()
+                        page_extracted = extract_invoice_core_fields_from_image(image_bytes)
+                        try:
+                            page_ocr = extract_text_from_image_file(image_bytes) or ""
+                        except Exception:
+                            page_ocr = ""
+                        text_extracted: Dict[str, str] = {}
+                        if _vision_core_fields_empty(page_extracted) and len(page_ocr.strip()) >= 50:
+                            try:
+                                text_extracted = extract_invoice_core_fields(page_ocr)
+                            except Exception:
+                                logger.exception(
+                                    "pdf_image_page_text_fallback_failed file=%s page=%s",
+                                    file_name,
+                                    page_idx,
+                                )
+                        merged_page = dict(text_extracted)
+                        merged_page.update({k: v for k, v in page_extracted.items() if _has_non_empty(v)})
+                        merged_page["_raw_invoice_text"] = page_ocr
+                        page_results.append(merged_page)
+                        page_ocr_texts.append(page_ocr)
+                    if len(page_results) == 1:
+                        extracted = page_results[0]
+                    else:
+                        extracted, merge_meta = merge_multi_page_image_extractions(page_results)
+                        logger.info("pdf_image_multi_page_merged file=%s meta=%s", file_name, merge_meta)
+                    text = "\n".join(t for t in page_ocr_texts if t.strip())
+                    if not text.strip():
+                        try:
+                            text = extract_text_from_image_file(file_bytes) or ""
+                        except Exception:
+                            logger.exception("pdf_image_ocr_fallback_failed file=%s", file_name)
+                else:
+                    extracted = extract_invoice_core_fields(text)
+            except Exception as exc:
+                logger.exception("pdf_to_image_failed file=%s error=%s", file_name, str(exc))
+                extracted = extract_invoice_core_fields(text)
+    else:
+        extracted = extract_invoice_core_fields_from_image(file_bytes)
+        try:
+            text = extract_text_from_image_file(file_bytes) or ""
+        except Exception:
+            logger.exception("image_ocr_fallback_failed file=%s", file_name)
+            text = ""
+
+    if not extracted.get("_raw_invoice_text"):
+        extracted["_raw_invoice_text"] = text
+    return extracted
+
+
+def _build_single_state(file_name: str, extracted: Dict[str, str], excel_row: Dict[str, str]) -> Dict[str, object]:
+    derived = derive_single_config(excel_row)
+    config: Dict[str, object] = {
+        "mode": derived.get("mode") or MODE_TDS,
+        "exchange_rate": derived.get("exchange_rate") or "1",
+        "currency_short": derived.get("currency_short") or str(extracted.get("currency_short") or ""),
+        "is_gross_up": str(derived.get("is_gross_up") or "N").upper() == "Y",
+    }
+    excel_seed = {
+        "mode": str(derived.get("mode") or MODE_TDS),
+        "is_gross_up": str(derived.get("is_gross_up") or "N"),
+        "exchange_rate": str(derived.get("exchange_rate") or ""),
+        "currency_short": str(derived.get("currency_short") or ""),
+        "document_date": str(derived.get("document_date") or ""),
+        "deduction_date": str(derived.get("posting_date") or ""),
+        "proposed_date": str(derived.get("proposed_date") or ""),
+        "amount_fcy": str(derived.get("amount_fcy") or ""),
+        "amount_inr": str(derived.get("amount_inr") or ""),
+    }
+    invoice_id = f"inv_single_{int(time.time() * 1000) % 1000000}"
+    return build_invoice_state(invoice_id, file_name, extracted, config, excel_seed=excel_seed)
+
+
+def _excel_row_label(row: Dict[str, str]) -> str:
+    return (
+        f"Row {row.get('__row_number', '?')} | "
+        f"Reference={row.get('Reference', '')} | "
+        f"Posting Date={row.get('Posting Date', '')} | "
+        f"FCY={row.get('Amount in Foreign Currency', '')} | "
+        f"INR={row.get('Amount in INR', '')}"
+    )
+
+
+def _reset_states_if_upload_changed(invoice_file, excel_file) -> None:
+    if not invoice_file or not excel_file:
+        return
+    signature = f"{invoice_file.name}:{invoice_file.size}:{excel_file.name}:{excel_file.size}"
+    previous = str(st.session_state.get(UPLOAD_SIGNATURE_KEY) or "")
+    if signature != previous:
+        st.session_state[UPLOAD_SIGNATURE_KEY] = signature
+        st.session_state[PENDING_MATCH_KEY] = None
+        st.session_state[SINGLE_STATE_KEY] = None
+
+
+st.subheader("Step 1 - Upload Files")
+invoice_file = st.file_uploader(
+    "Upload invoice file (PDF/JPG/PNG)",
     type=["pdf", "png", "jpg", "jpeg"],
-    accept_multiple_files=True,
-    key="batch_invoice_uploader",
+    accept_multiple_files=False,
+    key="single_invoice_uploader",
+)
+excel_file = st.file_uploader(
+    "Upload matching Excel file (.xlsx)",
+    type=["xlsx"],
+    accept_multiple_files=False,
+    key="single_excel_uploader",
 )
 
-if uploaded_files:
-    logger.info("upload_received file_count=%s files=%s", len(uploaded_files), [f.name for f in uploaded_files])
-    st.caption("Configure each invoice before processing")
-    for idx, file in enumerate(uploaded_files):
-        cfg_key = f"cfg_{file.name}_{idx}"
-        existing = st.session_state["uploaded_configs"].get(
-            cfg_key,
-            {"currency_short": DEFAULT_UPLOAD_CURRENCY, "exchange_rate": "1", "mode": MODE_TDS},
-        )
-        c1, c2, c3 = st.columns([3, 2, 2])
-        with c1:
-            st.text_input("Filename", value=file.name, disabled=True, key=f"{cfg_key}_file")
-        with c2:
-            existing_currency = str(existing.get("currency_short") or "").strip()
-            resolved_existing_currency = resolve_currency_selection(existing_currency, CURRENCY_INDEX)
-            selected_currency_value = resolved_existing_currency.get("code", "")
-            if selected_currency_value not in UPLOAD_CURRENCY_VALUES:
-                selected_currency_value = DEFAULT_UPLOAD_CURRENCY
-            currency_short = st.selectbox(
-                "Currency",
-                UPLOAD_CURRENCY_VALUES or [""],
-                index=(UPLOAD_CURRENCY_VALUES.index(selected_currency_value) if selected_currency_value in UPLOAD_CURRENCY_VALUES else 0),
-                format_func=lambda code: UPLOAD_CURRENCY_LABELS.get(code, code),
-                key=f"{cfg_key}_currency",
-            )
-            exchange_rate = st.text_input("1 unit of FCY = ₹ X", value=str(existing["exchange_rate"]), key=f"{cfg_key}_rate")
-        with c3:
-            mode = st.radio("Mode", [MODE_TDS, MODE_NON_TDS], index=0 if existing["mode"] == MODE_TDS else 1, key=f"{cfg_key}_mode")
-            is_gross_up = st.checkbox(
-                "Gross-up Tax?", 
-                value=bool(existing.get("is_gross_up")), 
-                disabled=(mode == MODE_NON_TDS), 
-                key=f"{cfg_key}_grossup"
-            )
-            # Guardrail: Never allow gross-up to be registered as True when in Non-TDS mode
-            if mode == MODE_NON_TDS:
-                is_gross_up = False
-                
-        st.session_state["uploaded_configs"][cfg_key] = {
-            "currency_short": currency_short,
-            "exchange_rate": exchange_rate,
-            "mode": mode,
-            "is_gross_up": is_gross_up,
-            "file_name": file.name,
-        }
-
-    process = st.button("Process Invoices", type="primary")
-    if process:
-        logger.info("process_clicked file_count=%s", len(uploaded_files))
-        states: Dict[str, Dict[str, object]] = {}
-        for idx, file in enumerate(uploaded_files):
-            cfg_key = f"cfg_{file.name}_{idx}"
-            cfg = st.session_state["uploaded_configs"].get(cfg_key, {})
-            logger.info("invoice_process_start file=%s cfg=%s", file.name, cfg)
-            if file.size > MAX_FILE_SIZE:
-                st.error(f"{file.name}: file too large.")
-                logger.warning("invoice_skipped_file_too_large file=%s size=%s", file.name, file.size)
-                continue
+if invoice_file and excel_file:
+    _reset_states_if_upload_changed(invoice_file, excel_file)
+    if st.button("Process Files", type="primary"):
+        if invoice_file.size > MAX_FILE_SIZE:
+            st.error("Invoice file too large (max 10 MB).")
+        elif excel_file.size > MAX_FILE_SIZE:
+            st.error("Excel file too large (max 10 MB).")
+        else:
+            invoice_bytes = invoice_file.getvalue()
+            excel_bytes = excel_file.getvalue()
             try:
-                if float(str(cfg.get("exchange_rate") or "0")) <= 0:
-                    st.error(f"{file.name}: exchange rate must be greater than 0.")
-                    logger.warning("invoice_skipped_bad_exchange file=%s exchange_rate=%s", file.name, cfg.get("exchange_rate"))
-                    continue
-            except ValueError:
-                st.error(f"{file.name}: invalid exchange rate.")
-                logger.warning("invoice_skipped_invalid_exchange file=%s exchange_rate=%s", file.name, cfg.get("exchange_rate"))
-                continue
-
-            with st.spinner(f"Processing {file.name}..."):
-                start = time.time()
-                text = ""  # ALWAYS reset per invoice to avoid cross-invoice leakage
-                # Handle PDFs differently: try text extraction first, else convert
-                # the first PDF page to an image and send to Gemini vision.
-                file_bytes = file.read()
-                if file.name.lower().endswith('.pdf'):
-                    try:
-                        text = extract_text_from_pdf(io.BytesIO(file_bytes)) or ""
-                    except Exception:
-                        logger.exception("pdf_text_extraction_failed file=%s", file.name)
-                        text = ""
-
-                    if text and len(text.strip()) >= 20:
-                        # Use text-based extraction when PDF text is sufficient
-                        extracted = extract_invoice_core_fields(text)
-                    else:
-                        # Convert scanned PDF pages to images and aggregate extraction.
-                        try:
-                            images = convert_from_bytes(file_bytes, dpi=300)
-                            if images:
-                                selected_pages = images[:MAX_SCANNED_PDF_PAGES]
-                                logger.info(
-                                    "pdf_image_fallback_pages file=%s total_pages=%s processed_pages=%s",
-                                    file.name,
-                                    len(images),
-                                    len(selected_pages),
-                                )
-                                page_results: List[Dict[str, str]] = []
-                                page_ocr_texts: List[str] = []
-                                for page_idx, page_img in enumerate(selected_pages, start=1):
-                                    buf = io.BytesIO()
-                                    page_img.save(buf, format='JPEG', quality=90)
-                                    image_bytes = buf.getvalue()
-                                    page_extracted = extract_invoice_core_fields_from_image(image_bytes)
-                                    # Free OCR on each page for classifier evidence
-                                    try:
-                                        page_ocr = extract_text_from_image_file(image_bytes) or ""
-                                    except Exception:
-                                        page_ocr = ""
-                                    text_extracted: Dict[str, str] = {}
-                                    if _vision_core_fields_empty(page_extracted) and len(page_ocr.strip()) >= 50:
-                                        try:
-                                            text_extracted = extract_invoice_core_fields(page_ocr)
-                                            logger.info(
-                                                "pdf_image_page_text_fallback_used file=%s page=%s text_keys=%s",
-                                                file.name,
-                                                page_idx,
-                                                sorted(text_extracted.keys()),
-                                            )
-                                        except Exception:
-                                            logger.exception(
-                                                "pdf_image_page_text_fallback_failed file=%s page=%s",
-                                                file.name,
-                                                page_idx,
-                                            )
-                                    merged_page = dict(text_extracted)
-                                    merged_page.update({k: v for k, v in page_extracted.items() if _has_non_empty(v)})
-                                    merged_page["_raw_invoice_text"] = page_ocr
-                                    page_results.append(merged_page)
-                                    page_ocr_texts.append(page_ocr)
-                                    logger.info(
-                                        "pdf_image_page_extracted file=%s page=%s ocr_len=%s summary=%s",
-                                        file.name,
-                                        page_idx,
-                                        len(page_ocr),
-                                        {
-                                            "invoice_number": merged_page.get("invoice_number", ""),
-                                            "amount": merged_page.get("amount", ""),
-                                            "currency_short": merged_page.get("currency_short", ""),
-                                            "remitter_name": merged_page.get("remitter_name", ""),
-                                            "beneficiary_name": merged_page.get("beneficiary_name", ""),
-                                        },
-                                    )
-                                if len(page_results) == 1:
-                                    extracted = page_results[0]
-                                else:
-                                    extracted, merge_meta = merge_multi_page_image_extractions(page_results)
-                                    logger.info("pdf_image_multi_page_merged file=%s meta=%s", file.name, merge_meta)
-                                # Combine OCR text from all pages as raw evidence
-                                text = "\n".join(t for t in page_ocr_texts if t.strip())
-                                if not text.strip():
-                                    try:
-                                        text = extract_text_from_image_file(file_bytes) or ""
-                                        logger.info(
-                                            "pdf_image_ocr_fallback file=%s text_len=%s",
-                                            file.name,
-                                            len(text),
-                                        )
-                                    except Exception:
-                                        logger.exception("pdf_image_ocr_fallback_failed file=%s", file.name)
-                            else:
-                                extracted = extract_invoice_core_fields(text)
-                        except Exception as e:
-                            logger.exception("pdf_to_image_failed file=%s error=%s", file.name, str(e))
-                            extracted = extract_invoice_core_fields(text)
-                else:
-                    # For image uploads (jpg/png/etc.), send bytes directly to image extractor
-                    extracted = extract_invoice_core_fields_from_image(file_bytes)
-                    # Free OCR for classifier evidence
-                    try:
-                        text = extract_text_from_image_file(file_bytes) or ""
-                    except Exception:
-                        logger.exception("image_ocr_fallback_failed file=%s", file.name)
-                        text = ""
-                # Set raw invoice text deterministically (never leaks from previous iteration)
-                if not extracted.get("_raw_invoice_text"):
-                    extracted["_raw_invoice_text"] = text
-                logger.info(
-                    "invoice_extracted file=%s fields=%s",
-                    file.name,
-                    {
-                        "remitter_name": extracted.get("remitter_name", ""),
-                        "remitter_country": extracted.get("remitter_country_text", ""),
-                        "beneficiary_name": extracted.get("beneficiary_name", ""),
-                        "beneficiary_country": extracted.get("beneficiary_country_text", ""),
-                        "invoice_number": extracted.get("invoice_number", ""),
-                        "amount": extracted.get("amount", ""),
-                        "currency_short": extracted.get("currency_short", ""),
-                        "invoice_date_iso": extracted.get("invoice_date_iso", ""),
-                    },
-                )
-                invoice_id = f"inv_{idx}_{int(time.time()*1000)%1000000}"
-                state = build_invoice_state(invoice_id, file.name, extracted, cfg)
-                states[invoice_id] = state
-                logger.info(
-                    "invoice_state_built invoice_id=%s file=%s form_snapshot=%s",
-                    invoice_id,
-                    file.name,
-                    {
-                        "RemitterPAN": state.get("form", {}).get("RemitterPAN", ""),
-                        "CountryRemMadeSecb": state.get("form", {}).get("CountryRemMadeSecb", ""),
-                        "RateTdsADtaa": state.get("form", {}).get("RateTdsADtaa", ""),
-                        "NatureRemCategory": state.get("form", {}).get("NatureRemCategory", ""),
-                    },
-                )
-                logger.info("invoice_processed file=%s elapsed=%.2fs", file.name, time.time() - start)
-        st.session_state["invoice_states"] = states
-        if states:
-            st.success(f"Processed {len(states)} invoices.")
-            logger.info("process_complete invoice_count=%s ids=%s", len(states), list(states.keys()))
-
-
-invoice_states = st.session_state.get("invoice_states", {})
-if invoice_states:
-    st.subheader("Step 2 - Review Invoices")
-    ordered_ids = list(invoice_states.keys())
-    tabs = st.tabs([invoice_states[i]["meta"]["file_name"] for i in ordered_ids])
-
-    all_xml_payloads: List[tuple[str, bytes]] = []
-    for tab, invoice_id in zip(tabs, ordered_ids):
-        with tab:
-            state = invoice_states[invoice_id]
-            logger.info("review_start invoice_id=%s file=%s", invoice_id, state.get("meta", {}).get("file_name"))
-            state = render_invoice_tab(state)
-            state = recompute_invoice(state)
-            st.session_state["invoice_states"][invoice_id] = state
-            logger.info(
-                "review_recomputed invoice_id=%s computed=%s",
-                invoice_id,
-                {
-                    "RemitterPAN": state.get("form", {}).get("RemitterPAN", ""),
-                    "CountryRemMadeSecb": state.get("form", {}).get("CountryRemMadeSecb", ""),
-                    "RateTdsADtaa": state.get("form", {}).get("RateTdsADtaa", ""),
-                    "TaxLiablIt": state.get("form", {}).get("TaxLiablIt", ""),
-                    "AmtPayForgnTds": state.get("form", {}).get("AmtPayForgnTds", ""),
-                },
-            )
-
-            xml_fields = build_xml_fields_by_mode(state)
-            mode = str(state.get("meta", {}).get("mode") or MODE_TDS)
-            logger.info(
-                "xml_fields_built invoice_id=%s mode=%s snapshot=%s",
-                invoice_id,
-                mode,
-                {
-                    "RemitterPAN": xml_fields.get("RemitterPAN", ""),
-                    "CountryRemMadeSecb": xml_fields.get("CountryRemMadeSecb", ""),
-                    "RateTdsADtaa": xml_fields.get("RateTdsADtaa", ""),
-                    "RateTdsSecB": xml_fields.get("RateTdsSecB", ""),
-                    "TaxLiablIt": xml_fields.get("TaxLiablIt", ""),
-                },
-            )
-            errors = _validate_xml_fields(xml_fields, mode=mode)
-            if errors:
-                logger.warning("review_blocked invoice_id=%s errors=%s", invoice_id, errors)
-                for err in errors:
-                    st.error(err)
+                with st.spinner("Parsing Excel..."):
+                    excel_rows = parse_excel_rows(excel_bytes)
+                with st.spinner("Extracting invoice fields..."):
+                    extracted = _extract_invoice_fields(invoice_file.name, invoice_bytes)
+            except Exception as exc:
+                logger.exception("single_processing_failed invoice=%s excel=%s", invoice_file.name, excel_file.name)
+                st.error(str(exc))
             else:
-                try:
-                    xml_content = generate_xml_content(xml_fields, mode=mode)
-                    logger.info("xml_generate_ok invoice_id=%s bytes=%s", invoice_id, len(xml_content.encode("utf8")))
-                except Exception as exc:
-                    logger.exception("xml_generate_failed invoice_id=%s", invoice_id)
-                    st.error(f"XML generation failed: {exc}")
-                    continue
-                file_stub = str(state["extracted"].get("invoice_number") or state["meta"]["invoice_id"]).replace(" ", "_")
-                xml_filename = f"form15cb_{file_stub}.xml"
-                st.download_button(
-                    "Generate XML",
-                    data=xml_content.encode("utf8"),
-                    file_name=xml_filename,
-                    mime="application/xml",
-                    key=f"dl_{invoice_id}",
+                match_result = match_invoice_row(
+                    excel_rows,
+                    invoice_filename=invoice_file.name,
+                    invoice_number=str(extracted.get("invoice_number") or ""),
                 )
-                if st.button("Save XML to output folder", key=f"save_{invoice_id}"):
-                    path = write_xml_content(xml_content, filename=xml_filename)
-                    st.success(f"Saved: {path}")
-                all_xml_payloads.append((xml_filename, xml_content.encode("utf8")))
+                if match_result["status"] == "matched" and match_result["matched_index"] is not None:
+                    selected_row = excel_rows[match_result["matched_index"]]
+                    try:
+                        state = _build_single_state(invoice_file.name, extracted, selected_row)
+                    except ValueError as exc:
+                        st.session_state[SINGLE_STATE_KEY] = None
+                        st.session_state[PENDING_MATCH_KEY] = {
+                            "rows": excel_rows,
+                            "match_result": match_result,
+                            "extracted": extracted,
+                            "file_name": invoice_file.name,
+                        }
+                        st.error(str(exc))
+                    else:
+                        st.session_state[SINGLE_STATE_KEY] = state
+                        st.session_state[PENDING_MATCH_KEY] = None
+                        if len(match_result.get("candidates") or []) > 1:
+                            st.info(
+                                f"Multiple rows matched by normalized Reference; auto-selected first match (row {selected_row.get('__row_number', '?')})."
+                            )
+                        st.success("Invoice and Excel row matched successfully.")
+                else:
+                    st.session_state[SINGLE_STATE_KEY] = None
+                    st.session_state[PENDING_MATCH_KEY] = {
+                        "rows": excel_rows,
+                        "match_result": match_result,
+                        "extracted": extracted,
+                        "file_name": invoice_file.name,
+                    }
+                    st.warning("No matching row found. Select the correct row below.")
+else:
+    st.caption("Upload one invoice file and one Excel file to begin.")
 
-    st.divider()
-    st.subheader("Batch Output")
-    if all_xml_payloads:
-        zip_bytes = generate_zip_from_xmls(all_xml_payloads)
-        st.download_button(
-            "Generate All XMLs as ZIP",
-            data=zip_bytes,
-            file_name="form15cb_batch.zip",
-            mime="application/zip",
+pending_context = st.session_state.get(PENDING_MATCH_KEY)
+if isinstance(pending_context, dict) and not st.session_state.get(SINGLE_STATE_KEY):
+    rows = pending_context.get("rows") or []
+    match_result = pending_context.get("match_result") or {}
+    candidate_indices = list(match_result.get("candidates") or list(range(len(rows))))
+    if rows and candidate_indices:
+        st.subheader("Step 1.1 - Select Matching Excel Row")
+        selected_idx = st.selectbox(
+            "Select the correct row",
+            options=candidate_indices,
+            format_func=lambda idx: _excel_row_label(rows[idx]),
+            key="single_row_selector",
         )
+        if st.button("Use Selected Row", type="primary", key="single_select_row"):
+            selected_row = rows[int(selected_idx)]
+            try:
+                state = _build_single_state(
+                    str(pending_context.get("file_name") or ""),
+                    pending_context.get("extracted") or {},
+                    selected_row,
+                )
+            except ValueError as exc:
+                st.error(str(exc))
+            else:
+                st.session_state[SINGLE_STATE_KEY] = state
+                st.session_state[PENDING_MATCH_KEY] = None
+                st.success("Selected row applied successfully.")
+                st.rerun()
+    else:
+        st.error("No Excel rows available to select.")
+
+state = st.session_state.get(SINGLE_STATE_KEY)
+if isinstance(state, dict):
+    st.subheader("Step 2 - Review Invoice")
+    logger.info("single_review_start invoice_id=%s", state.get("meta", {}).get("invoice_id", ""))
+    state = render_invoice_tab(state)
+    state = recompute_invoice(state)
+    st.session_state[SINGLE_STATE_KEY] = state
+
+    xml_fields = build_xml_fields_by_mode(state)
+    mode = str(state.get("meta", {}).get("mode") or MODE_TDS)
+    errors = _validate_xml_fields(xml_fields, mode=mode)
+    if errors:
+        for err in errors:
+            st.error(err)
+    else:
+        try:
+            xml_content = generate_xml_content(xml_fields, mode=mode)
+        except Exception as exc:
+            logger.exception("single_xml_generate_failed invoice_id=%s", state.get("meta", {}).get("invoice_id", ""))
+            st.error(f"XML generation failed: {exc}")
+        else:
+            file_stub = str(state["extracted"].get("invoice_number") or state["meta"]["invoice_id"]).replace(" ", "_")
+            xml_filename = f"form15cb_{file_stub}.xml"
+            st.download_button(
+                "Generate XML",
+                data=xml_content.encode("utf8"),
+                file_name=xml_filename,
+                mime="application/xml",
+                key="single_xml_download",
+            )
+            if st.button("Save XML to output folder", key="single_xml_save"):
+                path = write_xml_content(xml_content, filename=xml_filename)
+                st.success(f"Saved: {path}")
 
 st.markdown("---")
 st.caption(f"Version: {VERSION} | Last Updated: {LAST_UPDATED}")

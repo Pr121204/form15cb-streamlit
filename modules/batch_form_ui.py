@@ -447,7 +447,24 @@ def render_invoice_tab(state: Dict[str, object]) -> Dict[str, object]:
             else:
                 logger.warning("ui_rate_missing invoice_id=%s", invoice_id)
         # date remains outside the two-column row so it spans full width
-        form["DednDateTds"] = st.date_input("Date of deduction of TDS", key=f"{invoice_id}_dedn_date").isoformat()
+        dedn_default = None
+        for candidate in (
+            form.get("DednDateTds"),
+            form.get("InvoiceDate"),
+            extracted.get("invoice_date_iso"),
+        ):
+            try:
+                dedn_default = date.fromisoformat(str(candidate or ""))
+                break
+            except Exception:
+                continue
+        if dedn_default is None:
+            dedn_default = date.today()
+        form["DednDateTds"] = st.date_input(
+            "Date of deduction of TDS",
+            value=dedn_default,
+            key=f"{invoice_id}_dedn_date",
+        ).isoformat()
     else:
         st.caption("Non-TDS mode - TDS fields are shown but disabled and will output as zero.")
 
